@@ -1,0 +1,35 @@
+.modal__search {
+    max-width: 1320px !important;
+}
+
+.modal__search .modal__header {
+    flex-wrap: unset !important;
+    align-items: center;
+}
+
+.modal__search .modal__header .logo {
+    padding: 0 15px;
+}
+
+.modal__search .modal__header .input__search {
+    max-width: 600px !important;
+    border: 1px solid #ccd4e4;
+    padding: 5px;
+    border-radius: 20px;
+    position: relative;
+}
+
+.modal__search .modal__header .input__search input{
+    width: 500px;
+    margin-left: 40px;
+    border: none;
+    outline: none;
+}
+
+
+.modal__search .modal__header .input__search .icon__search{
+    color: #ccd4e4;
+    position: absolute;
+    top: 31%;
+    left: 3%;
+}

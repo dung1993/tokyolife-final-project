@@ -1,0 +1,23 @@
+.product__image img{
+    height: 320px;
+    width: 250px;
+}
+
+.product__name {
+    font-size: 21px;
+    text-decoration: none !important;
+    color: #444444 !important;
+}
+
+.product__item {
+    padding: 10px;
+    background-color: #fff !important;
+}
+
+.slick-slide >div {
+    padding: 10px !important;
+}
+
+.slick-dots {
+    display: none !important;
+}

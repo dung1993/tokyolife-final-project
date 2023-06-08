@@ -1,0 +1,114 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.menu {
+    margin: 0;
+}
+
+.header-wrap-search {
+    margin-left: 230px;
+    border: 1px solid gray;
+    border-radius: 30px;
+    padding: 5px 25px;
+}
+
+.header-wrap-search:hover {
+    cursor: pointer;
+}
+
+
+.modal__search{
+    margin-top: 0 !important;
+}
+
+.menu {
+    padding: 0 15px;
+}
+
+li.menu:hover li{
+    display: block !important;
+}
+
+.header-account {
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+.header-cart {
+    position: relative;
+}
+
+.cart-icon {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.cart__icon{
+    position: absolute;
+    top: -20%;
+    right: 26%;
+    content: '';
+    background: #c50017;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 9px;
+}
+
+.cart__icon .badge {
+    font-size: 9px;
+}
+
+.menu-main{
+    position: relative;
+}
+
+.mega-menu {
+    position: absolute;
+    z-index: 10;
+    background-color: #fff;
+    width: 100%;
+    top: 100%;
+    left: 0%;
+    display: none;
+    justify-content: space-around;
+    padding: 15px;
+}
+
+
+
+.mega-menu > ul {
+    list-style: none;
+}
+
+ul.menu {
+    height: 65px;
+    align-items: center;
+}
+
+li.menu{
+    height: 100%;
+    align-items: center;
+    display: flex;
+}
+
+.women-category:hover > .mega-menu, 
+.man-category:hover > .mega-menu, 
+.childrent-category:hover > .mega-menu, 
+.housewares-category:hover > .mega-menu,
+.beauty-category:hover > .mega-menu,
+.new-category:hover > .mega-menu{
+    display: flex !important;
+}
+
+a{
+    text-decoration: none;
+    color: #444444;
+}
+
+.menu ul{
+    margin: 0;
+    padding: 0;
+}
