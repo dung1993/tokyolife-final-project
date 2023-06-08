@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+.slick-arrow::before {
+  color: #444444 !important;
+}

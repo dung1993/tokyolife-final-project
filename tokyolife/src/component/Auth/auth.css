@@ -1,0 +1,84 @@
+.modal-sm {
+    max-width: 340px !important;
+}
+
+p {
+    font-size: 15px;
+    color: #798389;
+}
+
+.modal-header {
+    padding: 10px;
+}
+
+.btn-close {
+    display: none;
+}
+
+.form__input-wrapper {
+    margin: 15px 0;
+}
+
+.form__input-wrapper input {
+    width: 300px !important;
+    height: 40px;
+    border-radius: 2px;
+    position: relative;
+    z-index: 0;
+    padding: 15px;
+}
+
+.form__input-wrapper label {
+    position: absolute;
+    left: 20px;
+    z-index: 20;
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px;
+}
+
+.form__input-wrapper:first-child label {
+    top: 30px;
+}
+
+.form__input-wrapper:nth-child(2) label {
+    top: 85px;
+}
+
+.sitebox-recaptcha {
+    padding: 15px 0;
+}
+
+.form-submit {
+    width: 300px;
+}
+
+.btn-google-login {
+    display: flex;
+    margin: 10px 0;
+    width: 300px;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    border-radius: 5px;
+    background: #dd4b39;
+    color: #fff;
+}
+
+.btn-facebook-login {
+    display: flex;
+    margin: 10px 0;
+    width: 300px;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    border-radius: 5px;
+    background: #3b5998;
+    color: #fff;
+}
+
+.btn-google-login p,
+.btn-facebook-login p {
+    margin: 0;
+    color: #fff !important;
+}
