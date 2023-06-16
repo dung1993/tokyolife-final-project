@@ -8,7 +8,7 @@
 }
 
 .header-wrap-search {
-    margin-left: 230px;
+    margin-left: 200px;
     border: 1px solid gray;
     border-radius: 30px;
     padding: 5px 25px;
@@ -68,19 +68,23 @@ li.menu:hover li{
 .mega-menu {
     position: absolute;
     z-index: 10;
-    background-color: #fff;
-    width: 100%;
+    background: #ececec;
     top: 100%;
-    left: 0%;
     display: none;
-    justify-content: space-around;
-    padding: 15px;
+    flex-direction: column;
+    width: 170px;
 }
-
-
 
 .mega-menu > ul {
     list-style: none;
+    padding: 5px 15px !important;
+}
+
+.mega-menu > ul:hover {
+    background: #444444;
+    color: #fff;
+    transition: all 0,2s;
+    cursor: pointer;
 }
 
 ul.menu {
@@ -94,12 +98,7 @@ li.menu{
     display: flex;
 }
 
-.women-category:hover > .mega-menu, 
-.man-category:hover > .mega-menu, 
-.childrent-category:hover > .mega-menu, 
-.housewares-category:hover > .mega-menu,
-.beauty-category:hover > .mega-menu,
-.new-category:hover > .mega-menu{
+.category:hover > .mega-menu{
     display: flex !important;
 }
 
