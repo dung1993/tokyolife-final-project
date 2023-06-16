@@ -2,7 +2,7 @@ import React from "react";
 
 import Slider from "react-slick";
 
-import Banner from "./banner";
+import Banner from "./Banner";
 
 const BannerList = () => {
     const settings = {

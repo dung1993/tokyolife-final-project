@@ -1,9 +1,9 @@
 import React from "react";
 
-import BannerList from "../component/Banner/bannerList.js";
-import Helmet from "../component/Helmet/helmet";
+import BannerList from "../component/Banner/BannerList.js";
+import Helmet from "../component/Helmet/Helmet";
 import { Container, Row, Col } from "react-bootstrap";
-import ProductList from "../component/UI/productList";
+import ProductList from "../component/UI/ProductList.js";
 
 
 const Home = () => {
