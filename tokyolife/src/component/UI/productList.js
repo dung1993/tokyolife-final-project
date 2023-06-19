@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 import Slider from "react-slick";
-import Products from "../../assets/data/Products";
+import Products from "../../assets/data/products";
 
-import ProductCard from "./ProductCard";
+import ProductCard from "./productCard";
 
 const ProductList = () => {
 
@@ -36,8 +36,8 @@ const ProductList = () => {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1
+    slidesToShow: 3,
+    slidesToScroll: 3
   };
 
   const { products } = state;

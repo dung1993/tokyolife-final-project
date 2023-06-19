@@ -1,81 +1,117 @@
-import React, { useState, useEffect } from "react";
+import React, { useState,useRef, useEffect,Component } from "react";
 
-// import { Container, Row, Col } from "reactstrap";
-import Products from "../assets/data/Products.js"
-// import { useLocation } from "react-router-dom";
-// import CommonSection from "../component/UI/commonSection.js";
-import "../component/Style/product-detals.css";
+import { Container, Row, Col } from "reactstrap";
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import Slider from "react-slick";
+import "../component/Style/product-details.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 
+
+
+
+Fancybox.bind('[data-fancybox="gallery"]', {
+    // Your custom options
+});
 
 
 const ProductDetails = () => {
     document.title = 'N2D shop - Product Detail';
-    // let { state } = useLocation();
-
-    const [state, setState] = useState({
-        products: []
-    })
-
+    const [product, setProduct] = useState({});
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1
+      };
+    const sliderRef = useRef(null);
     useEffect(() => {
         try {
+            fetch(`http://localhost:8086/api/products/9`)
+            .then(async (response)=>{
+                let product = await response.json();
+                setProduct(product)
+            })
             
-            async function getData() {
-                let productRes = await Products.getProduct();
-                console.log(productRes, 'hello')
-                setState({products: productRes.data})
-            }
-            getData();
         } catch (error) {
-
+            console.log('error product');
         }
-    }, [])
+    }, []);
 
-    useEffect(() => {
-        console.log(state.products)
-    },[state.products])
+    const handleTab = (index)=>{
+        if(sliderRef.current){
+            sliderRef.current.slickGoTo(index)
+        }
+       
+    }
 
-
-    const { products } = state;
-
+  
     return <>
-        {products.map((product) => {
-            console.log(product)
-        })}
-        
-
-        {/* <div className="productDetail">
+        <div className="productDetail">
             <Container>
                 <section className="productDetail-information" key={product.id}>
                     <Container>
+                        <Row className="top-container" >
+                            <Col lg="12" md="12" className="d-flex" >
+                                <ul className="breadcrumb-list">
+                                    <li><a>Trang chu </a><span>&nbsp;&nbsp;</span></li><span>&#47;&nbsp;&nbsp;&nbsp;</span>
+                                    <li><a href="#">{product.categoryName}</a><span>&nbsp;&nbsp;</span></li><span>&#47;&nbsp;&nbsp;&nbsp;</span>
+                                    <li><a href="#">{product.title}</a></li><span>&nbsp;</span>
+                                    <li><a href="#">{product.code}</a></li>
+                                </ul>
+                                </Col>
+                        </Row>
                         <Row>
-                            <Col lg="6" md="6" className="productDetail-gallery">
-                                <div className="product-container-gallery">
-                                    <img src={imgUrl} alt="" style={{ maxWidth: '100%' }} />
-                                </div>
+                            <Col lg="6" md="6" className="productDetail-gallery d-flex">
+                                <Col lg="2" md="2" className="d-flex flex-column">                                  
+                                    {product.images?.map((data, index)=>(
+                                        <a>
+                                        <img onClick={()=>handleTab(index)}  src={data.fileUrl} alt="" className="image-product-list" />
+                                        </a>   
+                                    ))}
+                                
+                                </Col>
+                                <Col lg="10" md="10">
+                                    <Slider ref={sliderRef} {...settings}>
+                                            {product.images?.map((data)=>(
+                                                <a data-fancybox="gallery" href={data.fileUrl}>
+                                                    <img  src={data.fileUrl} alt="" style={{maxWidth:'100%' }} />
+                                                </a>   
+                                                ))}
+                                    </Slider>
+                                </Col>
 
+                                
+                            
                             </Col>
                             <Col lg="6" md="6" className="productDetail-content">
                                 <div className="product__detail">
                                     <div className="product-heading">
-                                        <h1>{productName}</h1>
+                                        <h1>{product.title}</h1>
                                         <ul className="product-meta">
-                                            <li className="pro-sku">Mã sản phẩm:</li>
-                                            <li className="pro-brand">Thương hiệu: <span>{brand}</span></li>
-                                            <li className="pro-sharing"></li>
+                                            <li className="pro-sku">Mã sản phẩm: <span>{product.code}</span> </li>
+                                            <li>&#124;</li>
+                                            <li className="pro-brand">Thương hiệu: <span>{product.brandName}</span></li>
+                                            <li>&#124;</li>
+                                            <li className="pro-sharing">
+                                                
+                                            </li>
                                         </ul>
                                     </div>
                                     <div className="product-price" id="price-preview">
                                         <span className="pro-percen me-2">-50%</span>
                                         <del>600,000đ</del>
-                                        <span className="pro-price ms-2">{price}đ</span>
+                                        <span className="pro-price ms-2">{product.price}đ</span>
                                     </div>
                                     <div className="product-variants">
                                         <form action="/cart/add" className="variants" id="add-item-form">
                                             <div className="select-swatch">
                                                 <div className="swatch">
                                                     <div className="title-swap">
-                                                        Màu sắc: <strong>{color}</strong>
+                                                        Màu sắc: <strong></strong>
                                                     </div>
                                                     <div className="select-swap">
 
@@ -83,7 +119,7 @@ const ProductDetails = () => {
                                                 </div>
                                                 <div className="swatch">
                                                     <div className="title-swap">
-                                                        Size: <strong>{size}</strong>
+                                                        Size: <strong></strong>
                                                     </div>
                                                     <div className="select-swap">
 
@@ -100,7 +136,7 @@ const ProductDetails = () => {
                                         </div>
                                         <div className="panel-description ">
                                             <div className="description-productdetail">
-                                                <p>{description}</p>
+                                                <p>{product.description}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -110,7 +146,7 @@ const ProductDetails = () => {
                     </Container>
                 </section>
             </Container>
-        </div> */}
+        </div>
     </>
 
 }
