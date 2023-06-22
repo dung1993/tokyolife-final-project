@@ -3,6 +3,7 @@ import { Col } from "react-bootstrap";
 import Slider from "react-slick";
 import ProductCard from "./ProductCard";
 
+
 const ProductList = ({ listProductAllRender }) => {
 
   const [state, setState] = useState({
@@ -15,8 +16,8 @@ const ProductList = ({ listProductAllRender }) => {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1
+    slidesToShow: 3,
+    slidesToScroll: 3
   };
 
 

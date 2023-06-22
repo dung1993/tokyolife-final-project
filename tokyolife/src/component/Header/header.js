@@ -5,7 +5,7 @@ import { Container, Row } from 'react-bootstrap';
 import ModalSearch from '../Search/Modal-search';
 import Auth from '../Auth/Auth';
 import { Link } from 'react-router-dom';
-import CategoryService from './../../assets/data/CategoryService';
+import CategoryService from '../../assets/data/CategoryService';
 
 const Header = () => {
     const [isOpenSearch, setIsOpenSearch] = useState(false);
@@ -25,9 +25,9 @@ const Header = () => {
     })
 
     useEffect(() => {
-        try{
-            setState({...state});
-            async function getData(){
+        try {
+            setState({ ...state });
+            async function getData() {
                 let categoriesRes = await CategoryService.getCategory();
                 setState({
                     ...state,
@@ -35,10 +35,10 @@ const Header = () => {
                 })
             }
             getData();
-        }catch(error){
+        } catch (error) {
 
         }
-    },[])
+    }, [])
 
 
     // const removeProduct = () => {
@@ -54,17 +54,17 @@ const Header = () => {
     //   }, 0);
     useEffect(e => {
         // console.log(state)
-    },[state])
-    
+    }, [state])
+
 
     return <>
-            
-            <header className="header">
+
+        <header className="header">
             <Container>
                 <ModalSearch isOpen={isOpenSearch} toggle={toggleSearch} />
                 <Auth isOpen={isOpenAuth} toggle={toggleAuth} />
                 <Row className='d-flex align-items-center menu-main'>
-    
+
                     <div className="nav_warpper w-auto ">
                         <div className="logo">
                             <img src={logo} alt="logo" style={{ height: 65, width: 200 }} />
@@ -75,19 +75,19 @@ const Header = () => {
                             {state.categories?.map(e => <li className="menu category">
                                 <Link className='category'>{e.name}</Link>
                                 <div className='mega-menu'>
-                                {e.categoryChilds.map(c => 
-                                   
-                                    <ul className='sub-menu'>{c.name}</ul>
-                                   
-                                )}
-                                 </div>
-    
+                                    {e.categoryChilds.map(c =>
+
+                                        <ul className='sub-menu'>{c.name}</ul>
+
+                                    )}
+                                </div>
+
                             </li>
                             )}
                             <li className="menu category">Cửa hàng</li>
                         </ul>
                     </div>
-    
+
                     <div className="header-wrap-search w-auto" onClick={() => {
                         setIsOpenSearch(true)
                     }}>
@@ -124,9 +124,9 @@ const Header = () => {
             </Container>
         </header>
 
-        </>    
-    
-    
+    </>
+
+
 }
 
 export default Header;
