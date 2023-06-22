@@ -20,6 +20,7 @@
     "react-bootstrap": "^2.7.4",
     "react-carousel-minimal": "^1.4.1",
     "react-dom": "^18.2.0",
+    "react-intl": "^6.4.4",
     "react-router-dom": "^6.11.2",
     "react-scripts": "5.0.1",
     "react-slick": "^0.29.0",
