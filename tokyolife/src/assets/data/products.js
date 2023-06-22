@@ -11,6 +11,10 @@ class Products{
     static getProductById(productId){
         return axios.get(API_URL + 'products/' + productId)
     }
+
+    static getProductByCategoryId(categoryId){
+        return axios.get(API_URL + 'product/category=' + categoryId)
+    }
 }
 
 
