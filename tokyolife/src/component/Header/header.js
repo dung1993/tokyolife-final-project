@@ -2,7 +2,7 @@ import { React, useEffect, useState } from 'react';
 import "./header.css"
 import logo from "../../assets/images/logo.png"
 import { Container, Row } from 'react-bootstrap';
-import ModalSearch from '../Search/modal-search';
+import ModalSearch from '../Search/Modal-search';
 import Auth from '../Auth/auth';
 import { Link } from 'react-router-dom';
 import CategoryService from '../Services/CategoryService';

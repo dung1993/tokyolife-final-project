@@ -35,15 +35,15 @@ const ProductDetails = () => {
     slidesToScroll: 1,
   };
   const sliderRef = useRef(null);
-
   const [color, setColor] = useState();
   const [size, setSize] = useState();
   const [orderProduct, setorderProduct] = useState({});
   const [visitedProductId, setVisitedProductId] = useState([]);
-  const [visitedproduct, setVisitedProduct] = useState([]);
+  const [visitedproducts, setVisitedproducts] = useState([]);
 
   useEffect(() => {
     try {
+
       fetch(`http://localhost:8086/api/products/${productId}`).then(
         async (response) => {
           let product = await response.json();
@@ -59,26 +59,33 @@ const ProductDetails = () => {
 
   useEffect(() => {
     localStorage.setItem("visitedproduct", JSON.stringify(visitedProductId));
-  });
+  },[visitedProductId]);
+
+  const addRelatedProducts = [relatedProducts[0],relatedProducts[1],
+          relatedProducts[2],relatedProducts[3],relatedProducts[4],relatedProducts[5]]
+
+  useEffect(()=>{
+    setVisitedproducts(addRelatedProducts)
+  },[productId])
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("visitedproduct");
-      const array = JSON.parse(saved);
-      console.log(array.join("-"));
-      const str = array.join("-");
-
-      fetch(`http://localhost:8086/api/products/visited?products=${str}`)
-        .then(async (response) => {
+    
+    const saved = localStorage.getItem("visitedproduct");
+    const array = JSON.parse(saved);
+    const str = array.join("-");
+    if (str) {
+      try {
+        fetch(
+          `http://localhost:8086/api/products/visited?products=${str}`
+        ).then(async (response) => {
           const products = await response.json();
-          console.log(products);
-        })
-        .catch((error) => {
-          console.log("Đã xảy ra lỗi:", error);
-          // Xử lý lỗi khi gửi yêu cầu hoặc phân tích phản hồi JSON
+          const newProducts = [...visitedproducts,products]
+          
+          setVisitedproducts(newProducts)
         });
-    } catch (error) {
-      console.log("Đã xảy ra lỗi:", error);
+      } catch (error) {
+        console.log("Đã xảy ra lỗi:", error);
+      }
     }
   }, [productId]);
 
@@ -183,7 +190,7 @@ const ProductDetails = () => {
                 <Col lg="6" md="6" className="productDetail-gallery d-flex">
                   <Col lg="2" md="2" className="d-flex flex-column">
                     {product.images?.map((data, index) => (
-                      <a>
+                      <a key={index}>
                         <img
                           onClick={() => handleTab(index)}
                           src={data.fileUrl}
@@ -195,8 +202,8 @@ const ProductDetails = () => {
                   </Col>
                   <Col lg="10" md="10">
                     <Slider ref={sliderRef} {...settings}>
-                      {product.images?.map((data) => (
-                        <a data-fancybox="gallery" href={data.fileUrl}>
+                      {product.images?.map((data,index) => (
+                        <a key={index} data-fancybox="gallery" href={data.fileUrl}>
                           <img
                             src={data.fileUrl}
                             alt=""
@@ -255,6 +262,7 @@ const ProductDetails = () => {
                               {product.productImportResDTOS?.map(
                                 (item, index) => (
                                   <input
+                                    key={index}
                                     type="button"
                                     data-input="color-size"
                                     onClick={() => handleSetColor(index)}
@@ -352,11 +360,11 @@ const ProductDetails = () => {
               <Row>
                 <Col lg="12" md="12" className="related-product">
                   <Slider {...settingsRelatedProduct}>
-                    {relatedProducts?.map((data) => (
-                      <div className="related-product">
+                    {relatedProducts?.map((data,index) => (
+                      <div key={index} className="related-product">
                         <Link to={`/productdetails/${data.id}`}>
                           <img
-                            src={data.avatar.fileUrl}
+                            src={data.urlImage}
                             style={{ width: "200px" }}
                           />
                         </Link>
@@ -381,6 +389,56 @@ const ProductDetails = () => {
               </Row>
             </Container>
           </section>
+          <hr />
+
+          {visitedproducts.length > 0 && (
+            <section>
+              <Container>
+                <Row>
+                  <Col
+                    lg="12"
+                    md="12"
+                    className="d-flex justify-content-center"
+                  >
+                    <h1>visited Products</h1>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg="12" md="12" className="related-product">
+                    <Slider {...settingsRelatedProduct}>
+                      {visitedproducts?.map((data,index) => {
+                       
+                        return (
+                          <div key={index} className="related-product">
+                            <Link to={`/productdetails/${data?.id}`}>
+                              <img
+                                src={data?.urlImage}
+                                style={{ width: "200px" }}
+                              />
+                            </Link>
+
+                            <div className="d-flex justify-content-center">
+                              <span>{data?.title}</span>
+                            </div>
+                            <div className="d-flex justify-content-center">
+                              <span style={{ color: "red", fontWeight: "600" }}>
+                                <FormattedNumber
+                                  value={data?.price}
+                                  style="currency"
+                                  currency="VND"
+                                  minimumFractionDigits={0}
+                                />
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </Slider>
+                  </Col>
+                </Row>
+              </Container>
+            </section>
+          )}
         </Container>
       </div>
     </>

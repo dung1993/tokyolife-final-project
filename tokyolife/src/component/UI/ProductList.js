@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Products from "../../assets/data/products";
 
-import ProductCard from "./productCard";
+import ProductCard from "./ProductCard";
 
 const ProductList = () => {
 
