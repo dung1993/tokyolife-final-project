@@ -5,7 +5,7 @@ import { Container, Row } from 'react-bootstrap';
 import ModalSearch from '../Search/Modal-search';
 import Auth from '../Auth/Auth';
 import { Link } from 'react-router-dom';
-import CategoryService from '../Services/CategoryService';
+import CategoryService from './../../assets/data/CategoryService';
 
 const Header = () => {
     const [isOpenSearch, setIsOpenSearch] = useState(false);
