@@ -1,0 +1,15 @@
+.tokyo__sales > .container{
+    background: #fff;
+    padding: 10px;
+}
+
+.sales__item{
+    border: 1px solid;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+
+.content{
+    font-size: 12px;
+}
