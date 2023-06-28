@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import API_URL from './../../constant/APP_CONSTANT';
+import API_URL from '../../constant/APP_CONSTANT';
 
 
 class Products{

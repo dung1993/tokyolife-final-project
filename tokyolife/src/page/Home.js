@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import BannerList from "../component/Banner/BannerList.js";
-import Helmet from "../component/Helmet/Helmet";
-import { Container, Row } from "react-bootstrap";
+import Helmet from "../component/Helmet/Helmet.js";
+import { Container, Row, Col } from "react-bootstrap";
 import ProductList from "../component/UI/ProductList.js";
 import Sales from "../component/Sale/Sales.js";
 import CategoryService from '../assets/data/CategoryService.js';
-import Products from "../assets/data/Products";
-
+import Products from "../assets/data/Products.js";
 
 
 
