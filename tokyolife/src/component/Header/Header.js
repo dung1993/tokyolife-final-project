@@ -7,6 +7,8 @@ import Auth from '../Auth/Auth';
 import { Link } from 'react-router-dom';
 import CategoryService from '../../assets/data/CategoryService';
 
+import ProductDetails from '../../page/ProductDetails';
+
 const Header = () => {
     const [isOpenSearch, setIsOpenSearch] = useState(false);
 
@@ -28,7 +30,7 @@ const Header = () => {
         try {
             setState({ ...state });
             async function getData() {
-                let categoriesRes = await CategoryService.getCategory();
+                let categoriesRes = await CategoryService.getAllCategory();
                 setState({
                     ...state,
                     categories: categoriesRes.data,
@@ -39,24 +41,6 @@ const Header = () => {
 
         }
     }, [])
-
-
-    // const removeProduct = () => {
-
-    // }
-
-    // const updateQuantity = (id , quantity) => {
-
-    // }
-
-    // const totalCost = products.reduce((acc, product) => {
-    //     return acc + product.price * product.quantity;
-    //   }, 0);
-    useEffect(e => {
-        // console.log(state)
-    }, [state])
-
-
     return <>
 
         <header className="header">
@@ -72,13 +56,11 @@ const Header = () => {
                     </div>
                     <div className="navigation w-auto">
                         <ul className="menu d-flex " style={{ listStyle: 'none' }}>
-                            {state.categories?.map(e => <li className="menu category">
+                            {state?.categories?.map(e => <li className="menu category">
                                 <Link className='category'>{e.name}</Link>
                                 <div className='mega-menu'>
                                     {e.categoryChilds.map(c =>
-
                                         <ul className='sub-menu'>{c.name}</ul>
-
                                     )}
                                 </div>
 

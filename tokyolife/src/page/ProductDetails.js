@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, Component } from "react";
-
+import axios from 'axios';
 import { Container, Row, Col } from "reactstrap";
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
@@ -41,7 +41,7 @@ const ProductDetails = () => {
   const [sizeArr, setSizeArr] = useState([]);
   const [quantity, setQuantity] = useState(1);
 
-  const [orderProduct, setorderProduct] = useState({});
+  const [cart, setCart] = useState({});
   const [visitedProductId, setVisitedProductId] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [visitedproducts, setVisitedproducts] = useState([]);
@@ -54,6 +54,7 @@ const ProductDetails = () => {
           setProduct(product);
           let newProductId = [...visitedProductId, productId];
           setVisitedProductId(newProductId);
+          
           if (product && product.productImportResDTOS) {
             const colorarr = product.productImportResDTOS.map((item)=> item.color);
             const uniqueColorArr = Array.from(new Set(colorarr));
@@ -62,6 +63,8 @@ const ProductDetails = () => {
             const uniqueSizeArr = Array.from(new Set(sizearr))
             setSizeArr(uniqueSizeArr)
           }
+          setCheckQuantity(true)
+          setQuantity(1)
         }
       );
     } catch (error) { 
@@ -81,7 +84,7 @@ const ProductDetails = () => {
     try {
       if (product && product.categoryId) {
         fetch(
-          `http://localhost:8086/api/products/category=${product?.categoryId}`
+          `http://localhost:8086/api/products/category/${product?.categoryId}`
         ).then(async (response) => {
           let products = await response.json();
           setRelatedProducts(products);
@@ -128,8 +131,8 @@ const ProductDetails = () => {
   }, [productId]);
 
   useEffect(() => {
-    localStorage.setItem("orderProduct", JSON.stringify(orderProduct));
-  }, [orderProduct]);
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   const handleTab = (index) => {
     if (sliderRef.current) {
@@ -156,6 +159,15 @@ const ProductDetails = () => {
   };
 
   const handleSetColor = (color) => {
+    const temp = []
+    if(product && product.productImportResDTOS){
+      for(let i = 0; i< product.productImportResDTOS.length; i++){
+        if(product.productImportResDTOS[i].color==color){
+          temp.push(product.productImportResDTOS[i].size)
+        }
+      }
+      setSizeArr(temp)
+    }
     setColor(color)
   };
 
@@ -185,31 +197,29 @@ const ProductDetails = () => {
     setQuantity(e.target.value)
   }
 
-  useEffect(()=>console.log('quantity'+quantity),[quantity])
 
   const [checkQuantity, setCheckQuantity] = useState(true)
+  const [alertQuantity, setAlertQuantity] = useState()
 
   useEffect(()=>{ 
     if(product && product.productImportResDTOS){
-      console.log('product import'+product.productImportResDTOS);
-      for( let i=0; i < product.productImportResDTOS.length-1; i++){
-        console.log('product import size'+product.productImportResDTOS[i].size);
-        console.log('product import color'+product.productImportResDTOS[i].color);
-        console.log('product size'+size);
-        console.log('product color'+color); 
+     setCheckQuantity(true)
+      for( let i=0; i < product.productImportResDTOS.length; i++){
         if(product.productImportResDTOS[i].size == size && product.productImportResDTOS[i].color == color && product.productImportResDTOS[i].quantity<quantity){
           setCheckQuantity(false)
-          console.log('iam here');
+          setAlertQuantity(product.productImportResDTOS[i].quantity)
         }
-      }
+        
+        }
+        
     } 
   },[quantity])
 
+  const [checkCart, setCheckCart] = useState(false)
   const handleAddToCart = () => {
-    
-    // Cập nhật thuộc tính của `order`
-    setorderProduct((prevOrder) => ({
-      ...prevOrder,
+    // Cập nhật thuộc tính của `cart'
+    setCart( (prevCart) => ({
+      ...prevCart,
       id: product.id, 
       title: product.title,
       code: product.code,
@@ -218,9 +228,16 @@ const ProductDetails = () => {
       size: size,
       quantity: quantity,
       color: color    
-
     }));
+    setCheckCart(true)
   };
+  useEffect(()=>{
+    if(checkCart){
+      axios.post('http://localhost:8086/api/carts/add', {cart}).then((res)=>{
+        console.log(res.data);
+      })
+    }
+  },[cart])
 
   return (
     <>
@@ -402,8 +419,8 @@ const ProductDetails = () => {
                     <div>
                       <span style={{color:"red"}}>
                         {
-                          checkQuantity ? 'hee' :null
-
+                          product && checkQuantity ? null : 
+                          `* Số lượng vượt quá hàng trong kho. Xin vui lòng nhập lại số lượng <= ${alertQuantity}`
                         }
                       </span>
                     </div>
