@@ -28,7 +28,7 @@ const Header = () => {
         try {
             setState({ ...state });
             async function getData() {
-                let categoriesRes = await CategoryService.getCategory();
+                let categoriesRes = await CategoryService.getAllCategory();
                 setState({
                     ...state,
                     categories: categoriesRes.data,
@@ -53,7 +53,11 @@ const Header = () => {
     //     return acc + product.price * product.quantity;
     //   }, 0);
     useEffect(e => {
-        // console.log(state)
+        // console.log("met", state.categories)
+        // if (state.categories) {
+        //     console.log("chua ra", state.categories[0].categoryChilds);
+        // }
+
     }, [state])
 
 
@@ -72,17 +76,20 @@ const Header = () => {
                     </div>
                     <div className="navigation w-auto">
                         <ul className="menu d-flex " style={{ listStyle: 'none' }}>
-                            {state.categories?.map(e => <li className="menu category">
-                                <Link className='category'>{e.name}</Link>
-                                <div className='mega-menu'>
-                                    {e.categoryChilds.map(c =>
+                            {state.categories?.map(e => {
+                                console.log(e, 'moi viet')
+                                return <li className="menu category">
+                                    <Link className='category'>{e.name}</Link>
+                                    <div className='mega-menu'>
+                                        {e?.categoryChilds?.map(c =>
 
-                                        <ul className='sub-menu'>{c.name}</ul>
+                                            <ul className='sub-menu'>{c.name}</ul>
 
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
 
-                            </li>
+                                </li>
+                            }
                             )}
                             <li className="menu category">Cửa hàng</li>
                         </ul>

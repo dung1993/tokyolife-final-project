@@ -1,4 +1,4 @@
-.product__image img{
+.product__image img {
     height: 320px;
     width: 230px;
 }
@@ -12,9 +12,10 @@
 .product__item {
     padding: 10px;
     background-color: #fff !important;
+    height: 462px;
 }
 
-.slick-slide >div {
+.slick-slide > div {
     padding: 10px !important;
 }
 

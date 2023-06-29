@@ -4,6 +4,11 @@ import API_URL from '../../constant/APP_CONSTANT';
 class CategoryService {
     static getCategory() {
         return axios.get(API_URL + 'categories/get')
+
+    }
+
+    static getAllCategory() {
+        return axios.get(API_URL + 'categories')
     }
 
     static getCategoryById(id) {

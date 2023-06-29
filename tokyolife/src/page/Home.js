@@ -23,6 +23,7 @@ const Home = () => {
         let productsRes = await Products.getProduct();
         // let categories = ;
         // let products = productsRes.data;
+
         let listProductAllRender = [];
 
         setState({
@@ -31,12 +32,20 @@ const Home = () => {
             products: productsRes.data,
             listProductAllRender,
         })
+
+
     }
     useEffect(() => {
+        console.log("nghia can het", state.categories);
+    }, [state])
+    useEffect(() => {
+
         let listProductAllRender = [];
         state.categories.filter(e => e.status === 'SUMMER').forEach(category => {
+            console.log(category)
             listProductAllRender.push(products.filter(e => e.category.id === category.id))
         })
+
 
         setState({
             ...state,
