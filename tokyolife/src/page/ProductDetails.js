@@ -220,10 +220,11 @@ const ProductDetails = () => {
     // Cập nhật thuộc tính của `cart'
     setCart( (prevCart) => ({
       ...prevCart,
-      id: product.id, 
-      title: product.title,
-      code: product.code,
-      categoryName: product.categoryName,
+      id: product.id,
+      status:1, 
+      // title: product.title,
+      // code: product.code,
+      // categoryName: product.categoryName,
       price: product.price,
       size: size,
       quantity: quantity,
