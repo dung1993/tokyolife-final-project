@@ -19,7 +19,6 @@ const ProductDetails = () => {
 
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
-  const [relatedProducts, setRelatedProducts] = useState([]);
   const settings = {
     dots: true,
     infinite: true,
@@ -35,12 +34,17 @@ const ProductDetails = () => {
     slidesToScroll: 1,
   };
   const sliderRef = useRef(null);
-
+  //cung cấp thông tin cho order size, color
   const [color, setColor] = useState();
   const [size, setSize] = useState();
+  const [colorArr, setColorArr] = useState([]);
+  const [sizeArr, setSizeArr] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+
   const [orderProduct, setorderProduct] = useState({});
   const [visitedProductId, setVisitedProductId] = useState([]);
-  const [visitedproduct, setVisitedProduct] = useState([]);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [visitedproducts, setVisitedproducts] = useState([]);
 
   useEffect(() => {
     try {
@@ -50,38 +54,29 @@ const ProductDetails = () => {
           setProduct(product);
           let newProductId = [...visitedProductId, productId];
           setVisitedProductId(newProductId);
+          if (product && product.productImportResDTOS) {
+            const colorarr = product.productImportResDTOS.map((item)=> item.color);
+            const uniqueColorArr = Array.from(new Set(colorarr));
+            setColorArr(uniqueColorArr)
+            const sizearr = product.productImportResDTOS.map((item)=> item.size)
+            const uniqueSizeArr = Array.from(new Set(sizearr))
+            setSizeArr(uniqueSizeArr)
+          }
         }
       );
-    } catch (error) {
+    } catch (error) { 
       console.log("error product");
     }
   }, [productId]);
 
+
   useEffect(() => {
     localStorage.setItem("visitedproduct", JSON.stringify(visitedProductId));
-  });
+  }, [visitedProductId]);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("visitedproduct");
-      const array = JSON.parse(saved);
-      console.log(array.join("-"));
-      const str = array.join("-");
-
-      fetch(`http://localhost:8086/api/products/visited?products=${str}`)
-        .then(async (response) => {
-          const products = await response.json();
-          console.log(products);
-        })
-        .catch((error) => {
-          console.log("Đã xảy ra lỗi:", error);
-          // Xử lý lỗi khi gửi yêu cầu hoặc phân tích phản hồi JSON
-        });
-    } catch (error) {
-      console.log("Đã xảy ra lỗi:", error);
-    }
-  }, [productId]);
-
+  // check useEffect relatedProduct co data moi setVisitedproducts
+  const [check, setCheck] = useState(false);
+  const [fixedRelatedProducts, setFixedRelatedProducts] = useState([]);
   useEffect(() => {
     try {
       if (product && product.categoryId) {
@@ -90,6 +85,7 @@ const ProductDetails = () => {
         ).then(async (response) => {
           let products = await response.json();
           setRelatedProducts(products);
+          setCheck(true);
         });
       }
     } catch (error) {
@@ -97,28 +93,48 @@ const ProductDetails = () => {
     }
   }, [product]);
 
+  // Create fixedRelateProducts to fix data when load productId
+  useEffect(() => {
+    if (check) {
+      setFixedRelatedProducts(relatedProducts.slice(0, 5));
+    }
+  }, [check]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("visitedproduct");
+    const array = JSON.parse(saved);
+    let temp1 = [];
+    array.forEach((element) => {
+      temp1.push(element);
+    });
+
+    const str = temp1.join("-");
+
+    if (str) {
+      try {
+        fetch(
+          `http://localhost:8086/api/products/visited?products=${str}`
+        ).then(async (response) => {
+          const products = await response.json();
+          const temp = [...fixedRelatedProducts, ...products];
+          // Đối tượng Set tự động loại bỏ các giá trị trùng lặp tren truong id, do đó bạn có thể chuyển đổi mảng temp thành một Set và sau đó chuyển đổi lại thành một mảng.
+          const uniqueProducts = Array.from(new Set(temp));
+          setVisitedproducts(uniqueProducts);
+        });
+      } catch (error) {
+        console.log("Đã xảy ra lỗi:", error);
+      }
+    }
+  }, [productId]);
+
   useEffect(() => {
     localStorage.setItem("orderProduct", JSON.stringify(orderProduct));
-  });
+  }, [orderProduct]);
 
   const handleTab = (index) => {
     if (sliderRef.current) {
       sliderRef.current.slickGoTo(index);
     }
-  };
-
-  const handleAddToCart = () => {
-    // Cập nhật thuộc tính của `order`
-    setorderProduct((prevOrder) => ({
-      ...prevOrder,
-      id: product.id,
-      title: product.title,
-      code: product.code,
-      categoryName: product.categoryName,
-      price: product.price,
-      size: size,
-      color: color,
-    }));
   };
 
   // const handleUpdateHobby = () => {
@@ -135,22 +151,75 @@ const ProductDetails = () => {
   //     setData(newData);
   //   };
 
-  const handleSetSize = (index) => {
-    const updatedProductImport = product?.productImportResDTOS?.map((item) => {
-      if (item.id == index + 1) {
-        setSize(item.size);
-      }
-      return item;
-    });
+  const handleSetSize = (size) => {
+    setSize(size)
   };
 
-  const handleSetColor = (index) => {
-    const updatedProductImport = product?.productImportResDTOS?.map((item) => {
-      if (item.id == index + 1) {
-        setColor(item.color);
+  const handleSetColor = (color) => {
+    setColor(color)
+  };
+
+  const handleIncreaseQuantity = () =>{
+    const quantityInput = document.getElementById("quantity")
+    let quantity  = parseInt(quantityInput.value)
+    quantity += 1
+    quantityInput.value = quantity
+    setQuantity(quantity)
+  }
+
+  const handleDecreaseQuantity = ()=>{
+    
+    const quantityInput = document.getElementById("quantity")
+    let quantity = parseInt(quantityInput.value)
+    quantity -= 1
+    if(quantity>0){
+      
+      quantityInput.value = quantity
+      setQuantity(quantity)
+    }
+    else quantityInput.value = 1
+
+  }
+
+  const handleQuantity = (e)=>{
+    setQuantity(e.target.value)
+  }
+
+  useEffect(()=>console.log('quantity'+quantity),[quantity])
+
+  const [checkQuantity, setCheckQuantity] = useState(true)
+
+  useEffect(()=>{ 
+    if(product && product.productImportResDTOS){
+      console.log('product import'+product.productImportResDTOS);
+      for( let i=0; i < product.productImportResDTOS.length-1; i++){
+        console.log('product import size'+product.productImportResDTOS[i].size);
+        console.log('product import color'+product.productImportResDTOS[i].color);
+        console.log('product size'+size);
+        console.log('product color'+color); 
+        if(product.productImportResDTOS[i].size == size && product.productImportResDTOS[i].color == color && product.productImportResDTOS[i].quantity<quantity){
+          setCheckQuantity(false)
+          console.log('iam here');
+        }
       }
-      return item;
-    });
+    } 
+  },[quantity])
+
+  const handleAddToCart = () => {
+    
+    // Cập nhật thuộc tính của `order`
+    setorderProduct((prevOrder) => ({
+      ...prevOrder,
+      id: product.id, 
+      title: product.title,
+      code: product.code,
+      categoryName: product.categoryName,
+      price: product.price,
+      size: size,
+      quantity: quantity,
+      color: color    
+
+    }));
   };
 
   return (
@@ -183,7 +252,7 @@ const ProductDetails = () => {
                 <Col lg="6" md="6" className="productDetail-gallery d-flex">
                   <Col lg="2" md="2" className="d-flex flex-column">
                     {product.images?.map((data, index) => (
-                      <a>
+                      <a key={index}>
                         <img
                           onClick={() => handleTab(index)}
                           src={data.fileUrl}
@@ -195,8 +264,12 @@ const ProductDetails = () => {
                   </Col>
                   <Col lg="10" md="10">
                     <Slider ref={sliderRef} {...settings}>
-                      {product.images?.map((data) => (
-                        <a data-fancybox="gallery" href={data.fileUrl}>
+                      {product.images?.map((data, index) => (
+                        <a
+                          key={index}
+                          data-fancybox="gallery"
+                          href={data.fileUrl}
+                        >
                           <img
                             src={data.fileUrl}
                             alt=""
@@ -252,14 +325,15 @@ const ProductDetails = () => {
                           <div className="swatch">
                             <div className="title-swap">Màu sắc:</div>
                             <div className="select-swap">
-                              {product.productImportResDTOS?.map(
+                              {colorArr?.map(
                                 (item, index) => (
                                   <input
+                                    key={index}
                                     type="button"
                                     data-input="color-size"
-                                    onClick={() => handleSetColor(index)}
+                                    onClick={() => handleSetColor(item)}
                                     style={{
-                                      backgroundColor: item.color,
+                                      backgroundColor: item,
                                       width: "30px",
                                       height: "30px",
                                       border: "0.5px solid gray",
@@ -276,19 +350,19 @@ const ProductDetails = () => {
                               Size: <strong></strong>
                             </div>
                             <div className="select-swap">
-                              {product.productImportResDTOS?.map(
+                              {sizeArr?.map(
                                 (item, index) => (
                                   <input
                                     type="button"
                                     data-input="color-size"
-                                    onClick={() => handleSetSize(index)}
+                                    onClick={() => handleSetSize(item)}
                                     style={{
                                       marginLeft: "5px",
                                       width: "30px",
                                       height: "30px",
                                       border: "0.1px solid gray",
                                     }}
-                                    value={item.size}
+                                    value={item}
                                   ></input>
                                 )
                               )}
@@ -298,6 +372,41 @@ const ProductDetails = () => {
                       </form>
                     </div>
                     <hr />
+
+                    <div class="quantity-area clearfix">
+                      <input
+                        type="button"
+                        value="-"
+                        onClick={()=>handleDecreaseQuantity()}
+                        class="qty-btn"
+                        id="quantity-btn"
+                      />
+                      <input
+                        type="text"
+                        id="quantity"
+                        name="quantity"
+                        value={quantity}
+                        min="1"
+                        class="quantity-input"
+                        onChange={(e)=>handleQuantity(e)}
+                      />
+                      <input
+                        type="button"
+                        value="+"
+                        onclick="HRT.All.plusQuantity()"
+                        class="qty-btn"
+                        onClick={()=>handleIncreaseQuantity()}
+                      />
+                    </div>
+
+                    <div>
+                      <span style={{color:"red"}}>
+                        {
+                          checkQuantity ? 'hee' :null
+
+                        }
+                      </span>
+                    </div>
 
                     <div class="addcart-area">
                       <button
@@ -312,8 +421,7 @@ const ProductDetails = () => {
                       <button
                         type="button"
                         id="buy-now"
-                        class="btnred  
-                                        add-to-cartProduct-buynow button dark btn-addtocart addtocart-modal"
+                        class="btnred add-to-cartProduct-buynow button dark btn-addtocart addtocart-modal"
                         name="add"
                         style={{ display: "inline-block" }}
                       >
@@ -352,13 +460,10 @@ const ProductDetails = () => {
               <Row>
                 <Col lg="12" md="12" className="related-product">
                   <Slider {...settingsRelatedProduct}>
-                    {relatedProducts?.map((data) => (
-                      <div className="related-product">
+                    {relatedProducts?.map((data, index) => (
+                      <div key={index} className="related-product">
                         <Link to={`/productdetails/${data.id}`}>
-                          <img
-                            src={data.avatar.fileUrl}
-                            style={{ width: "200px" }}
-                          />
+                          <img src={data.urlImage} style={{ width: "200px" }} />
                         </Link>
 
                         <div className="d-flex justify-content-center">
@@ -381,6 +486,84 @@ const ProductDetails = () => {
               </Row>
             </Container>
           </section>
+          <hr />
+
+          {
+            <section>
+              <Container>
+                <Row>
+                  <Col
+                    lg="12"
+                    md="12"
+                    className="d-flex justify-content-center"
+                  >
+                    <h1>visited Products</h1>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg="12" md="12" className="related-product">
+                    <Slider {...settingsRelatedProduct}>
+                      {visitedproducts.length > 0
+                        ? visitedproducts?.map((data, index) => {
+                            return (
+                              <div key={index} className="related-product">
+                                <Link to={`/productdetails/${data?.id}`}>
+                                  <img
+                                    src={data?.urlImage}
+                                    style={{ width: "200px" }}
+                                  />
+                                </Link>
+
+                                <div className="d-flex justify-content-center">
+                                  <span>{data?.title}</span>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                  <span
+                                    style={{ color: "red", fontWeight: "600" }}
+                                  >
+                                    <FormattedNumber
+                                      value={data?.price}
+                                      style="currency"
+                                      currency="VND"
+                                      minimumFractionDigits={0}
+                                    />
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })
+                        : fixedRelatedProducts?.map((data, index) => (
+                            <div key={index} className="related-product">
+                              <Link to={`/productdetails/${data.id}`}>
+                                <img
+                                  src={data.urlImage}
+                                  style={{ width: "200px" }}
+                                />
+                              </Link>
+
+                              <div className="d-flex justify-content-center">
+                                <span>{data.title}</span>
+                              </div>
+                              <div className="d-flex justify-content-center">
+                                <span
+                                  style={{ color: "red", fontWeight: "600" }}
+                                >
+                                  <FormattedNumber
+                                    value={data.price}
+                                    style="currency"
+                                    currency="VND"
+                                    minimumFractionDigits={0}
+                                  />
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                    </Slider>
+                  </Col>
+                </Row>
+              </Container>
+            </section>
+          }
         </Container>
       </div>
     </>

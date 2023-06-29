@@ -155,3 +155,44 @@ section {
     -webkit-transition: color 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), border 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
     transition: color 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), border 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
+.quantity-area {
+    width: 285px !important;
+    /* float: left; */
+}
+.quantity-area .qty-btn {
+    float: left;
+    background: #f3f4f4;
+    border: solid 1px #f3f4f4;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    outline: none;
+    height: 45px;
+    line-height: 45px;
+    width: 45px;
+    text-align: center;
+    border-radius: 0;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+}
+.quantity-input {
+    background: #fff;
+    font-weight: 600;
+    height: 45px;
+    line-height: 45px;
+    width: 120px;
+    padding: 0;
+    text-align: center;
+    border: 1px solid #f3f4f4;
+    border-left: none;
+    border-right: none;
+    border-radius: 1px;
+    float: left;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+} 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Col } from "react-bootstrap";
 import Slider from "react-slick";
-import ProductCard from "./ProductCard";
+import ProductCard from "./ProductCard.js";
 
 
 const ProductList = ({ listProductAllRender }) => {
