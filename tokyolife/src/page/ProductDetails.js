@@ -14,9 +14,9 @@ Fancybox.bind('[data-fancybox="gallery"]', {
   // Your custom options
 });
 
-const ProductDetails = () => {
+const ProductDetails = ({setCartDetail}) => {
   const { productId, categoryId } = useParams();
-
+  
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const settings = {
@@ -45,7 +45,7 @@ const ProductDetails = () => {
   const [visitedProductId, setVisitedProductId] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [visitedproducts, setVisitedproducts] = useState([]);
-
+  // const [cartDetail, setCartDetail] = useState();
   useEffect(() => {
     try {
       fetch(`http://localhost:8086/api/products/${productId}`).then(
@@ -96,7 +96,7 @@ const ProductDetails = () => {
     }
   }, [product]);
 
-  // Create fixedRelateProducts to fix data when load productId
+  
   useEffect(() => {
     if (check) {
       setFixedRelatedProducts(relatedProducts.slice(0, 5));
@@ -220,11 +220,9 @@ const ProductDetails = () => {
     // Cập nhật thuộc tính của `cart'
     setCart( (prevCart) => ({
       ...prevCart,
-      id: product.id,
-      status:1, 
-      // title: product.title,
-      // code: product.code,
-      // categoryName: product.categoryName,
+      customerId:1,
+      productId: product.id,
+      status:"ISCART", 
       price: product.price,
       size: size,
       quantity: quantity,
@@ -232,13 +230,22 @@ const ProductDetails = () => {
     }));
     setCheckCart(true)
   };
-  useEffect(()=>{
-    if(checkCart){
-      axios.post('http://localhost:8086/api/carts/add', {cart}).then((res)=>{
-        console.log(res.data);
-      })
-    }
-  },[cart])
+
+    useEffect(()=>{
+      if(checkCart){
+        fetch('http://localhost:8086/api/carts/add',{
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify(cart)
+        }).then(async (response)=>{
+          let result = await response.json() 
+          setCartDetail(result);
+        })
+      }
+    },[cart])
 
   return (
     <>

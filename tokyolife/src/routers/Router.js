@@ -10,13 +10,13 @@ import Cart from "../page/Cart"
 import Login from "../page/Login"
 import Signup from "../page/Signup"
 
-const Routers = () =>{
+const Routers = ({cartDetail,setCartDetail}) =>{
     return <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route path="shop" element={<Shop/>}/>
                 <Route path="checkout" element={<Checkout/>}/>
-                <Route path="/productdetails/:productId" element={<ProductDetails/>}/>
-                <Route path="cart" element={<Cart/>}/>
+                <Route path="/productdetails/:productId" element={<ProductDetails setCartDetail={setCartDetail}/>}/>
+                <Route path="/cart" element={<Cart/>}/>
                 <Route path="login" element={<Login/>}/>
                 <Route path="signup" element={<Signup/>}/>
             </Routes>
