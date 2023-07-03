@@ -7,6 +7,8 @@ import Auth from '../Auth/Auth';
 import { Link } from 'react-router-dom';
 import CategoryService from '../../assets/data/CategoryService';
 
+import ProductDetails from '../../page/ProductDetails';
+
 const Header = () => {
     const [isOpenSearch, setIsOpenSearch] = useState(false);
 
@@ -41,6 +43,7 @@ const Header = () => {
     }, [])
 
 
+
     // const removeProduct = () => {
 
     // }
@@ -71,7 +74,7 @@ const Header = () => {
 
                     <div className="nav_warpper w-auto ">
                         <div className="logo">
-                            <img src={logo} alt="logo" style={{ height: 65, width: 200 }} />
+                            <Link to={"/"}><img src={logo} alt="logo" style={{ height: 65, width: 200 }} /></Link>
                         </div>
                     </div>
                     <div className="navigation w-auto">
@@ -79,14 +82,13 @@ const Header = () => {
                             {state.categories?.map(e => {
                                 console.log(e, 'moi viet')
                                 return <li className="menu category">
-                                    <Link className='category'>{e.name}</Link>
+                                    <Link className='category' >{e.name}</Link>
                                     <div className='mega-menu'>
                                         {e?.categoryChilds?.map(c =>
-
-                                            <ul className='sub-menu'>{c.name}</ul>
-
+                                            <Link><ul className='sub-menu'>{c.name}</ul></Link>
                                         )}
                                     </div>
+
 
                                 </li>
                             }
