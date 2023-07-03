@@ -9,6 +9,8 @@ import ProductDetails from "../page/ProductDetails"
 import Cart from "../page/Cart"
 import Login from "../page/Login"
 import Signup from "../page/Signup"
+import ListProductWithCategory from "../page/ListProductWithCategory"
+import ProductList from "../component/UI/ProductList";
 
 const Routers = () => {
     return <Routes>
@@ -16,6 +18,7 @@ const Routers = () => {
         <Route path="shop" element={<Shop />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="/productdetails/:productId" element={<ProductDetails />} />
+        <Route path="/products/:categoryId" element={<ListProductWithCategory />} />
         <Route path="cart" element={<Cart />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />

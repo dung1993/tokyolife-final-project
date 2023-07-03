@@ -10,6 +10,7 @@
 }
 
 .product__item {
+    position: relative;
     padding: 10px;
     background-color: #fff !important;
     height: 462px;
@@ -21,4 +22,12 @@
 
 .slick-dots {
     display: none !important;
+}
+
+.product-discount {
+    position: absolute;
+    left: 15px;
+    border: 1px solid red;
+    background: red;
+    color: yellow;
 }

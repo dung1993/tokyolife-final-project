@@ -15,6 +15,10 @@ class Products {
     static getProductByCategoryId(categoryId) {
         return axios.get(API_URL + 'product/category=' + categoryId)
     }
+
+    static getProductWithDiscount() {
+        return axios.get('http://localhost:8086/api/client/products/discount-time')
+    }
 }
 
 
