@@ -9,7 +9,9 @@ import CategoryService from '../../assets/data/CategoryService';
 
 import ProductDetails from '../../page/ProductDetails';
 
-const Header = () => {
+const Header = ({cartDetail}) => {
+    
+
     const [isOpenSearch, setIsOpenSearch] = useState(false);
 
     const [isOpenAuth, setIsOpenAuth] = useState(false);
@@ -120,13 +122,19 @@ const Header = () => {
                             </div>
                             <div className='header-item-action header-cart d-flex justify-content-center align-items-center flex-column'>
                                 <div className='cart-icon' onClick={toggleCart}>
+                                
                                     <i className='fa fa-cart-shopping d-flex justify-content-center'></i>
-                                    <span className='box-text'>Giỏ hàng</span>
+                                    <span className='box-text'><a href="http://localhost:3000/cart">Giỏ hàng</a></span>
                                     <span className='cart__icon'>
-                                        <span className='badge'>1</span>
+                                        <span className='badge'>
+                                            {cartDetail}
+                                        </span>
                                     </span>
                                 </div>
                             </div>
+
+                            
+
                         </div>
                     </div>
                 </Row>

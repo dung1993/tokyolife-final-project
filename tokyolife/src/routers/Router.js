@@ -12,14 +12,14 @@ import Signup from "../page/Signup"
 import ListProductWithCategory from "../page/ListProductWithCategory"
 import ProductList from "../component/UI/ProductList";
 
-const Routers = () => {
+
+const Routers = ({ cartDetail, setCartDetail }) => {
     return <Routes>
         <Route path="/" element={<Home />} />
         <Route path="shop" element={<Shop />} />
         <Route path="checkout" element={<Checkout />} />
-        <Route path="/productdetails/:productId" element={<ProductDetails />} />
-        <Route path="/products/:categoryId" element={<ListProductWithCategory />} />
-        <Route path="cart" element={<Cart />} />
+        <Route path="/productdetails/:productId" element={<ProductDetails setCartDetail={setCartDetail} />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
     </Routes>
