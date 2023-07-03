@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import Routers from "../../routers/Router";
 
 
 const Layout = () => {
+    const [cartDetail , setCartDetail] = useState()
     return (
         <>
-            <Header />
+            <Header cartDetail={cartDetail} />
             <div>
-                <Routers />
+                <Routers setCartDetail={setCartDetail} />
             </div>
             <Footer />
         </>
