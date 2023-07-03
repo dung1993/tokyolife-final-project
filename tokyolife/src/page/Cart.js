@@ -266,6 +266,7 @@ const Cart = () => {
                     <p className="total-amount">
                       Tổng tiền:{" "}
                       <span class="total-final">
+                        {products}
                         <FormattedNumber
                           value={products[0].totalAmountCart}
                           style="currency"
