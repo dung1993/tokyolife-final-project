@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, Component } from "react";
-import axios from 'axios';
 import { Container, Row, Col } from "reactstrap";
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
@@ -9,16 +8,17 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FormattedNumber } from "react-intl";
 import { Link, json, useParams } from "react-router-dom";
+import { useSnackbar } from 'notistack'
 
 Fancybox.bind('[data-fancybox="gallery"]', {
   // Your custom options
 });
-
 const ProductDetails = ({setCartDetail}) => {
   const { productId, categoryId } = useParams();
-  
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();   
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
+  const [discountAmount, setDiscountAmount] = useState()
   const settings = {
     dots: true,
     infinite: true,
@@ -51,6 +51,7 @@ const ProductDetails = ({setCartDetail}) => {
       fetch(`http://localhost:8086/api/products/${productId}`).then(
         async (response) => {
           let product = await response.json();
+          console.log(product);
           setProduct(product);
           let newProductId = [...visitedProductId, productId];
           setVisitedProductId(newProductId);
@@ -65,6 +66,7 @@ const ProductDetails = ({setCartDetail}) => {
           }
           setCheckQuantity(true)
           setQuantity(1)
+          setDiscountAmount(product.price-(product.discount*product.price/100))
         }
       );
     } catch (error) { 
@@ -216,8 +218,8 @@ const ProductDetails = ({setCartDetail}) => {
   },[quantity])
 
   const [checkCart, setCheckCart] = useState(false)
+
   const handleAddToCart = () => {
-    // Cập nhật thuộc tính của `cart'
     setCart( (prevCart) => ({
       ...prevCart,
       customerId:1,
@@ -243,6 +245,7 @@ const ProductDetails = ({setCartDetail}) => {
         }).then(async (response)=>{
           let result = await response.json() 
           setCartDetail(result);
+          enqueueSnackbar('Successfully done the operation.', { variant: 'success' });
         })
       }
     },[cart])
@@ -313,7 +316,7 @@ const ProductDetails = ({setCartDetail}) => {
                         <li className="pro-sku">
                           Mã sản phẩm: <span>{product.code}</span>{" "}
                         </li>
-                        <li>&#124;</li>
+                        <li>&#124;</li> 
                         <li className="pro-brand">
                           Thương hiệu: <span>{product.brandName}</span>
                         </li>
@@ -321,25 +324,42 @@ const ProductDetails = ({setCartDetail}) => {
                         <li className="pro-sharing"></li>
                       </ul>
                     </div>
-                    <div className="product-price" id="price-preview">
-                      <span className="pro-percen me-2">-50%</span>
-                      <del>
-                        <FormattedNumber
-                          value={600000}
-                          style="currency"
-                          currency="VND"
-                          minimumFractionDigits={0}
-                        />
-                      </del>
-                      <span className="pro-price ms-2">
-                        <FormattedNumber
-                          value={product.price}
-                          style="currency"
-                          currency="VND"
-                          minimumFractionDigits={0}
-                        />
-                      </span>
-                    </div>
+                    {product.discount!=0?
+                     <div className="product-price" id="price-preview">
+                      
+                     <span className="pro-percen me-2">-{product.discount}%</span>
+                     <del>
+                       <FormattedNumber
+                         value={product.price}
+                         style="currency"
+                         currency="VND"
+                         minimumFractionDigits={0}
+                       />
+                     </del>
+                     <span className="pro-price ms-2">
+                      
+                       <FormattedNumber
+                         value={discountAmount}
+                         style="currency"
+                         currency="VND"
+                         minimumFractionDigits={0}
+                       />
+                     </span>
+                   </div>
+                   :
+                   <div className="product-price" id="price-preview">
+                   <span className="pro-price ms-2">
+                      
+                       <FormattedNumber
+                         value={product.price}
+                         style="currency"
+                         currency="VND"
+                         minimumFractionDigits={0}
+                       />
+                     </span>
+                     </div>
+                  }
+                   
                     <div className="product-variants">
                       <form
                         action="/cart/add"
