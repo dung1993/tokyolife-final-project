@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 
 import {Routes, Route} from 'react-router-dom'
 
@@ -11,12 +11,14 @@ import Login from "../page/Login"
 import Signup from "../page/Signup"
 
 const Routers = ({cartDetail,setCartDetail}) =>{
+    const [products, setProducts] = useState();
+    
     return <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route path="shop" element={<Shop/>}/>
-                <Route path="/checkout" element={<Checkout/>}/>
+                <Route path="/checkout" element={<Checkout products={products}/>}/>
                 <Route path="/productdetails/:productId" element={<ProductDetails setCartDetail={setCartDetail}/>}/>
-                <Route path="/cart" element={<Cart/>}/>
+                <Route path="/cart" element={<Cart products={products} setProducts={setProducts}/>}/>
                 <Route path="login" element={<Login/>}/>
                 <Route path="signup" element={<Signup/>}/>
             </Routes>

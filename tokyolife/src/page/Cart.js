@@ -3,8 +3,8 @@ import { Container, Row, Col } from "reactstrap";
 import "../component/Style/cart.css";
 import { FormattedNumber } from "react-intl";
 import { Link } from "react-router-dom";
-const Cart = () => {
-  const [products, setProducts] = useState();
+const Cart = ({products,setProducts}) => {
+  // const [products, setProducts] = useState();
   const [cartDetailLength, setCartDetailLength] = useState();
   const [totalAmountCart, setTotalAmountCart] = useState(0)
   
@@ -24,6 +24,7 @@ const Cart = () => {
   useEffect(() => {
     if (products) {
       setCartDetailLength(products.length);
+      
     }
   }, [products]);
   const handleRemoveItem = (index) => {
