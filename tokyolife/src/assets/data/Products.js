@@ -13,11 +13,20 @@ class Products {
     }
 
     static getProductByCategoryId(categoryId) {
-        return axios.get(API_URL + 'product/category=' + categoryId)
+        return axios.get(API_URL + 'client/products/category?id=' + categoryId)
     }
 
     static getProductWithDiscount() {
-        return axios.get('http://localhost:8086/api/client/products/discount-time')
+        return axios.get(API_URL + 'client/products/discount-time')
+
+    }
+
+    static postProductByCategoryId(categoryId) {
+        return axios.post(API_URL + 'client/products/category?id=' + categoryId)
+    }
+
+    static getAllProductFilter(categoryId) {
+        return axios.post(API_URL + 'client/products/filter/category/' + categoryId)
     }
 }
 

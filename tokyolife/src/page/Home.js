@@ -55,7 +55,6 @@ const Home = () => {
     const {
         products,
         listProductAllRender,
-        listProductWithDiscountAllRender
     } = state;
 
 

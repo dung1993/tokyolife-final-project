@@ -12,11 +12,7 @@ class CategoryService {
     }
 
     static getCategoryById(id) {
-        return axios.get(API_URL + 'categories=' + id)
-    }
-
-    static getAllCategory(){
-        return axios.get(API_URL + 'categories')
+        return axios.post(API_URL + 'categories/get/' + id)
     }
 
     static getAllCategoryByStatus(status) {

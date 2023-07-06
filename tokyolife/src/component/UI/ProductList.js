@@ -29,7 +29,7 @@ const ProductList = ({ listProductAllRender }) => {
         listProductAllRender?.map(products => products.length > 0 ? <>
           <img src={products[0]?.category?.avatar} alt="" style={{ width: "100%", height: "250px" }} />
           <Col lg='12' md='12'>
-            <h2 className="section__title">{products[0]?.category?.name}</h2>
+            <h2 className="section__title mt-2">{products[0]?.category?.name}</h2>
           </Col>
           <Slider {...settings}>
             {products && products?.map(product => <ProductCard key={Math.random() + "H123"} product={product} />)}

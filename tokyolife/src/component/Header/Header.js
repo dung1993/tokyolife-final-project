@@ -6,11 +6,13 @@ import ModalSearch from '../Search/Modal-search';
 import Auth from '../Auth/Auth';
 import { Link } from 'react-router-dom';
 import CategoryService from '../../assets/data/CategoryService';
+import API_URL from '../../constant/APP_CONSTANT';
 
 import ProductDetails from '../../page/ProductDetails';
+import ProductsListFilter from './../UI/ProductListFilter';
 
-const Header = ({cartDetail}) => {
-    
+const Header = ({ cartDetail }) => {
+
 
     const [isOpenSearch, setIsOpenSearch] = useState(false);
 
@@ -26,6 +28,7 @@ const Header = ({cartDetail}) => {
 
     const [state, setState] = useState({
         categories: [],
+
     })
 
     useEffect(() => {
@@ -43,6 +46,7 @@ const Header = ({cartDetail}) => {
 
         }
     }, [])
+
 
 
 
@@ -82,12 +86,11 @@ const Header = ({cartDetail}) => {
                     <div className="navigation w-auto">
                         <ul className="menu d-flex " style={{ listStyle: 'none' }}>
                             {state.categories?.map(e => {
-                                console.log(e, 'moi viet')
                                 return <li className="menu category">
                                     <Link className='category' >{e.name}</Link>
                                     <div className='mega-menu'>
-                                        {e?.categoryChilds?.map(c =>
-                                            <Link><ul className='sub-menu'>{c.name}</ul></Link>
+                                        {e?.categoryChilds?.map(c => { return < Link key={c.id.toString()} to={`products/category/${c.id}`} state={{ id: c.id }}><ul className='sub-menu'>{c.name} {console.log(c, "ckeck c")}</ul></Link> }
+
                                         )}
                                     </div>
 
@@ -122,7 +125,7 @@ const Header = ({cartDetail}) => {
                             </div>
                             <div className='header-item-action header-cart d-flex justify-content-center align-items-center flex-column'>
                                 <div className='cart-icon' onClick={toggleCart}>
-                                
+
                                     <i className='fa fa-cart-shopping d-flex justify-content-center'></i>
                                     <span className='box-text'><a href="http://localhost:3000/cart">Giỏ hàng</a></span>
                                     <span className='cart__icon'>
@@ -133,13 +136,13 @@ const Header = ({cartDetail}) => {
                                 </div>
                             </div>
 
-                            
+
 
                         </div>
                     </div>
                 </Row>
             </Container>
-        </header>
+        </header >
 
     </>
 

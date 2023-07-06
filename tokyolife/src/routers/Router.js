@@ -10,7 +10,7 @@ import Cart from "../page/Cart"
 import Login from "../page/Login"
 import Signup from "../page/Signup"
 import ListProductWithCategory from "../page/ListProductWithCategory"
-import ProductList from "../component/UI/ProductList";
+
 
 
 const Routers = ({ cartDetail, setCartDetail }) => {
@@ -19,6 +19,7 @@ const Routers = ({ cartDetail, setCartDetail }) => {
         <Route path="shop" element={<Shop />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="/productdetails/:productId" element={<ProductDetails setCartDetail={setCartDetail} />} />
+        <Route path="products/category/:categoryId" element={<ListProductWithCategory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
