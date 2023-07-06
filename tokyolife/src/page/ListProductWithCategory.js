@@ -29,6 +29,7 @@ const ListProductWithCategory = () => {
 
     })
 
+
     const params = useLocation().state;
 
     const handleValue = (e) => {
@@ -42,6 +43,10 @@ const ListProductWithCategory = () => {
         if (checkbox.checked) {
             let min = +price[0]
             let max = +price[1]
+            setState({
+                ...state,
+                priceArr: [min, max]
+            });
 
             console.log(max);
             console.log(min);
@@ -81,59 +86,23 @@ const ListProductWithCategory = () => {
     }
 
     const handleColor = (e) => {
-        let id = e.target.id
-        let checkbox = document.getElementById(id);
-        let color = e.target.value
-        let colorArr = state.colorArr
-        let newColorArr = []
-        let checkIfElse = false
-
-        if (checkbox.checked) {
-
-            if (colorArr.length === 0) {
-                newColorArr.push(color)
-                setState({
-                    ...state,
-                    colorArr: newColorArr
-                })
-            }
-            else {
-                colorArr.forEach(item => {
-                    if (item == color) {
-                        checkIfElse = true
-                    }
-                });
-
-                if (checkIfElse == false) {
-                    colorArr.push(color)
-                    newColorArr = colorArr
-                    setState({
-                        ...state,
-                        colorArr: newColorArr
-                    })
-                }
-            }
-
+        const findColor = state.colorArr.find(color => color === e.target.value);
+        let arr = state.colorArr;
+        if (findColor) {
+            arr = state.colorArr.filter(color => color !== e.target.value);
+        } else {
+            arr.push(e.target.value)
         }
-        else {
-            newColorArr = colorArr.filter(item => item != color)
-            setState({
-                ...state,
-                colorArr: newColorArr
-            })
-        }
-
-        let productsRender = []
-        state.products.filter(item => (item.color == colorArr.forEach(color => {
-
-        })))
+        console.log(arr)
         setState({
             ...state,
-            productsRender: productsRender
+            colorArr: [...arr]
         })
     }
 
     const handleSize = (e) => {
+        console.log(e);
+
         let id = e.target.id
         let checkbox = document.getElementById(id)
         let size = e.target.value
@@ -199,7 +168,25 @@ const ListProductWithCategory = () => {
         }
     }, [params.id])
 
+    useEffect(() => {
+        console.log('demo')
+        Products.getAllProductFilter(params.id, {
+            minPrice: state.priceArr[0] || 0,
+            maxPrice: state.priceArr[1] || 1_000_000,
+            colors: state.colorArr,
+            sizes: state.sizeArr,
+        }).then(e => {
+            console.log(e)
+            setState({
+                ...state,
+                products: e.data
+            })
+        })
+    }, [state.colorArr, state.sizeArr, state.priceArr])
 
+    useEffect(() => {
+        console.log(state.colorArr)
+    }, [state.colorArr])
 
     const { products, productsRes, category, colors, sizes } = state
 
@@ -236,37 +223,38 @@ const ListProductWithCategory = () => {
                         <div className="filter-checkbox">
                             <ul className="checkbox d-none">
                                 <li>
-                                    <input className="me-2" type="checkbox" id="value-100000" value="0 100000" onChange={(e) => { handleValue(e) }} />
+                                    <input className="me-2" type="checkbox" id="value_100000" value="0 100000" onChange={(e) => { handleValue(e) }} />
                                     <label htmlFor="">
                                         <span>Dưới</span> 100.000₫
                                     </label>
                                 </li>
                                 <li>
-                                    <input className="me-2" type="checkbox" id="value-200000" value="100000 200000" onChange={(e) => { handleValue(e) }} />
+                                    <input className="me-2" type="checkbox" id="value_200000" value="100000 200000" onChange={(e) => { handleValue(e) }} />
                                     <label htmlFor="">
                                         100.000₫ - 200.000₫
                                     </label>
                                 </li>
                                 <li>
-                                    <input className="me-2" type="checkbox" id="" value="200000 300000" onChange={(e) => { handleValue(e) }} />
+                                    <input className="me-2" type="checkbox" id="value_300000" value="200000 300000" onChange={(e) => { handleValue(e) }} />
                                     <label htmlFor="">
                                         200.000₫ - 300.000₫
                                     </label>
                                 </li>
                                 <li>
-                                    <input className="me-2" type="checkbox" id="" value="300000 400000" onChange={(e) => { handleValue(e) }} />
+
                                     <label htmlFor="">
+                                        <input className="me-2" type="checkbox" id="value_400000" value="300000 400000" onChange={(e) => { handleValue(e) }} />
                                         300.000₫ - 400.000₫
                                     </label>
                                 </li>
                                 <li>
-                                    <input className="me-2" type="checkbox" id="" value="400000 500000" onChange={(e) => { handleValue(e) }} />
+                                    <input className="me-2" type="checkbox" id="value_500000" value="400000 500000" onChange={(e) => { handleValue(e) }} />
                                     <label htmlFor="">
                                         400.000₫ - 500.000₫
                                     </label>
                                 </li>
                                 <li>
-                                    <input className="me-2" type="checkbox" id="" value="500001" onChange={(e) => { handleValue(e) }} />
+                                    <input className="me-2" type="checkbox" id="value_600000" value="500001" onChange={(e) => { handleValue(e) }} />
                                     <label htmlFor="">
                                         <span>Trên</span> 500.000₫
                                     </label>
@@ -281,6 +269,7 @@ const ListProductWithCategory = () => {
                             <span>Màu sắc</span>
                             <span className="icon-control ms-2">
                                 <i className="fa fa-chevron-down"></i>
+
                             </span>
                         </div>
                         <div className="filter-checkbox">

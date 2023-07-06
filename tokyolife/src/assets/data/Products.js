@@ -25,8 +25,8 @@ class Products {
         return axios.post(API_URL + 'client/products/category?id=' + categoryId)
     }
 
-    static getAllProductFilter(categoryId) {
-        return axios.post(API_URL + 'client/products/filter/category/' + categoryId)
+    static getAllProductFilter(categoryId, data) {
+        return axios.post(API_URL + 'client/products/filter/category/' + categoryId, data)
     }
 }
 

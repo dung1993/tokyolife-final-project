@@ -40,3 +40,7 @@
     width: 230px;
     padding: 5px 15px;
 }
+
+input {
+    -webkit-appearance: checkbox !important;
+}
