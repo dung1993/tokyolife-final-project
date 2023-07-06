@@ -1,0 +1,42 @@
+.border-filter {
+    position: relative;
+}
+
+.filter-checkbox {
+    position: absolute;
+    z-index: 2;
+}
+
+.border-filter ul {
+    list-style: none;
+    border: 1px solid gray;
+    border-radius: 5px;
+    width: 230px;
+    padding: 0;
+    background: #fff;
+}
+
+.border-filter ul li {
+    border-radius: 5px;
+    width: 228px;
+    padding: 5px 15px;
+    background: #fff;
+}
+
+.border-filter:hover ul {
+    display: block !important;
+}
+
+.border-filter ul li:hover {
+    background: #c92027;
+    color: #fff;
+}
+
+.border-filter .fil-title {
+    border: 1px solid gray;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    width: 230px;
+    padding: 5px 15px;
+}

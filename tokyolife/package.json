@@ -16,6 +16,7 @@
     "auth": "^0.0.1",
     "axios": "^1.4.0",
     "bootstrap": "^5.2.3",
+    "helmet": "^7.0.0",
     "jwt-decode": "^3.1.2",
     "model": "^0.0.6",
     "notistack": "^3.0.1",
@@ -27,6 +28,8 @@
     "react-intl": "^6.4.4",
     "react-router-dom": "^6.11.2",
     "react-scripts": "^5.0.1",
+    "react-select": "^5.7.3",
+
     "react-slick": "^0.29.0",
     "reactstrap": "^9.1.10",
     "slick-carousel": "^1.8.1",

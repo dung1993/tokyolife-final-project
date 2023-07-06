@@ -1,5 +1,5 @@
 import React from "react";
-import products from '../../assets/data/products';
+
 
 const CartItem = ({ product, removeProduct, updateQuantity }) => {
 

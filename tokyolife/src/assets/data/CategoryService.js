@@ -4,14 +4,15 @@ import API_URL from '../../constant/APP_CONSTANT';
 class CategoryService {
     static getCategory() {
         return axios.get(API_URL + 'categories/get')
+
+    }
+
+    static getAllCategory() {
+        return axios.get(API_URL + 'categories')
     }
 
     static getCategoryById(id) {
-        return axios.get(API_URL + 'categories=' + id)
-    }
-
-    static getAllCategory(){
-        return axios.get(API_URL + 'categories')
+        return axios.post(API_URL + 'categories/get/' + id)
     }
 
     static getAllCategoryByStatus(status) {
