@@ -236,7 +236,7 @@ const ListProductWithCategory = () => {
                         <div className="filter-checkbox">
                             <ul className="checkbox d-none">
                                 <li>
-                                    <input className="me-2" type="checkbox" id="value-100000" value="0 100000" onChange={(e) => { handleValue(e) }} />
+                                    <input className="me-2" type="checkbox" id="value_100000" value="0 100000" onChange={(e) => { handleValue(e) }} />
                                     <label htmlFor="">
                                         <span>Dưới</span> 100.000₫
                                     </label>
@@ -254,8 +254,9 @@ const ListProductWithCategory = () => {
                                     </label>
                                 </li>
                                 <li>
-                                    <input className="me-2" type="checkbox" id="" value="300000 400000" onChange={(e) => { handleValue(e) }} />
+
                                     <label htmlFor="">
+                                        <input className="me-2" type="checkbox" id="" value="300000 400000" onChange={(e) => { handleValue(e) }} />
                                         300.000₫ - 400.000₫
                                     </label>
                                 </li>
@@ -281,6 +282,7 @@ const ListProductWithCategory = () => {
                             <span>Màu sắc</span>
                             <span className="icon-control ms-2">
                                 <i className="fa fa-chevron-down"></i>
+
                             </span>
                         </div>
                         <div className="filter-checkbox">
