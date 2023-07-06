@@ -274,3 +274,48 @@ button, input, optgroup, select, textarea {
     background: transparent;
     line-height: normal;
 }
+.product-thumbnail {
+    width: 78px;
+    display: flex;
+    justify-content: center;
+    border: 1px solid gray;
+    border-radius: 8px;
+}
+.product-thumbnail-image {
+    width: 54px;
+    position: relative;
+}
+.product-table {
+    width: 100%;
+}
+.product-description{
+    font-size: 16px;
+    color: #2b3033;
+}
+.product-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: black;
+}
+.product-thumbnail-quantity {
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    color: white;
+    background-color: gray;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    right: 519px;
+    align-items: center;
+   
+}
+.order-summary {
+    font-size: 20px;
+    color: red  ;
+}
+.total-summary {
+    font-size: 20px;
+    font-weight: 1000;
+    color: black;
+}

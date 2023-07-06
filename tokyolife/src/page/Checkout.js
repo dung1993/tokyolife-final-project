@@ -3,13 +3,13 @@ import { Container, Row, Col } from "reactstrap";
 import "../component/Style/checkout.css";
 import { useForm } from "react-hook-form";
 import { FormattedNumber } from "react-intl";
-const Checkout = ({products}) => {
-  const [provinces, setProvinces]= useState(null)
-  const [provinceId, setProvinceId] = useState()
-  const [districts, setDistricts] = useState(null)
-  const [districtId,setDistrictId] = useState()
-  const [wards,setWards] = useState()
-  
+const Checkout = ({ products,totalAmountCart }) => {
+  const [provinces, setProvinces] = useState(null);
+  const [provinceId, setProvinceId] = useState();
+  const [districts, setDistricts] = useState(null);
+  const [districtId, setDistrictId] = useState();
+  const [wards, setWards] = useState();
+  const [customer, setCustomer] = useState();
   const {
     register,
     handleSubmit,
@@ -19,59 +19,60 @@ const Checkout = ({products}) => {
 
   const onSubmit = (data) => console.log(data);
 
-  // useEffect(()=>{
-  //   fetch("http://localhost:8086/api/carts/customer/1").then(async (response)=>{
-
-  //   })
-  // })
- 
-  useEffect(()=>{
-    fetch("https://vapi.vnappmob.com/api/province/").then(async (response)=>{
-      let province = await response.json()
-      setProvinces(province)
-    })
-  },[])
-
-  const handleProvince =(e) =>{
-    let provinceId = e.target.value
-    setProvinceId(provinceId)
-  }
-
-  useEffect(()=>{
-    try {
-      if (provinceId){
-        fetch(`https://vapi.vnappmob.com/api/province/district/${provinceId}`).then(async (response)=>{
-          let districts = await response.json()
-          setDistricts(districts.results)
-          setWards()
-          })
+  useEffect(() => {
+    fetch("http://localhost:8086/api/carts/customer/1").then(
+      async (response) => {
+        let customer = await response.json();
+        setCustomer(customer);
+        console.log("customer" + customer);
       }
-    }
-    
-    catch(error){
+    );
+  }, []);
+
+  useEffect(() => {
+    fetch("https://vapi.vnappmob.com/api/province/").then(async (response) => {
+      let province = await response.json();
+      setProvinces(province);
+    });
+  }, []);
+
+  const handleProvince = (e) => {
+    let provinceId = e.target.value;
+    setProvinceId(provinceId);
+  };
+
+  useEffect(() => {
+    try {
+      if (provinceId) {
+        fetch(
+          `https://vapi.vnappmob.com/api/province/district/${provinceId}`
+        ).then(async (response) => {
+          let districts = await response.json();
+          setDistricts(districts.results);
+          setWards();
+        });
+      }
+    } catch (error) {
       console.log(error);
     }
-  },[provinceId])
+  }, [provinceId]);
 
-  const handleDistrict = (e) =>{
-    let districtId = e.target.value
-    setDistrictId(districtId)
-  }
+  const handleDistrict = (e) => {
+    let districtId = e.target.value;
+    setDistrictId(districtId);
+  };
 
-  useEffect(()=>{
-    fetch(`https://vapi.vnappmob.com/api/province/ward/${districtId}`)
-    .then(async (response)=>{
-      let wards = await response.json()
-      setWards(wards.results)
-    })
-  },[districtId])
+  useEffect(() => {
+    fetch(`https://vapi.vnappmob.com/api/province/ward/${districtId}`).then(
+      async (response) => {
+        let wards = await response.json();
+        setWards(wards.results);
+      }
+    );
+  }, [districtId]);
 
-  useEffect(()=>{
-    if(products) console.log(products);
-  })
   return (
     <>
-      
       <div className="checkout-page">
         <Container>
           <Row>
@@ -110,7 +111,7 @@ const Checkout = ({products}) => {
                             <input
                               type="hidden"
                               name="checkout_user[email]"
-                              value="chauphuoc1996@gmail.com"
+                              value={customer?.email}
                             />
                             <div className="logged-in-customer-information">
                               &nbsp;
@@ -124,7 +125,7 @@ const Checkout = ({products}) => {
                                 ></div>
                               </div>
                               <p className="logged-in-customer-information-paragraph">
-                                Chau Phuoc (chauphuoc1996@gmail.com)
+                                {customer?.fullName} ({customer?.email})
                                 <br />
                                 <a href="/account/logout?return_url=%2Fcheckouts%2Fad9e7dfa23044ffeabbee02030f84bc2%3Fstep%3D1">
                                   Đăng xuất
@@ -160,6 +161,7 @@ const Checkout = ({products}) => {
                                   class="form-control"
                                   id="exampleInputPassword1"
                                   {...register("fullname")}
+                                  placeholder={customer?.fullName}
                                 />
                               </div>
 
@@ -167,8 +169,6 @@ const Checkout = ({products}) => {
                                 <label
                                   for="exampleInputPassword1"
                                   class="form-label"
-                                
-                                  
                                 >
                                   Phone
                                 </label>
@@ -177,6 +177,7 @@ const Checkout = ({products}) => {
                                   class="form-control"
                                   id="exampleInputPassword1"
                                   {...register("phoneNumber")}
+                                  placeholder={customer?.phone}
                                 />
                               </div>
                               <div class="mb-3">
@@ -198,34 +199,44 @@ const Checkout = ({products}) => {
                                   <label for="inputCity" class="form-label">
                                     Tinh / Thanh
                                   </label>
-                                  <select id="inputState" class="form-select" onChange={(e)=>handleProvince(e)}>
+                                  <select
+                                    id="inputState"
+                                    class="form-select"
+                                    onChange={(e) => handleProvince(e)}
+                                  >
                                     <option selected>Choose...</option>
-                                    {
-                                      provinces?.results?.map((data, index) => (
-                                        <option key={index} value={data.province_id}>
-                                          {data.province_name}
-                                        </option>
-                                      ))
-                                    }
+                                    {provinces?.results?.map((data, index) => (
+                                      <option
+                                        key={index}
+                                        value={data.province_id}
+                                      >
+                                        {data.province_name}
+                                      </option>
+                                    ))}
                                   </select>
                                 </div>
                                 <div class="col-md-4">
                                   <label for="inputState" class="form-label">
                                     Quan / Huyen
                                   </label>
-                                  
-                                  <select id="inputState" class="form-select" onChange={(e)=>handleDistrict(e)}>
 
+                                  <select
+                                    id="inputState"
+                                    class="form-select"
+                                    onChange={(e) => handleDistrict(e)}
+                                  >
                                     <option selected>Choose...</option>
 
-                                    {
-                                      districts && districts?.map((data,index)=>(
-                                        <option key={index} value={data.district_id}>{data.district_name}</option>
-                                      
-                                    ))}
+                                    {districts &&
+                                      districts?.map((data, index) => (
+                                        <option
+                                          key={index}
+                                          value={data.district_id}
+                                        >
+                                          {data.district_name}
+                                        </option>
+                                      ))}
                                   </select>
-
-                                  
                                 </div>
                                 <div class="col-md-4">
                                   <label for="inputZip" class="form-label">
@@ -233,11 +244,11 @@ const Checkout = ({products}) => {
                                   </label>
                                   <select id="inputState" class="form-select">
                                     <option selected>Choose...</option>
-                                    {
-                                      wards?.map((data,index)=>(
-                                        <option key={index}>{data.ward_name}</option>
-                                      ))
-                                    }
+                                    {wards?.map((data, index) => (
+                                      <option key={index}>
+                                        {data.ward_name}
+                                      </option>
+                                    ))}
                                   </select>
                                 </div>
                               </div>
@@ -270,53 +281,99 @@ const Checkout = ({products}) => {
             <div className="col-lg-5">
               <div className="sidebar-content">
                 <table class="product-table">
-												<thead>
-													<tr>
-														<th scope="col"><span class="visually-hidden">Hình ảnh</span></th>
-														<th scope="col"><span class="visually-hidden">Mô tả</span></th>
-														<th scope="col"><span class="visually-hidden">Số lượng</span></th>
-														<th scope="col"><span class="visually-hidden">Giá</span></th>
-													</tr>
-												</thead>
-												<tbody>
-													{products?.map((data,index)=>(
-                            <tr class="product" scope="row" data-product-id="1046555400" data-variant-id="1105003741">
-															<td class="product-image">
-																<div class="product-thumbnail">
-																	<div class="product-thumbnail-wrapper">
-																		<img class="product-thumbnail-image" alt="Quần bơi nam C7BKN007M" src={data.avt}/>
-																	</div>
-																	<span class="product-thumbnail-quantity" aria-hidden="true">{data.quantity}</span>
-																</div>
-															</td>
-															<td class="product-description">
-																<span class="product-description-name order-summary-emphasis">Quần bơi nam C7BKN007M</span>
-																
-																	<span class="product-description-variant order-summary-small-text">
-																		{data.color} / {data.size}
-																	</span>
-																
-															</td>
-															<td class="product-quantity visually-hidden">2</td>
-															<td class="product-price">
-																<span class="order-summary-emphasis">
-                                <FormattedNumber
-                                          value={data.price}
-                                          style="currency"
-                                          currency="VND"
-                                          minimumFractionDigits={0}
-                                        />
-                                </span>
-															</td>
-														</tr>
-                          ))}
-														
-													
-												</tbody>
-											</table>
-										</div>
-                  </div>
-                
+                  <thead>
+                    <tr>
+                      <th scope="col">
+                        <span class="visually-hidden">Hình ảnh</span>
+                      </th>
+                      <th scope="col">
+                        <span class="visually-hidden">Mô tả</span>
+                      </th>
+                      <th scope="col">
+                        <span class="visually-hidden">Giá</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody style={{ backgroundColor: "#f9f7f7" }}>
+                    {products?.map((data, index) => (
+                      <tr
+                        class="product row mb-4"
+                        scope="row"
+                        data-product-id="1046555400"
+                        data-variant-id="1105003741"
+                      >
+                        <td class="product-image col-lg-3 d-flex justify-content-center">
+                          <div class="product-thumbnail">
+                            <img
+                              class="product-thumbnail-image"
+                              alt="Quần bơi nam C7BKN007M"
+                              src={data.avt}
+                            />
+
+                            <span
+                              class="product-thumbnail-quantity"
+                              aria-hidden="true"
+                            >
+                              {data.quantity}
+                            </span>
+                          </div>
+                        </td>
+                        <td class="product-description col-lg-6">
+                          <span class="product-description-name order-summary-emphasis d-block">
+                            Quần bơi nam C7BKN007M
+                          </span>
+
+                          <span class="product-description-variant order-summary-small-text">
+                            {data.color} / {data.size}
+                          </span>
+                        </td>
+
+                        <td class="product-price col-lg-3">
+                          <span class="order-summary-emphasis">
+                            <FormattedNumber
+                              value={data.totalAmountItem}
+                              style="currency"
+                              currency="VND"
+                              minimumFractionDigits={0}
+                            />
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                    <hr/>
+                    <tr
+                        class="product row mb-4"
+                        scope="row"
+                        data-product-id="1046555400"
+                        data-variant-id="1105003741"
+                      >
+                        <td class="product-image col-lg-3 d-flex justify-content-center">
+                          <div class="total-summary">
+                            Tong tien
+                          </div>
+                        </td>
+                        <td class="product-description col-lg-6">
+                         
+                        </td>
+
+                        <td class="product-price col-lg-3">
+                          <span class="order-summary">
+                            <FormattedNumber
+                              value={totalAmountCart}
+                              style="currency"
+                              currency="VND"
+                              minimumFractionDigits={0}
+                            />
+                            
+                          </span>
+                        </td>
+                      </tr>
+
+                  </tbody>
+                  
+                </table>
+              </div>
+            </div>
           </Row>
         </Container>
       </div>

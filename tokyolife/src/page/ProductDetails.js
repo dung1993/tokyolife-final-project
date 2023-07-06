@@ -220,17 +220,28 @@ const ProductDetails = ({setCartDetail}) => {
   const [checkCart, setCheckCart] = useState(false)
 
   const handleAddToCart = () => {
-    setCart( (prevCart) => ({
-      ...prevCart,
-      customerId:1,
-      productId: product.id,
-      status:"ISCART", 
-      price: product.price,
-      size: size,
-      quantity: quantity,
-      color: color    
-    }));
-    setCheckCart(true)
+    if(color==null){
+      enqueueSnackbar('Color is required', { variant: 'error' });
+      return
+    }
+    if(size==null){
+       enqueueSnackbar('Size is required', { variant: 'error' });
+      return
+      }
+    
+      setCart( (prevCart) => ({
+        ...prevCart,
+        customerId:1,
+        productId: product.id,
+        status:"ISCART", 
+        price: product.price,
+        size: size,
+        quantity: quantity,
+        color: color    
+      }));
+      setCheckCart(true)
+    
+    
   };
 
     useEffect(()=>{
@@ -260,7 +271,10 @@ const ProductDetails = ({setCartDetail}) => {
                 <Col lg="12" md="12" className="d-flex">
                   <ul className="breadcrumb-list">
                     <li>
-                      <a>Trang chu </a>
+                    <Link to={`/`}>
+                      Trang chu
+                        </Link>
+                      
                       <span>&nbsp;&nbsp;</span>
                     </li>
                     <span>&#47;&nbsp;&nbsp;&nbsp;</span>
@@ -614,5 +628,6 @@ const ProductDetails = ({setCartDetail}) => {
     </>
   );
 };
+
 
 export default ProductDetails;
