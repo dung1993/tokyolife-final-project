@@ -2,7 +2,7 @@
     background: #f7f7f7;
 }
 
-.product-container-gallery{
+.product-container-gallery {
     background: #fff;
     padding: 15px;
 }
@@ -21,10 +21,9 @@ ul.product-meta {
 }
 .product__detail > div {
     font-size: 15px;
-    padding:  6px 15px;
-    
+    padding: 6px 15px;
 }
-.product-heading{
+.product-heading {
     padding-top: 10px !important;
 }
 .product-heading > h1 {
@@ -44,10 +43,10 @@ ul.product-meta {
     font-weight: 700;
 }
 
-.top-container{
+.top-container {
     height: 35px;
 }
-.product-meta > li{
+.product-meta > li {
     font-size: 15px;
 }
 .product-meta > li > span {
@@ -56,7 +55,7 @@ ul.product-meta {
 #price-preview {
     padding-top: 0px !important;
 }
-.breadcrumb-list{
+.breadcrumb-list {
     list-style: none;
     display: flex;
     padding: 0;
@@ -64,42 +63,47 @@ ul.product-meta {
     font-size: 17px;
     align-items: center;
 }
-.breadcrumb-list>li{
+.breadcrumb-list > li {
     font-size: 15px;
 }
-.breadcrumb-list>span {
+.breadcrumb-list > span {
     font-size: 12px;
     color: gray;
 }
 .product-container-gallery img {
     margin-bottom: 10px !important;
 }
-.slick-dots { 
+.slick-dots {
     display: inline-block !important;
 }
-.image-product-list{
+.image-product-list {
     width: 50px;
     margin-bottom: 10px;
     cursor: pointer;
 }
-.image-product-list:hover{
+.image-product-list:hover {
     border: 1px solid black;
 }
-[data-input="color-size"]:hover{
+[data-input="color-size"]:hover {
     border: 1.5px solid black !important;
     /* background-color: red; */
 }
-.slick-dots li button:before{
+
+[data-input="color-size"]:active {
+    border: 1.5px solid black !important;
+}
+
+.slick-dots li button:before {
     top: -60px !important;
     font-size: 15px !important;
 }
-.fancybox__footer{
-    visibility:  hidden!important;
+.fancybox__footer {
+    visibility: hidden !important;
 }
 section {
     margin-bottom: 10px !important;
 }
-.add-to-cartProduct.button.dark.btn-addtocart.addtocart-modal{
+.add-to-cartProduct.button.dark.btn-addtocart.addtocart-modal {
     width: 49%;
     height: 45px;
     line-height: 45px;
@@ -125,7 +129,7 @@ section {
     text-transform: uppercase;
     transition: color 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), border 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
-.btnred.add-to-cartProduct-buynow.button.dark.btn-addtocart.addtocart-modal{
+.btnred.add-to-cartProduct-buynow.button.dark.btn-addtocart.addtocart-modal {
     margin-left: 5px;
     width: 49%;
     height: 45px;
@@ -152,7 +156,8 @@ section {
     outline: none;
     border-radius: 2px;
     text-transform: uppercase;
-    -webkit-transition: color 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), border 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    -webkit-transition: color 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86),
+        border 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
     transition: color 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), border 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 .quantity-area {
@@ -195,4 +200,4 @@ section {
     -moz-appearance: none;
     -o-appearance: none;
     appearance: none;
-} 
+}
