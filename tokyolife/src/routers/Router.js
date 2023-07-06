@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 
 import { Routes, Route } from 'react-router-dom'
 
@@ -11,18 +11,19 @@ import Login from "../page/Login"
 import Signup from "../page/Signup"
 import ListProductWithCategory from "../page/ListProductWithCategory"
 
-
-
-const Routers = ({ cartDetail, setCartDetail }) => {
+const Routers = ({cartDetail,setCartDetail}) =>{
+    const [products, setProducts] = useState();
+    const [totalAmountCart, setTotalAmountCart] = useState(0);
     return <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="shop" element={<Shop />} />
-        <Route path="checkout" element={<Checkout />} />
-        <Route path="/productdetails/:productId" element={<ProductDetails setCartDetail={setCartDetail} />} />
-        <Route path="products/category/:categoryId" element={<ListProductWithCategory />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
-    </Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="shop" element={<Shop/>}/>
+                <Route path="/checkout" element={<Checkout totalAmountCart={totalAmountCart} products={products}/>}/>
+                <Route path="/productdetails/:productId" element={<ProductDetails setCartDetail={setCartDetail}/>}/>
+                <Route path="/cart" element={<Cart totalAmountCart={totalAmountCart} setTotalAmountCart={setTotalAmountCart} products={products} setProducts={setProducts}/>}/>
+                <Route path="login" element={<Login/>}/>
+                <Route path="products/category/:categoryId" element={<ListProductWithCategory />} />
+                <Route path="signup" element={<Signup/>}/>
+            </Routes>
+
 }
 export default Routers;

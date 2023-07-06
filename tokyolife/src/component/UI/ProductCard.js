@@ -9,9 +9,9 @@ const ProductCard = ({ product }) => {
 
 
     return (
+        product.id && <Link key={product.id.toString()} to={`/productDetails/${product.id}`} state={{ id: product.id }}>
 
 
-        product.id && <Link key={product.id.toString()} to={`/productdetails/${product.id}`} state={{ id: product.id }}>
             <div className="product__item ">
                 <div className="product__image d-flex justify-content-center mb-2">
                     <img src={product?.avatar} alt="" />

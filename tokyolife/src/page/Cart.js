@@ -2,16 +2,22 @@ import { React, useEffect, useState } from "react";
 import { Container, Row, Col } from "reactstrap";
 import "../component/Style/cart.css";
 import { FormattedNumber } from "react-intl";
-
-const Cart = () => {
-  const [products, setProducts] = useState();
+import { Link } from "react-router-dom";
+const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => {
+  // const [products, setProducts] = useState();
   const [cartDetailLength, setCartDetailLength] = useState();
+  
+
   useEffect(() => {
     fetch(`http://localhost:8086/api/carts/cart-details/1`).then(
       async (response) => {
         let products = await response.json();
         setProducts(products);
-        console.log(products);
+        let result = 0;
+        products.map((item) => {
+          return (result += item.totalAmountItem);
+        });
+        setTotalAmountCart(result);
       }
     );
   }, []);
@@ -23,9 +29,13 @@ const Cart = () => {
   const handleRemoveItem = (index) => {
     const updatedProducts = [...products];
     updatedProducts.splice(index, 1);
+    let totalResult = totalAmountCart - products[index].totalAmountItem;
+    console.log("total" + totalResult);
     console.log(updatedProducts);
     setProducts(updatedProducts);
+    setTotalAmountCart(totalResult);
   };
+
   return (
     <>
       <div className="cartDetail">
@@ -34,7 +44,7 @@ const Cart = () => {
             <div className="col-lg-12">
               <ul className="title-top">
                 <li>
-                  <a>Trang chu </a>
+                  <Link to={`/`}>Trang chu</Link>
                   <span>&nbsp;&nbsp;</span>
                 </li>
                 <span>&#47;&nbsp;&nbsp;&nbsp;</span>
@@ -266,13 +276,14 @@ const Cart = () => {
                     <p className="total-amount">
                       Tổng tiền:{" "}
                       <span class="total-final">
-                        {products}
-                        <FormattedNumber
-                          value={products[0].totalAmountCart}
-                          style="currency"
-                          currency="VND"
-                          minimumFractionDigits={0}
-                        />
+                        {products && (
+                          <FormattedNumber
+                            value={totalAmountCart}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                        )}
                       </span>
                     </p>
                   </div>
@@ -290,15 +301,16 @@ const Cart = () => {
                       toán.
                     </div> */}
                     <div class="summary-button">
-                      <a
+                      <Link
+                        to={`/checkout`}
                         id="btnCart-checkout"
                         class="checkout-btn btnred "
                         data-price-min="150000"
                         data-price-total="1754000"
-                        href="#"
+                        href=""
                       >
                         THANH TOÁN{" "}
-                      </a>
+                      </Link>
                     </div>
                     <div id="script-cart-container"></div>
                   </div>
