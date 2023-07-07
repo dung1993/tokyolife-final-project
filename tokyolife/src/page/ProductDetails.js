@@ -19,6 +19,7 @@ const ProductDetails = ({setCartDetail}) => {
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const [discountAmount, setDiscountAmount] = useState()
+  const [visitedproductArr, setVisitedProducArr] = useState()
   const settings = {
     dots: true,
     infinite: true,
@@ -26,13 +27,25 @@ const ProductDetails = ({setCartDetail}) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  const settingsRelatedProduct = {
+  const settingsVisitedProduct = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 5,
+    slidesToShow: 1,
     slidesToScroll: 1,
-  };
+    afterChange: function(currentSlide) {
+    
+    // const slides = document.querySelectorAll('.slick-slide');
+    
+    // slides.forEach(function(slide) {
+     
+      
+    //    slide.style.width = "216px"
+    //   console.log(slide.style.width);
+    // });
+    
+    }}
+  
   const sliderRef = useRef(null);
   //cung cấp thông tin cho order size, color
   const [color, setColor] = useState();
@@ -43,19 +56,17 @@ const ProductDetails = ({setCartDetail}) => {
 
   const [cart, setCart] = useState({});
   const [visitedProductId, setVisitedProductId] = useState([]);
-  const [relatedProducts, setRelatedProducts] = useState([]);
   const [visitedproducts, setVisitedproducts] = useState([]);
-  // const [cartDetail, setCartDetail] = useState();
+  
   useEffect(() => {
     try {
       fetch(`http://localhost:8086/api/products/${productId}`).then(
         async (response) => {
           let product = await response.json();
-          console.log(product);
           setProduct(product);
           let newProductId = [...visitedProductId, productId];
           setVisitedProductId(newProductId);
-          
+          console.log('list product id'+newProductId);
           if (product && product.productImportResDTOS) {
             const colorarr = product.productImportResDTOS.map((item)=> item.color);
             const uniqueColorArr = Array.from(new Set(colorarr));
@@ -74,40 +85,16 @@ const ProductDetails = ({setCartDetail}) => {
     }
   }, [productId]);
 
-
+//localstorage
   useEffect(() => {
     localStorage.setItem("visitedproduct", JSON.stringify(visitedProductId));
   }, [visitedProductId]);
 
-  // check useEffect relatedProduct co data moi setVisitedproducts
-  const [check, setCheck] = useState(false);
   const [fixedRelatedProducts, setFixedRelatedProducts] = useState([]);
-  useEffect(() => {
-    try {
-      if (product && product.categoryId) {
-        fetch(
-          `http://localhost:8086/api/products/category/${product?.categoryId}`
-        ).then(async (response) => {
-          let products = await response.json();
-          setRelatedProducts(products);
-          setCheck(true);
-        });
-      }
-    } catch (error) {
-      console.log("error");
-    }
-  }, [product]);
-
   
-  useEffect(() => {
-    if (check) {
-      setFixedRelatedProducts(relatedProducts.slice(0, 5));
-    }
-  }, [check]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("visitedproduct");
-    const array = JSON.parse(saved);
+    const array = visitedProductId;
     let temp1 = [];
     array.forEach((element) => {
       temp1.push(element);
@@ -509,44 +496,6 @@ const ProductDetails = ({setCartDetail}) => {
 
           <hr />
 
-          <section>
-            <Container>
-              <Row>
-                <Col lg="12" md="12" className="d-flex justify-content-center">
-                  <h1>Referenced Products</h1>
-                </Col>
-              </Row>
-              <Row>
-                <Col lg="12" md="12" className="related-product">
-                  <Slider {...settingsRelatedProduct}>
-                    {relatedProducts?.map((data, index) => (
-                      <div key={index} className="related-product">
-                        <Link to={`/productdetails/${data.id}`}>
-                          <img src={data.urlImage} style={{ width: "200px" }} />
-                        </Link>
-
-                        <div className="d-flex justify-content-center">
-                          <span>{data.title}</span>
-                        </div>
-                        <div className="d-flex justify-content-center">
-                          <span style={{ color: "red", fontWeight: "600" }}>
-                            <FormattedNumber
-                              value={data.price}
-                              style="currency"
-                              currency="VND"
-                              minimumFractionDigits={0}
-                            />
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </Slider>
-                </Col>
-              </Row>
-            </Container>
-          </section>
-          <hr />
-
           {
             <section>
               <Container>
@@ -560,12 +509,13 @@ const ProductDetails = ({setCartDetail}) => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col lg="12" md="12" className="related-product">
-                    <Slider {...settingsRelatedProduct}>
+                  <Col lg="12" md="12" >
+                    <Slider {...settingsVisitedProduct}>
                       {visitedproducts.length > 0
                         ? visitedproducts?.map((data, index) => {
                             return (
                               <div key={index} className="related-product">
+                                <div className="related-product-slide">
                                 <Link to={`/productdetails/${data?.id}`}>
                                   <img
                                     src={data?.urlImage}
@@ -588,11 +538,14 @@ const ProductDetails = ({setCartDetail}) => {
                                     />
                                   </span>
                                 </div>
+                                </div>
+                               
                               </div>
                             );
                           })
                         : fixedRelatedProducts?.map((data, index) => (
                             <div key={index} className="related-product">
+                              <div className="related-product-slide">
                               <Link to={`/productdetails/${data.id}`}>
                                 <img
                                   src={data.urlImage}
@@ -615,6 +568,8 @@ const ProductDetails = ({setCartDetail}) => {
                                   />
                                 </span>
                               </div>
+                              </div>
+                              
                             </div>
                           ))}
                     </Slider>

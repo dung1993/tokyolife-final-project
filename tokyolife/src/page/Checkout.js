@@ -364,7 +364,7 @@ const Checkout = ({ products,totalAmountCart }) => {
                               currency="VND"
                               minimumFractionDigits={0}
                             />
-                            
+                            {/* <div>test</div> */}
                           </span>
                         </td>
                       </tr>

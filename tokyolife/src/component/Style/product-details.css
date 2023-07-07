@@ -201,3 +201,11 @@ section {
     -o-appearance: none;
     appearance: none;
 }
+/* .slick-slide{
+    width: 216px !important;
+} */
+
+.related-product-slide {
+    width: 216px !important;
+}
+
