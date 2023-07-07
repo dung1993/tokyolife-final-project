@@ -33,56 +33,34 @@ const ListProductWithCategory = () => {
     const params = useLocation().state;
 
     const handleValue = (e) => {
-        let id = e.target.id
-        let price = e.target.value.split(" ")
-        let checkbox = document.getElementById(id);
-        console.log(price);
+        // let id = e.target.id
+        // let price = e.target.value.split(" ")
+        // let checkbox = document.getElementById(id);
+        // console.log(price);
         // let priceArr = state.priceArr
         // let newPriceArr = []
         // let checkIfElse = false
-        if (checkbox.checked) {
-            let min = +price[0]
-            let max = +price[1]
-            setState({
-                ...state,
-                priceArr: [min, max]
-            });
+        // // if (checkbox.checked) {
+        // let min = +price[0]
+        // let max = +price[1]
+        // setState({
+        //     ...state,
+        //     priceArr: [min, max]
+        // });
 
-            console.log(max);
-            console.log(min);
+        // }
 
-            //     if(priceArr.length === 0) {
-            //         newPriceArr.push(price)
-            //         setState({
-            //             ...state,
-            //             priceArr: newPriceArr
-            //         })
-            //     }
-            //     else {
-            //         priceArr.forEach(item => {
-            //             if(item == price) {
-            //                 checkIfElse = true
-            //             }
-            //         })
-            //         if (checkIfElse == false){
-            //             priceArr.push(price)
-            //             newPriceArr = priceArr
-            //             setState({
-            //                 ...state,
-            //                 priceArr: newPriceArr
-            //             })
-            //         }
-            //     }
-
-            // }
-            // else {
-            //     newPriceArr = priceArr.filter(item => item != price)
-            //     setState({
-            //         ...state,
-            //         priceArr: newPriceArr
-            //     })
-
+        const findPrice = state.priceArr.find(price => price === e.target.value);
+        let arr = state.priceArr;
+        if (findPrice) {
+            arr = state.priceArr.filter(price => price !== e.target.value);
+        } else {
+            arr.push(e.target.value.split(" "))
         }
+        setState({
+            ...state,
+            priceArr: [...arr]
+        })
     }
 
     const handleColor = (e) => {
@@ -172,7 +150,7 @@ const ListProductWithCategory = () => {
         console.log('demo')
         Products.getAllProductFilter(params.id, {
             minPrice: state.priceArr[0] || 0,
-            maxPrice: state.priceArr[1] || 1_000_000,
+            maxPrice: state.priceArr[1] || 1_000_000_000,
             colors: state.colorArr,
             sizes: state.sizeArr,
         }).then(e => {
