@@ -201,11 +201,14 @@ section {
     -o-appearance: none;
     appearance: none;
 }
-/* .slick-slide{
-    width: 216px !important;
-} */
+.productDetail .visitedProducts .slick-slide{
+    width: 318px !important;
+}
 
 .related-product-slide {
     width: 216px !important;
 }
-
+.related-product{
+    display: flex !important;
+    justify-content: center;
+}

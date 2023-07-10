@@ -3,13 +3,15 @@ import { Container, Row, Col } from "reactstrap";
 import "../component/Style/checkout.css";
 import { useForm } from "react-hook-form";
 import { FormattedNumber } from "react-intl";
-const Checkout = ({ products,totalAmountCart }) => {
+const Checkout = () => {
+  const [products, setProducts] = useState()
   const [provinces, setProvinces] = useState(null);
   const [provinceId, setProvinceId] = useState();
   const [districts, setDistricts] = useState(null);
   const [districtId, setDistrictId] = useState();
   const [wards, setWards] = useState();
   const [customer, setCustomer] = useState();
+  const [totalAmountCart,setTotalAmountCart] = useState()
   const {
     register,
     handleSubmit,
@@ -19,12 +21,26 @@ const Checkout = ({ products,totalAmountCart }) => {
 
   const onSubmit = (data) => console.log(data);
 
+  useEffect(()=>{
+    fetch(`http://localhost:8086/api/carts/cart-details/1`).then(async (data)=>{
+      let products = await data.json();
+      setProducts(products)
+    })
+  },[])
+
+  useEffect(()=>{
+    fetch(`http://localhost:8086/api/carts/amount/1`)
+    .then( async (data)=>{
+      let cart = await data.json()
+      setTotalAmountCart(cart.totalAmountCart)
+    })
+  },[])
+
   useEffect(() => {
     fetch("http://localhost:8086/api/carts/customer/1").then(
       async (response) => {
         let customer = await response.json();
         setCustomer(customer);
-        console.log("customer" + customer);
       }
     );
   }, []);
@@ -253,21 +269,9 @@ const Checkout = ({ products,totalAmountCart }) => {
                                 </div>
                               </div>
 
-                              <div class="mb-3 form-check">
-                                <input
-                                  type="checkbox"
-                                  class="form-check-input"
-                                  id="exampleCheck1"
-                                />
-                                <label
-                                  class="form-check-label"
-                                  for="exampleCheck1"
-                                >
-                                  Check me out
-                                </label>
-                              </div>
+                              
                               <button type="submit" class="btn btn-primary">
-                                Submit
+                              Hoàn tất đơn hàng
                               </button>
                             </form>
                           </div>
@@ -349,7 +353,7 @@ const Checkout = ({ products,totalAmountCart }) => {
                       >
                         <td class="product-image col-lg-3 d-flex justify-content-center">
                           <div class="total-summary">
-                            Tong tien
+                          Tổng tiền
                           </div>
                         </td>
                         <td class="product-description col-lg-6">

@@ -19,7 +19,7 @@ const Home = () => {
     })
 
     useEffect(() => {
-
+        console.log(products);
         let listProductAllRender = [];
         state.categories.filter(e => e.status === 'SUMMER').forEach(category => {
             listProductAllRender.push(products.filter(e => e.category.id === category.id))
@@ -76,7 +76,7 @@ const Home = () => {
                 <Container>
                     <Row>
 
-                        <ProductList
+                        <ProductList 
                             listProductAllRender={listProductAllRender}
                         />
                     </Row>

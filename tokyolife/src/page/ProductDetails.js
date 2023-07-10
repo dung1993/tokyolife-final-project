@@ -8,18 +8,17 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FormattedNumber } from "react-intl";
 import { Link, json, useParams } from "react-router-dom";
-import { useSnackbar } from 'notistack'
+import { useSnackbar } from "notistack";
 
 Fancybox.bind('[data-fancybox="gallery"]', {
   // Your custom options
 });
-const ProductDetails = ({setCartDetail}) => {
+const ProductDetails = ({ setCartDetail }) => {
   const { productId, categoryId } = useParams();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();   
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
-  const [discountAmount, setDiscountAmount] = useState()
-  const [visitedproductArr, setVisitedProducArr] = useState()
+  const [discountAmount, setDiscountAmount] = useState();
   const settings = {
     dots: true,
     infinite: true,
@@ -27,25 +26,21 @@ const ProductDetails = ({setCartDetail}) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  const settingsVisitedProduct = {
+  const [silder, setSlider] = useState({
     dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    afterChange: function(currentSlide) {
-    
-    // const slides = document.querySelectorAll('.slick-slide');
-    
-    // slides.forEach(function(slide) {
-     
-      
-    //    slide.style.width = "216px"
-    //   console.log(slide.style.width);
-    // });
-    
-    }}
-  
+  });
+  // const settingsVisitedProduct = {
+  //   dots: false,
+  //   infinite: true,
+  //   speed: 500,
+  //   slidesToShow: 1,
+  //   slidesToScroll: 1
+  //   }
+
   const sliderRef = useRef(null);
   //cung cấp thông tin cho order size, color
   const [color, setColor] = useState();
@@ -55,46 +50,74 @@ const ProductDetails = ({setCartDetail}) => {
   const [quantity, setQuantity] = useState(1);
 
   const [cart, setCart] = useState({});
-  const [visitedProductId, setVisitedProductId] = useState([]);
+  //khai bao phia ngoai route
+
   const [visitedproducts, setVisitedproducts] = useState([]);
-  
+
   useEffect(() => {
     try {
       fetch(`http://localhost:8086/api/products/${productId}`).then(
         async (response) => {
           let product = await response.json();
           setProduct(product);
-          let newProductId = [...visitedProductId, productId];
-          setVisitedProductId(newProductId);
-          console.log('list product id'+newProductId);
-          if (product && product.productImportResDTOS) {
-            const colorarr = product.productImportResDTOS.map((item)=> item.color);
-            const uniqueColorArr = Array.from(new Set(colorarr));
-            setColorArr(uniqueColorArr)
-            const sizearr = product.productImportResDTOS.map((item)=> item.size)
-            const uniqueSizeArr = Array.from(new Set(sizearr))
-            setSizeArr(uniqueSizeArr)
+          const visitedProducts =
+            JSON.parse(localStorage.getItem("visitedproduct")) || [];
+          if (visitedProducts.length == 0) {
+            const updateVisitedProducts = Array.from(
+              new Set([...visitedProducts, productId])
+            );
+            localStorage.setItem(
+              "visitedproduct",
+              JSON.stringify(updateVisitedProducts)
+            );
+          } else {
+            for (let i = 0; i < visitedProducts.length; i++) {
+              if (productId != visitedProducts[i]) {
+                const updateVisitedProducts = Array.from(
+                  new Set([...visitedProducts, productId])
+                );
+                localStorage.setItem(
+                  "visitedproduct",
+                  JSON.stringify(updateVisitedProducts)
+                );
+              }
+            }
           }
-          setCheckQuantity(true)
-          setQuantity(1)
-          setDiscountAmount(product.price-(product.discount*product.price/100))
+
+          if (product && product.productImportResDTOS) {
+            const colorarr = product.productImportResDTOS.map(
+              (item) => item.color
+            );
+            const uniqueColorArr = Array.from(new Set(colorarr));
+            setColorArr(uniqueColorArr);
+            const sizearr = product.productImportResDTOS.map(
+              (item) => item.size
+            );
+            const uniqueSizeArr = Array.from(new Set(sizearr));
+            setSizeArr(uniqueSizeArr);
+          }
+          setCheckQuantity(true);
+          setQuantity(1);
+          setDiscountAmount(
+            product.price - (product.discount * product.price) / 100
+          );
         }
       );
-    } catch (error) { 
+    } catch (error) {
       console.log("error product");
     }
   }, [productId]);
 
-//localstorage
   useEffect(() => {
-    localStorage.setItem("visitedproduct", JSON.stringify(visitedProductId));
-  }, [visitedProductId]);
-
-  const [fixedRelatedProducts, setFixedRelatedProducts] = useState([]);
-  
-
-  useEffect(() => {
-    const array = visitedProductId;
+    const visitedProducts = JSON.parse(localStorage.getItem("visitedproduct"));
+    const result = Array.from(new Set(visitedProducts));
+    const array = result;
+    for (let i = 0; i < array.length; i++) {
+      if (productId == array[i]) {
+        array.splice(i, 1);
+        break;
+      }
+    }
     let temp1 = [];
     array.forEach((element) => {
       temp1.push(element);
@@ -108,20 +131,34 @@ const ProductDetails = ({setCartDetail}) => {
           `http://localhost:8086/api/products/visited?products=${str}`
         ).then(async (response) => {
           const products = await response.json();
-          const temp = [...fixedRelatedProducts, ...products];
-          // Đối tượng Set tự động loại bỏ các giá trị trùng lặp tren truong id, do đó bạn có thể chuyển đổi mảng temp thành một Set và sau đó chuyển đổi lại thành một mảng.
+          const temp = [...products];
           const uniqueProducts = Array.from(new Set(temp));
           setVisitedproducts(uniqueProducts);
+          if(uniqueProducts.length>=4){
+            setSlider({
+              dots: false,
+              infinite: true,
+              speed: 500,
+              slidesToShow: 4,
+              slidesToScroll: 1,
+            });
+          }
+          else{
+            setSlider({
+              dots: false,
+              infinite: true,
+              speed: 500,
+              slidesToShow: uniqueProducts.length,
+              slidesToScroll: 1,
+              
+            });
+          }
         });
       } catch (error) {
         console.log("Đã xảy ra lỗi:", error);
       }
     }
   }, [productId]);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
 
   const handleTab = (index) => {
     if (sliderRef.current) {
@@ -144,109 +181,106 @@ const ProductDetails = ({setCartDetail}) => {
   //   };
 
   const handleSetSize = (size) => {
-    setSize(size)
+    setSize(size);
   };
 
   const handleSetColor = (color) => {
-    const temp = []
-    if(product && product.productImportResDTOS){
-      for(let i = 0; i< product.productImportResDTOS.length; i++){
-        if(product.productImportResDTOS[i].color==color){
-          temp.push(product.productImportResDTOS[i].size)
+    const temp = [];
+    if (product && product.productImportResDTOS) {
+      for (let i = 0; i < product.productImportResDTOS.length; i++) {
+        if (product.productImportResDTOS[i].color == color) {
+          temp.push(product.productImportResDTOS[i].size);
         }
       }
-      setSizeArr(temp)
+      setSizeArr(temp);
     }
-    setColor(color)
+    setColor(color);
   };
 
-  const handleIncreaseQuantity = () =>{
-    const quantityInput = document.getElementById("quantity")
-    let quantity  = parseInt(quantityInput.value)
-    quantity += 1
-    quantityInput.value = quantity
-    setQuantity(quantity)
-  }
+  const handleIncreaseQuantity = () => {
+    const quantityInput = document.getElementById("quantity");
+    let quantity = parseInt(quantityInput.value);
+    quantity += 1;
+    quantityInput.value = quantity;
+    setQuantity(quantity);
+  };
 
-  const handleDecreaseQuantity = ()=>{
-    
-    const quantityInput = document.getElementById("quantity")
-    let quantity = parseInt(quantityInput.value)
-    quantity -= 1
-    if(quantity>0){
-      
-      quantityInput.value = quantity
-      setQuantity(quantity)
+  const handleDecreaseQuantity = () => {
+    const quantityInput = document.getElementById("quantity");
+    let quantity = parseInt(quantityInput.value);
+    quantity -= 1;
+    if (quantity > 0) {
+      quantityInput.value = quantity;
+      setQuantity(quantity);
+    } else quantityInput.value = 1;
+  };
+
+  const handleQuantity = (e) => {
+    setQuantity(e.target.value);
+  };
+
+  const [checkQuantity, setCheckQuantity] = useState(true);
+  const [alertQuantity, setAlertQuantity] = useState();
+
+  useEffect(() => {
+    if (product && product.productImportResDTOS) {
+      setCheckQuantity(true);
+      for (let i = 0; i < product.productImportResDTOS.length; i++) {
+        if (
+          product.productImportResDTOS[i].size == size &&
+          product.productImportResDTOS[i].color == color &&
+          product.productImportResDTOS[i].quantity < quantity
+        ) {
+          setCheckQuantity(false);
+          setAlertQuantity(product.productImportResDTOS[i].quantity);
+        }
+      }
     }
-    else quantityInput.value = 1
+  }, [quantity]);
 
-  }
-
-  const handleQuantity = (e)=>{
-    setQuantity(e.target.value)
-  }
-
-
-  const [checkQuantity, setCheckQuantity] = useState(true)
-  const [alertQuantity, setAlertQuantity] = useState()
-
-  useEffect(()=>{ 
-    if(product && product.productImportResDTOS){
-     setCheckQuantity(true)
-      for( let i=0; i < product.productImportResDTOS.length; i++){
-        if(product.productImportResDTOS[i].size == size && product.productImportResDTOS[i].color == color && product.productImportResDTOS[i].quantity<quantity){
-          setCheckQuantity(false)
-          setAlertQuantity(product.productImportResDTOS[i].quantity)
-        }
-        
-        }
-        
-    } 
-  },[quantity])
-
-  const [checkCart, setCheckCart] = useState(false)
+  const [checkCart, setCheckCart] = useState(false);
 
   const handleAddToCart = () => {
-    if(color==null){
-      enqueueSnackbar('Color is required', { variant: 'error' });
-      return
+    if (color == null) {
+      enqueueSnackbar("Color is required", { variant: "error" });
+      return;
     }
-    if(size==null){
-       enqueueSnackbar('Size is required', { variant: 'error' });
-      return
-      }
-    
-      setCart( (prevCart) => ({
-        ...prevCart,
-        customerId:1,
-        productId: product.id,
-        status:"ISCART", 
-        price: product.price,
-        size: size,
-        quantity: quantity,
-        color: color    
-      }));
-      setCheckCart(true)
-    
-    
+    if (size == null) {
+      enqueueSnackbar("Size is required", { variant: "error" });
+      return;
+    }
+
+    setCart((prevCart) => ({
+      ...prevCart,
+      customerId: 1,
+      productId: product.id,
+      status: "ISCART",
+      price: product.price,
+      size: size,
+      quantity: quantity,
+      color: color,
+    }));
+    setCheckCart(true);
   };
 
-    useEffect(()=>{
-      if(checkCart){
-        fetch('http://localhost:8086/api/carts/add',{
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          method: "POST",
-          body: JSON.stringify(cart)
-        }).then(async (response)=>{
-          let result = await response.json() 
-          setCartDetail(result);
-          enqueueSnackbar('Successfully done the operation.', { variant: 'success' });
-        })
-      }
-    },[cart])
+  useEffect(() => {
+    if (checkCart) {
+      fetch("http://localhost:8086/api/carts/add", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(cart),
+      }).then(async (response) => {
+        let result = await response.json();
+        setCartDetail(result);
+        enqueueSnackbar("Successfully done the operation.", {
+          variant: "success",
+        });
+      });
+    }
+  }, [cart]);
 
   return (
     <>
@@ -258,10 +292,8 @@ const ProductDetails = ({setCartDetail}) => {
                 <Col lg="12" md="12" className="d-flex">
                   <ul className="breadcrumb-list">
                     <li>
-                    <Link to={`/`}>
-                      Trang chu
-                        </Link>
-                      
+                      <Link to={`/`}>Trang chu</Link>
+
                       <span>&nbsp;&nbsp;</span>
                     </li>
                     <span>&#47;&nbsp;&nbsp;&nbsp;</span>
@@ -317,7 +349,7 @@ const ProductDetails = ({setCartDetail}) => {
                         <li className="pro-sku">
                           Mã sản phẩm: <span>{product.code}</span>{" "}
                         </li>
-                        <li>&#124;</li> 
+                        <li>&#124;</li>
                         <li className="pro-brand">
                           Thương hiệu: <span>{product.brandName}</span>
                         </li>
@@ -325,42 +357,41 @@ const ProductDetails = ({setCartDetail}) => {
                         <li className="pro-sharing"></li>
                       </ul>
                     </div>
-                    {product.discount!=0?
-                     <div className="product-price" id="price-preview">
-                      
-                     <span className="pro-percen me-2">-{product.discount}%</span>
-                     <del>
-                       <FormattedNumber
-                         value={product.price}
-                         style="currency"
-                         currency="VND"
-                         minimumFractionDigits={0}
-                       />
-                     </del>
-                     <span className="pro-price ms-2">
-                      
-                       <FormattedNumber
-                         value={discountAmount}
-                         style="currency"
-                         currency="VND"
-                         minimumFractionDigits={0}
-                       />
-                     </span>
-                   </div>
-                   :
-                   <div className="product-price" id="price-preview">
-                   <span className="pro-price ms-2">
-                      
-                       <FormattedNumber
-                         value={product.price}
-                         style="currency"
-                         currency="VND"
-                         minimumFractionDigits={0}
-                       />
-                     </span>
-                     </div>
-                  }
-                   
+                    {product.discount != 0 ? (
+                      <div className="product-price" id="price-preview">
+                        <span className="pro-percen me-2">
+                          -{product.discount}%
+                        </span>
+                        <del>
+                          <FormattedNumber
+                            value={product.price}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                        </del>
+                        <span className="pro-price ms-2">
+                          <FormattedNumber
+                            value={discountAmount}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="product-price" id="price-preview">
+                        <span className="pro-price ms-2">
+                          <FormattedNumber
+                            value={product.price}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                        </span>
+                      </div>
+                    )}
+
                     <div className="product-variants">
                       <form
                         action="/cart/add"
@@ -371,24 +402,22 @@ const ProductDetails = ({setCartDetail}) => {
                           <div className="swatch">
                             <div className="title-swap">Màu sắc:</div>
                             <div className="select-swap">
-                              {colorArr?.map(
-                                (item, index) => (
-                                  <input
-                                    key={index}
-                                    type="button"
-                                    data-input="color-size"
-                                    onClick={() => handleSetColor(item)}
-                                    style={{
-                                      backgroundColor: item,
-                                      width: "30px",
-                                      height: "30px",
-                                      border: "0.5px solid gray",
-                                      marginLeft: "5px",
-                                      borderRadius: "90%",
-                                    }}
-                                  ></input>
-                                )
-                              )}
+                              {colorArr?.map((item, index) => (
+                                <input
+                                  key={index}
+                                  type="button"
+                                  data-input="color-size"
+                                  onClick={() => handleSetColor(item)}
+                                  style={{
+                                    backgroundColor: item,
+                                    width: "30px",
+                                    height: "30px",
+                                    border: "0.5px solid gray",
+                                    marginLeft: "5px",
+                                    borderRadius: "90%",
+                                  }}
+                                ></input>
+                              ))}
                             </div>
                           </div>
                           <div className="swatch">
@@ -396,23 +425,27 @@ const ProductDetails = ({setCartDetail}) => {
                               Size: <strong></strong>
                             </div>
                             <div className="select-swap">
-                              {sizeArr?.map(
-                                (item, index) => (
-                                  <input
-                                    type="button"
-                                    data-input="color-size"
-                                    onClick={() => handleSetSize(item)}
-                                    style={{
-                                      marginLeft: "5px",
-                                      width: "30px",
-                                      height: "30px",
-                                      border: "0.1px solid gray",
-                                    }}
-                                    value={item}
-                                  ></input>
-                                )
-                              )}
+                              {sizeArr?.map((item, index) => (
+                                <input
+                                  type="button"
+                                  data-input="color-size"
+                                  onClick={() => handleSetSize(item)}
+                                  style={{
+                                    marginLeft: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                    border: "0.1px solid gray",
+                                  }}
+                                  value={item}
+                                ></input>
+                              ))}
                             </div>
+                          </div>
+
+                          <div style={{ marginTop: "5px" }}>
+                            {product && checkQuantity
+                              ? null
+                              : `Số lượng hàng trong kho: ${alertQuantity}`}
                           </div>
                         </div>
                       </form>
@@ -423,7 +456,7 @@ const ProductDetails = ({setCartDetail}) => {
                       <input
                         type="button"
                         value="-"
-                        onClick={()=>handleDecreaseQuantity()}
+                        onClick={() => handleDecreaseQuantity()}
                         class="qty-btn"
                         id="quantity-btn"
                       />
@@ -434,23 +467,22 @@ const ProductDetails = ({setCartDetail}) => {
                         value={quantity}
                         min="1"
                         class="quantity-input"
-                        onChange={(e)=>handleQuantity(e)}
+                        onChange={(e) => handleQuantity(e)}
                       />
                       <input
                         type="button"
                         value="+"
                         onclick="HRT.All.plusQuantity()"
                         class="qty-btn"
-                        onClick={()=>handleIncreaseQuantity()}
+                        onClick={() => handleIncreaseQuantity()}
                       />
                     </div>
 
                     <div>
-                      <span style={{color:"red"}}>
-                        {
-                          product && checkQuantity ? null : 
-                          `* Số lượng vượt quá hàng trong kho. Xin vui lòng nhập lại số lượng <= ${alertQuantity}`
-                        }
+                      <span style={{ color: "red" }}>
+                        {product && checkQuantity
+                          ? null
+                          : `* Số lượng vượt quá hàng trong kho. Xin vui lòng nhập lại`}
                       </span>
                     </div>
 
@@ -498,7 +530,7 @@ const ProductDetails = ({setCartDetail}) => {
 
           {
             <section>
-              <Container>
+              <Container className="visitedProducts">
                 <Row>
                   <Col
                     lg="12"
@@ -509,69 +541,43 @@ const ProductDetails = ({setCartDetail}) => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col lg="12" md="12" >
-                    <Slider {...settingsVisitedProduct}>
+                  <Col lg="12" md="12">
+                    <Slider {...silder}>
                       {visitedproducts.length > 0
                         ? visitedproducts?.map((data, index) => {
                             return (
                               <div key={index} className="related-product">
                                 <div className="related-product-slide">
-                                <Link to={`/productdetails/${data?.id}`}>
-                                  <img
-                                    src={data?.urlImage}
-                                    style={{ width: "200px" }}
-                                  />
-                                </Link>
-
-                                <div className="d-flex justify-content-center">
-                                  <span>{data?.title}</span>
-                                </div>
-                                <div className="d-flex justify-content-center">
-                                  <span
-                                    style={{ color: "red", fontWeight: "600" }}
-                                  >
-                                    <FormattedNumber
-                                      value={data?.price}
-                                      style="currency"
-                                      currency="VND"
-                                      minimumFractionDigits={0}
+                                  <Link to={`/productdetails/${data?.id}`}>
+                                    <img
+                                      src={data?.urlImage}
+                                      style={{ width: "200px" }}
                                     />
-                                  </span>
+                                  </Link>
+
+                                  <div className="d-flex justify-content-center">
+                                    <span>{data?.title}</span>
+                                  </div>
+                                  <div className="d-flex justify-content-center">
+                                    <span
+                                      style={{
+                                        color: "red",
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      <FormattedNumber
+                                        value={data?.price}
+                                        style="currency"
+                                        currency="VND"
+                                        minimumFractionDigits={0}
+                                      />
+                                    </span>
+                                  </div>
                                 </div>
-                                </div>
-                               
                               </div>
                             );
                           })
-                        : fixedRelatedProducts?.map((data, index) => (
-                            <div key={index} className="related-product">
-                              <div className="related-product-slide">
-                              <Link to={`/productdetails/${data.id}`}>
-                                <img
-                                  src={data.urlImage}
-                                  style={{ width: "200px" }}
-                                />
-                              </Link>
-
-                              <div className="d-flex justify-content-center">
-                                <span>{data.title}</span>
-                              </div>
-                              <div className="d-flex justify-content-center">
-                                <span
-                                  style={{ color: "red", fontWeight: "600" }}
-                                >
-                                  <FormattedNumber
-                                    value={data.price}
-                                    style="currency"
-                                    currency="VND"
-                                    minimumFractionDigits={0}
-                                  />
-                                </span>
-                              </div>
-                              </div>
-                              
-                            </div>
-                          ))}
+                        : null}
                     </Slider>
                   </Col>
                 </Row>
@@ -583,6 +589,5 @@ const ProductDetails = ({setCartDetail}) => {
     </>
   );
 };
-
 
 export default ProductDetails;
