@@ -31,7 +31,8 @@
     "react-slick": "^0.29.0",
     "reactstrap": "^9.1.10",
     "slick-carousel": "^1.8.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.2.0"
   },
   "scripts": {
     "start": "dotenv -e .env react-scripts start",

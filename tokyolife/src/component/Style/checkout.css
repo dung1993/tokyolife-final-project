@@ -44,12 +44,6 @@ ul {
 li {
     text-align: -webkit-match-parent;
 }
-a {
-    text-decoration: none;
-    color: #2b3033;
-    transition: color 0.2s ease-in-out;
-    display: inline-block;
-}
 .main .main-header .breadcrumb .breadcrumb-item.breadcrumb-item-current {
     font-weight: 500;
     color: #4d4d4d;
@@ -105,11 +99,11 @@ button, input, optgroup, select, textarea {
     background: transparent;
     line-height: normal;
 }
-user agent stylesheet
+
 input:not([type="range"]):not([type="color"]) {
     writing-mode: horizontal-tb !important;
 }
-user agent stylesheet
+
 input[type="hidden" i] {
     appearance: none;
     background-color: initial;
@@ -123,7 +117,6 @@ input:not([type="file" i], [type="image" i], [type="checkbox" i], [type="radio" 
 }
 user agent stylesheet
 input {
-    
     text-rendering: auto;
     color: fieldtext;
     letter-spacing: normal;
@@ -318,4 +311,18 @@ button, input, optgroup, select, textarea {
     font-size: 20px;
     font-weight: 1000;
     color: black;
+}
+.errors{
+    color: red;
+    margin-top: 3px;
+}
+span.errors {
+
+    color: red;
+    font-size: 14px;
+    padding: 3px;
+    display: none;
+}
+input:invalid~span{
+    display: block;
 }
