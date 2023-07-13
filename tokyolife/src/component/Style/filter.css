@@ -1,5 +1,6 @@
 .border-filter {
     position: relative;
+    background: #fff;
 }
 
 .filter-checkbox {
@@ -43,4 +44,11 @@
 
 input {
     -webkit-appearance: checkbox !important;
+}
+
+.top-category #sort {
+    border: 1px solid;
+    padding: 5px 10px;
+    width: 230px;
+    border-radius: 5px;
 }

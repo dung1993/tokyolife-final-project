@@ -6,9 +6,8 @@ import ModalSearch from '../Search/Modal-search';
 import Auth from '../Auth/Auth';
 import { Link } from 'react-router-dom';
 import CategoryService from '../../assets/data/CategoryService';
-import API_URL from '../../constant/APP_CONSTANT';
-import ProductDetails from '../../page/ProductDetails';
-import ProductsListFilter from './../UI/ProductListFilter';
+
+
 
 const Header = ({ cartDetail }) => {
 
@@ -27,8 +26,10 @@ const Header = ({ cartDetail }) => {
 
     const [state, setState] = useState({
         categories: [],
+        products: []
 
     })
+
 
     useEffect(() => {
         try {
@@ -47,26 +48,6 @@ const Header = ({ cartDetail }) => {
     }, [])
 
 
-
-
-    // const removeProduct = () => {
-
-    // }
-
-    // const updateQuantity = (id , quantity) => {
-
-    // }
-
-    // const totalCost = products.reduce((acc, product) => {
-    //     return acc + product.price * product.quantity;
-    //   }, 0);
-    useEffect(e => {
-        // console.log("met", state.categories)
-        // if (state.categories) {
-        //     console.log("chua ra", state.categories[0].categoryChilds);
-        // }
-
-    }, [state])
 
 
     return <>
@@ -88,7 +69,7 @@ const Header = ({ cartDetail }) => {
                                 return <li className="menu category">
                                     <Link className='category' >{e.name}</Link>
                                     <div className='mega-menu'>
-                                        {e?.categoryChilds?.map(c => { return < Link key={c.id.toString()} to={`products/category/${c.id}`} state={{ id: c.id }}><ul className='sub-menu'>{c.name} {console.log(c, "ckeck c")}</ul></Link> }
+                                        {e?.categoryChilds?.map(c => { return < Link key={c.id.toString()} to={`products/category/${c.id}`} state={{ id: c.id }}><ul className='sub-menu'>{c.name}</ul></Link> }
 
                                         )}
                                     </div>
@@ -134,9 +115,6 @@ const Header = ({ cartDetail }) => {
                                     </span>
                                 </div>
                             </div>
-
-
-
                         </div>
                     </div>
                 </Row>

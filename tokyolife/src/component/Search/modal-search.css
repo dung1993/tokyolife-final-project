@@ -19,17 +19,31 @@
     position: relative;
 }
 
-.modal__search .modal__header .input__search input{
+.modal__search .modal__header .input__search input {
     width: 500px;
     margin-left: 40px;
     border: none;
     outline: none;
 }
 
-
-.modal__search .modal__header .input__search .icon__search{
+.modal__search .modal__header .input__search .icon__search {
     color: #ccd4e4;
     position: absolute;
     top: 31%;
     left: 3%;
+}
+
+.search_item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 260px;
+}
+
+.search_item .search_content {
+    display: flex;
+    flex-direction: column;
+}
+
+.search_item .search_content .product-price {
+    display: flex;
 }
