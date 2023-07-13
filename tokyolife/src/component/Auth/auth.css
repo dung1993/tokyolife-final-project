@@ -28,6 +28,7 @@ p {
     position: relative;
     z-index: 0;
     padding: 15px;
+    outline: none;
 }
 
 .form__input-wrapper label {
