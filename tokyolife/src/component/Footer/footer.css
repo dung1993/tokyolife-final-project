@@ -1,0 +1,47 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+footer{
+    width: 100%;
+}
+
+.bg-color{
+    background-color: #c92027;
+}
+
+.content-footer{
+    margin-top: 10px;
+    padding: 30px;
+}
+
+.cl-white {
+    color: #ffffff;
+}
+
+.item a{
+    color: #ffffff;
+}
+
+.item a:hover{
+    color: #000;
+
+}
+
+li{
+    text-decoration: block !important;
+}
+
+.footerInfo-hline{
+    display: flex;
+    align-items: center;
+}
+
+.icon-hl {
+    width: 40px ;
+    height: 40px ;
+    font-size: 30px;
+    margin-left: 5px;
+    margin-top: 0px;
+}

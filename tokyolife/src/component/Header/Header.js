@@ -7,7 +7,6 @@ import Auth from '../Auth/Auth';
 import { Link } from 'react-router-dom';
 import CategoryService from '../../assets/data/CategoryService';
 import API_URL from '../../constant/APP_CONSTANT';
-
 import ProductDetails from '../../page/ProductDetails';
 import ProductsListFilter from './../UI/ProductListFilter';
 
