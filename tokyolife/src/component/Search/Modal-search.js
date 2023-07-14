@@ -43,9 +43,6 @@ const ModalSearch = ({ isOpen, toggle }) => {
         }
         getData(keyword);
     }
-    useEffect(() => {
-        console.log(state.products)
-    }, [state.products])
 
     const searchRef = useRef();
 

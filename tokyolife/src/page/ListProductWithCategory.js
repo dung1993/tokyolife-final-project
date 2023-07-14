@@ -14,6 +14,8 @@ import Helmet from './../component/Helmet/Helmet';
 import ListBestSeller from "../component/UI/ListBestSeller";
 import "../../node_modules/@fortawesome/fontawesome-free/css/all.min.css"
 import "../component/Style/filter.css"
+import FiltersTag from './../component/UI/FiltersTag';
+
 
 
 const ListProductWithCategory = () => {
@@ -29,26 +31,22 @@ const ListProductWithCategory = () => {
         colorArr: [],
         sizeArr: [],
         sort: "",
-
     })
-
 
     const params = useLocation().state;
 
     const handleChange = (e) => {
         const sort = e.target.value;
+
         console.log(e.target.value)
 
         if (sort !== state.sort) {
             setState({
                 ...state,
-                sort: sort
+                sort: sort,
             })
         }
     }
-    useEffect(() => {
-        console.log(state.sort)
-    }, [state.sort])
 
     const handleValue = (e) => {
         let tempArr = [];
@@ -164,7 +162,6 @@ const ListProductWithCategory = () => {
                 sizes: [],
                 sort: 'id,desc'
             }).then(e => {
-                console.log(e)
                 setState({
                     ...state,
                     products: e.data
@@ -178,7 +175,6 @@ const ListProductWithCategory = () => {
             sizes: state.sizeArr,
             sort: state.sort
         }).then(e => {
-            console.log(e)
             setState({
                 ...state,
                 products: e.data
@@ -194,7 +190,6 @@ const ListProductWithCategory = () => {
             sizes: state.sizeArr,
             sort: "bestseller"
         }).then(e => {
-            console.log(e, "best")
             setState({
                 ...state,
                 productsRes: e.data
@@ -203,7 +198,7 @@ const ListProductWithCategory = () => {
         })
     }, [])
 
-    const { products, productsRes, category, colors, sizes } = state
+    const { products, productsRes, category, priceArr, colorArr, sizeArr, colors, sizes } = state
 
 
     return <>
@@ -238,21 +233,22 @@ const ListProductWithCategory = () => {
             </section>
             <section className="filter-service">
                 <Container className="d-flex">
-                    <Col lg="2" md="2" className="icon-filter d-flex align-items-center">
-                        <i class="fa-solid fa-filter me-2"></i>
-                        <p>Filter</p>
-                    </Col>
-                    <Col lg="10" md="10" className="fil-service d-flex justify-content-between align-items-center">
-                        <div className="category-fil border-filter">
-                            <div className="fil-title">
-                                <span>Loại</span>
-                                <span className="icon-control ms-2">
-                                    <i className="fa fa-chevron-down"></i>
-                                </span>
-                            </div>
-                            <div className="filter-checkbox">
-                                <ul className="checkbox d-none">
-                                    {/* {categories?.map(category => {
+                    <Row className="nav-filter" style={{ width: "1320px" }}>
+                        <Col lg="2" md="2" className="icon-filter d-flex align-items-center">
+                            <i class="fa-solid fa-filter me-2"></i>
+                            <p>Filter</p>
+                        </Col>
+                        <Col lg="10" md="10" className="fil-service d-flex justify-content-between align-items-center">
+                            <div className="category-fil border-filter">
+                                <div className="fil-title">
+                                    <span>Loại</span>
+                                    <span className="icon-control ms-2">
+                                        <i className="fa fa-chevron-down"></i>
+                                    </span>
+                                </div>
+                                <div className="filter-checkbox">
+                                    <ul className="checkbox d-none">
+                                        {/* {categories?.map(category => {
                                         return <>
                                             <li>
                                                 <input className="me-2" type="checkbox" id={category} value={category} onChange={(e) => { handleSize(e) }} />
@@ -263,111 +259,123 @@ const ListProductWithCategory = () => {
                                         </>
 
                                     })} */}
-                                </ul>
+                                    </ul>
+                                </div>
+
                             </div>
+                            <div className="price-fil border-filter">
+                                <div className="fil-title">
+                                    <span>Lọc Giá</span>
+                                    <span className="icon-control ms-2">
+                                        <i className="fa fa-chevron-down"></i>
+                                    </span>
+                                </div>
+                                <div className="filter-checkbox">
+                                    <ul className="checkbox d-none">
+                                        <li>
+                                            <input className="me-2" type="checkbox" id="value_100000" value="0 100000" onChange={(e) => { handleValue(e) }} />
+                                            <label htmlFor="value_100000">
+                                                <span>Dưới</span> 100.000₫
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <input className="me-2" type="checkbox" id="value_200000" value="100000 200000" onChange={(e) => { handleValue(e) }} />
+                                            <label htmlFor="value_200000">
+                                                100.000₫ - 200.000₫
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <input className="me-2" type="checkbox" id="value_300000" value="200000 300000" onChange={(e) => { handleValue(e) }} />
+                                            <label htmlFor="value_300000">
+                                                200.000₫ - 300.000₫
+                                            </label>
+                                        </li>
+                                        <li>
 
-                        </div>
-                        <div className="price-fil border-filter">
-                            <div className="fil-title">
-                                <span>Lọc Giá</span>
-                                <span className="icon-control ms-2">
-                                    <i className="fa fa-chevron-down"></i>
-                                </span>
+                                            <label htmlFor="value_400000">
+                                                <input className="me-2" type="checkbox" id="value_400000" value="300000 400000" onChange={(e) => { handleValue(e) }} />
+                                                300.000₫ - 400.000₫
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <input className="me-2" type="checkbox" id="value_500000" value="400000 500000" onChange={(e) => { handleValue(e) }} />
+                                            <label htmlFor="value_500000">
+                                                400.000₫ - 500.000₫
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <input className="me-2" type="checkbox" id="value_600000" value="500001" onChange={(e) => { handleValue(e) }} />
+                                            <label htmlFor="value_600000">
+                                                <span>Trên</span> 500.000₫
+                                            </label>
+                                        </li>
+
+                                    </ul>
+                                </div>
+
                             </div>
-                            <div className="filter-checkbox">
-                                <ul className="checkbox d-none">
-                                    <li>
-                                        <input className="me-2" type="checkbox" id="value_100000" value="0 100000" onChange={(e) => { handleValue(e) }} />
-                                        <label htmlFor="value_100000">
-                                            <span>Dưới</span> 100.000₫
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <input className="me-2" type="checkbox" id="value_200000" value="100000 200000" onChange={(e) => { handleValue(e) }} />
-                                        <label htmlFor="value_200000">
-                                            100.000₫ - 200.000₫
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <input className="me-2" type="checkbox" id="value_300000" value="200000 300000" onChange={(e) => { handleValue(e) }} />
-                                        <label htmlFor="value_300000">
-                                            200.000₫ - 300.000₫
-                                        </label>
-                                    </li>
-                                    <li>
+                            <div className="color-fil border-filter">
+                                <div className="fil-title">
+                                    <span>Màu sắc</span>
+                                    <span className="icon-control ms-2">
+                                        <i className="fa fa-chevron-down"></i>
 
-                                        <label htmlFor="value_400000">
-                                            <input className="me-2" type="checkbox" id="value_400000" value="300000 400000" onChange={(e) => { handleValue(e) }} />
-                                            300.000₫ - 400.000₫
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <input className="me-2" type="checkbox" id="value_500000" value="400000 500000" onChange={(e) => { handleValue(e) }} />
-                                        <label htmlFor="value_500000">
-                                            400.000₫ - 500.000₫
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <input className="me-2" type="checkbox" id="value_600000" value="500001" onChange={(e) => { handleValue(e) }} />
-                                        <label htmlFor="value_600000">
-                                            <span>Trên</span> 500.000₫
-                                        </label>
-                                    </li>
+                                    </span>
+                                </div>
+                                <div className="filter-checkbox">
+                                    <ul className="checkbox d-none ">
+                                        {colors?.map(color => {
+                                            return <>
+                                                <li>
+                                                    <input className="me-2" type="checkbox" id={color} value={color} onChange={(e) => { handleColor(e) }} />
+                                                    <label htmlFor={color}>
+                                                        <span>{color}</span>
+                                                    </label>
+                                                </li>
+                                            </>
 
-                                </ul>
+                                        })}
+                                    </ul>
+                                </div>
                             </div>
+                            <div className="size-fil border-filter">
+                                <div className="fil-title">
+                                    <span>Kích thước</span>
+                                    <span className="icon-control ms-2">
+                                        <i className="fa fa-chevron-down"></i>
+                                    </span>
+                                </div>
+                                <div className="filter-checkbox">
+                                    <ul className="checkbox d-none">
+                                        {sizes?.map(size => {
+                                            return <>
+                                                <li>
+                                                    <input className="me-2" type="checkbox" id={size} value={size} onChange={(e) => { handleSize(e) }} />
+                                                    <label htmlFor={size}>
+                                                        <span>{size}</span>
+                                                    </label>
+                                                </li>
+                                            </>
 
-                        </div>
-                        <div className="color-fil border-filter">
-                            <div className="fil-title">
-                                <span>Màu sắc</span>
-                                <span className="icon-control ms-2">
-                                    <i className="fa fa-chevron-down"></i>
+                                        })}
 
-                                </span>
+                                    </ul>
+                                </div>
+
                             </div>
-                            <div className="filter-checkbox">
-                                <ul className="checkbox d-none">
-                                    {colors?.map(color => {
-                                        return <>
-                                            <li>
-                                                <input className="me-2" type="checkbox" id={color} value={color} onChange={(e) => { handleColor(e) }} />
-                                                <label htmlFor={color}>
-                                                    <span>{color}</span>
-                                                </label>
-                                            </li>
-                                        </>
+                        </Col>
+                    </Row>
 
-                                    })}
-                                </ul>
-                            </div>
-                        </div>
-                        <div className="size-fil border-filter">
-                            <div className="fil-title">
-                                <span>Kích thước</span>
-                                <span className="icon-control ms-2">
-                                    <i className="fa fa-chevron-down"></i>
-                                </span>
-                            </div>
-                            <div className="filter-checkbox">
-                                <ul className="checkbox d-none">
-                                    {sizes?.map(size => {
-                                        return <>
-                                            <li>
-                                                <input className="me-2" type="checkbox" id={size} value={size} onChange={(e) => { handleSize(e) }} />
-                                                <label htmlFor={size}>
-                                                    <span>{size}</span>
-                                                </label>
-                                            </li>
-                                        </>
-
-                                    })}
-
-                                </ul>
-                            </div>
-
-                        </div>
-                    </Col>
+                </Container>
+            </section>
+            <section>
+                <Container>
+                    <Row className="list-tags d-block">
+                        {priceArr.length > 0 && <FiltersTag filtersTag={priceArr} title={'Lọc giá'} />}
+                        {colorArr.length > 0 && <FiltersTag filtersTag={colorArr} title={'Màu sắc'} />}
+                        {sizeArr.length > 0 && <FiltersTag filtersTag={sizeArr} title={'Kích thước'} />}
+                        <FiltersTag />
+                    </Row>
                 </Container>
             </section>
             <section className="product-list">

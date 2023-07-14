@@ -13,9 +13,9 @@ const Search = () => {
     const [state, setState] = useState({
         keyword: keyword,
         products: [],
-        pageCount: 0,
+        totalPage: [],
         currentPage: 0,
-        pageSize: 5,
+        pageSize: 20,
     });
 
     useEffect(() => {

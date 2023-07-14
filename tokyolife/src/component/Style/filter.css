@@ -52,3 +52,11 @@ input {
     width: 230px;
     border-radius: 5px;
 }
+
+.list-tags .filter-tag {
+    border: 1px solid;
+    background: #ffffff;
+    border-radius: 10px;
+    font-size: 15px;
+    padding: 5px;
+}
