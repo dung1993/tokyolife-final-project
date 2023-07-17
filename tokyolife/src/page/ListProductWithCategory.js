@@ -239,30 +239,6 @@ const ListProductWithCategory = () => {
                             <p>Filter</p>
                         </Col>
                         <Col lg="10" md="10" className="fil-service d-flex justify-content-between align-items-center">
-                            <div className="category-fil border-filter">
-                                <div className="fil-title">
-                                    <span>Loại</span>
-                                    <span className="icon-control ms-2">
-                                        <i className="fa fa-chevron-down"></i>
-                                    </span>
-                                </div>
-                                <div className="filter-checkbox">
-                                    <ul className="checkbox d-none">
-                                        {/* {categories?.map(category => {
-                                        return <>
-                                            <li>
-                                                <input className="me-2" type="checkbox" id={category} value={category} onChange={(e) => { handleSize(e) }} />
-                                                <label htmlFor={category}>
-                                                    <span>{category}</span>
-                                                </label>
-                                            </li>
-                                        </>
-
-                                    })} */}
-                                    </ul>
-                                </div>
-
-                            </div>
                             <div className="price-fil border-filter">
                                 <div className="fil-title">
                                     <span>Lọc Giá</span>
@@ -323,7 +299,7 @@ const ListProductWithCategory = () => {
                                     </span>
                                 </div>
                                 <div className="filter-checkbox">
-                                    <ul className="checkbox d-none ">
+                                    <ul className="checkbox d-none fil-color">
                                         {colors?.map(color => {
                                             return <>
                                                 <li>
@@ -331,10 +307,12 @@ const ListProductWithCategory = () => {
                                                     <label htmlFor={color}>
                                                         <span>{color}</span>
                                                     </label>
+
                                                 </li>
                                             </>
 
                                         })}
+
                                     </ul>
                                 </div>
                             </div>
@@ -374,7 +352,6 @@ const ListProductWithCategory = () => {
                         {priceArr.length > 0 && <FiltersTag filtersTag={priceArr} title={'Lọc giá'} />}
                         {colorArr.length > 0 && <FiltersTag filtersTag={colorArr} title={'Màu sắc'} />}
                         {sizeArr.length > 0 && <FiltersTag filtersTag={sizeArr} title={'Kích thước'} />}
-                        <FiltersTag />
                     </Row>
                 </Container>
             </section>

@@ -23,13 +23,13 @@ const Search = () => {
             try {
                 let productsRes = await Products.getProductWithSearch({
                     keyword,
-                    pagesize: 5,
+                    pagesize: 20,
                     page,
                 });
                 setState({
                     ...state,
                     products: productsRes.data.products || [],
-                    pageCount: Math.ceil(productsRes.data.total / 5),
+                    pageCount: Math.ceil(productsRes.data.total / 20),
                 });
             } catch (error) { }
         }
