@@ -8,24 +8,30 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   const [products, setProducts] = useState();
   const [cartDetailLength, setCartDetailLength] = useState();
   const [totalAmountCartNoDiscount, setTotalAmountCartNoDiscount] = useState();
-  const [customerId, setCustomerId] = useState(1);
+  const [customerId, setCustomerId] = useState();
   const [check, setCheck] = useState(0);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   useEffect(() => {
-    fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
-      async (response) => {
-        let products = await response.json();
-        setProducts(products);
-        let totalCart = 0;
-        let totalCarNoDiscount = 0;
-        products.map((item) => {
-          totalCarNoDiscount += item.price * item.quantity;
-          totalCart += item.totalAmountItem;
-        });
-        setTotalAmountCart(totalCart);
-        setTotalAmountCartNoDiscount(totalCarNoDiscount);
-      }
-    );
+    if(customerId!=null){
+      fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
+        async (response) => {
+          let products = await response.json();
+          setProducts(products);
+          let totalCart = 0;
+          let totalCarNoDiscount = 0;
+          products.map((item) => {
+            totalCarNoDiscount += item.price * item.quantity;
+            totalCart += item.totalAmountItem;
+          });
+          setTotalAmountCart(totalCart);
+          setTotalAmountCartNoDiscount(totalCarNoDiscount);
+        }
+      );
+    }
+    else{
+      alert('here')
+    }
+    
   }, [customerId, check]);
 
   useEffect(() => {
@@ -106,6 +112,8 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
         body: JSON.stringify(quantity),
       }).then((e)=>setCheck(check + 1));
   }
+
+
 
   return (
     <>

@@ -10,33 +10,39 @@ const Checkout = () => {
   const [products, setProducts] = useState();
   const [provinces, setProvinces] = useState(null);
   const [provinceId, setProvinceId] = useState();
+  const [provinceName,setProvinceName] = useState();
   const [districts, setDistricts] = useState(null);
   const [districtId, setDistrictId] = useState();
+  const [districtName, setDistrictName] = useState();
   const [wards, setWards] = useState();
+  const [wardId, setWardId] = useState()
+  const [wardName, setWardName] = useState()
   const [customer, setCustomer] = useState();
   const [totalAmountCart, setTotalAmountCart] = useState();
+  const [customerId, setCustomerId] = useState(1)
+  const [cartId, setCartId] = useState();
   const [values, setValues] = useState({
-    fullName: "",
-    phoneNumber: "",
+    name_receiver: "",
+    phone_receiver: "",
     address: "",
   });
   const inputs = [
     {
       id: 1,
-      name: "fullName",
+      name: "name_receiver",
       type: "text",
       placeholder: "Fullname",
-      errorsMessage: "Fullname should be 3-16 characters and shouldn't include any special character!",
-      pattern:"^[A-Za-z0-9]{3,16}$",
+      errorsMessage: "Fullname is required",
       label: "Fullname",
       required: true,
     },
     {
       id: 2,
-      name: "phoneNumber",
-      type: "number",
+      name: "phone_receiver",
+      type: "text",
       placeholder: "Phone Number",
-      errorsMessage: "Phone is required",
+      errorsMessage: "Phone number should be 10-12 characters",
+      pattern:"[0-9]{10}",
       label: "Phone",
       required: true,
     },
@@ -46,39 +52,69 @@ const Checkout = () => {
       type: "text",
       placeholder: "Address",
       errorsMessage: "Address is required",
+      pattern:"/^[a-zA-Z0-9\s\.,#-]+$/",
       label: "Address",
       required: true,
     },
   ];
 
+  const newObj = {
+    cartId:cartId,
+    cartDetailResDTOList: products,
+    name_receiver: values.name_receiver,
+    phone_receiver: values.phone_receiver,
+    totalAmount: totalAmountCart,
+    customerId: customerId,
+    locationRegion: {
+      id: null,
+      provinceId: provinceId,
+      provinceName: provinceName,
+      districtId: districtId,
+      districtName: districtName,
+      wardId: wardId,
+      wardName: wardName,
+      address: values.address,
+      customerId: customerId
+    }
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(newObj);
+    fetch('http://localhost:8086/api/carts/checkout',{
+      method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newObj)
+    })
   };
 
   useEffect(() => {
-    fetch(`http://localhost:8086/api/carts/cart-details/1`).then(
+    fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
       async (data) => {
         let products = await data.json();
         setProducts(products);
       }
     );
-  }, []);
+  }, customerId);
 
   useEffect(() => {
     fetch(`http://localhost:8086/api/carts/amount/1`).then(async (data) => {
       let cart = await data.json();
       setTotalAmountCart(cart.totalAmountCart);
+      setCartId(cart.id)
     });
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8086/api/carts/customer/1").then(
+    fetch(`http://localhost:8086/api/carts/customer/${customerId}`).then(
       async (response) => {
         let customer = await response.json();
         setCustomer(customer);
       }
     );
-  }, []);
+  }, customerId);
 
   useEffect(() => {
     fetch("https://vapi.vnappmob.com/api/province/").then(async (response) => {
@@ -89,7 +125,9 @@ const Checkout = () => {
 
   const handleProvince = (e) => {
     let provinceId = e.target.value;
+    let provinceName = e.target.options[e.target.selectedIndex].getAttribute("name")
     setProvinceId(provinceId);
+    setProvinceName(provinceName)
   };
 
   useEffect(() => {
@@ -110,8 +148,17 @@ const Checkout = () => {
 
   const handleDistrict = (e) => {
     let districtId = e.target.value;
+    let distrctName = e.target.options[e.target.selectedIndex].getAttribute("name")
+    setDistrictName(distrctName)
     setDistrictId(districtId);
   };
+
+  const handleWard = (e) =>{
+    let wardId = e.target.value
+    let wardName = e.target.options[e.target.selectedIndex].getAttribute("name")
+    setWardId(wardId)
+    setWardName(wardName)
+  }
 
   useEffect(() => {
     fetch(`https://vapi.vnappmob.com/api/province/ward/${districtId}`).then(
@@ -123,9 +170,10 @@ const Checkout = () => {
   }, [districtId]);
 
   const onChange = (e) => {
+    console.log(e.target.name);
     setValues({ ...values, [e.target.name]: e.target.value });
   };
-  console.log(values);
+  console.log(values.name_receiver);
   return (
     <>
       <div className="checkout-page">
@@ -230,6 +278,7 @@ const Checkout = () => {
                                       <option
                                         key={index}
                                         value={data.province_id}
+                                        name ={data.province_name}
                                       >
                                         {data.province_name}
                                       </option>
@@ -253,6 +302,7 @@ const Checkout = () => {
                                         <option
                                           key={index}
                                           value={data.district_id}
+                                          name = {data.district_name}
                                         >
                                           {data.district_name}
                                         </option>
@@ -263,10 +313,10 @@ const Checkout = () => {
                                   <label for="inputZip" class="form-label">
                                     Phuong / Xa
                                   </label>
-                                  <select id="inputState" class="form-select">
+                                  <select id="inputState" class="form-select" onChange={(e)=>handleWard(e)}>
                                     <option selected>Choose...</option>
                                     {wards?.map((data, index) => (
-                                      <option key={index}>
+                                      <option key={index} value={data.ward_id} name={data.ward_name}>
                                         {data.ward_name}
                                       </option>
                                     ))}

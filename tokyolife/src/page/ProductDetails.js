@@ -16,9 +16,12 @@ Fancybox.bind('[data-fancybox="gallery"]', {
 const ProductDetails = ({ setCartDetail }) => {
   const { productId, categoryId } = useParams();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [noAccountCart, setNoAccountCart] = useState([]);
+  
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const [discountAmount, setDiscountAmount] = useState();
+  
   const settings = {
     dots: true,
     infinite: true,
@@ -33,13 +36,6 @@ const ProductDetails = ({ setCartDetail }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   });
-  // const settingsVisitedProduct = {
-  //   dots: false,
-  //   infinite: true,
-  //   speed: 500,
-  //   slidesToShow: 1,
-  //   slidesToScroll: 1
-  //   }
 
   const sliderRef = useRef(null);
   //cung cấp thông tin cho order size, color
@@ -134,7 +130,7 @@ const ProductDetails = ({ setCartDetail }) => {
           const temp = [...products];
           const uniqueProducts = Array.from(new Set(temp));
           setVisitedproducts(uniqueProducts);
-          if(uniqueProducts.length>=4){
+          if (uniqueProducts.length >= 4) {
             setSlider({
               dots: false,
               infinite: true,
@@ -142,15 +138,13 @@ const ProductDetails = ({ setCartDetail }) => {
               slidesToShow: 4,
               slidesToScroll: 1,
             });
-          }
-          else{
+          } else {
             setSlider({
               dots: false,
               infinite: true,
               speed: 500,
               slidesToShow: uniqueProducts.length,
               slidesToScroll: 1,
-              
             });
           }
         });
@@ -165,20 +159,6 @@ const ProductDetails = ({ setCartDetail }) => {
       sliderRef.current.slickGoTo(index);
     }
   };
-
-  // const handleUpdateHobby = () => {
-  //     // Tìm và thay đổi giá trị của phần tử trong mảng 'hobbies'
-  //     const updatedHobbies = data.hobbies.map(hobby => {
-  //       if (hobby.id === 1) {
-  //         return { ...hobby, name: 'Painting' };
-  //       }
-  //       return hobby;
-  //     });
-
-  //     const newData = { ...data, hobbies: updatedHobbies };
-  //     localStorage.setItem('data', JSON.stringify(newData));
-  //     setData(newData);
-  //   };
 
   const handleSetSize = (size) => {
     setSize(size);
@@ -260,8 +240,25 @@ const ProductDetails = ({ setCartDetail }) => {
       quantity: quantity,
       color: color,
     }));
+
+    setNoAccountCart((noAccountCart) => ({
+      ...noAccountCart,
+      productId: product.id,
+      status: "ISCART",
+      price: product.price,
+      size: size,
+      quantity: quantity,
+      color: color,
+    }));
+    let storedNoAccountCart = JSON.parse(localStorage.getItem("cartNoAccount"));
+    if (!Array.isArray(storedNoAccountCart)) {
+      storedNoAccountCart = [];
+    }
+    const updatedStore = [...storedNoAccountCart, noAccountCart];
+    localStorage.setItem("cartNoAccount", JSON.stringify(updatedStore));
     setCheckCart(true);
   };
+
 
   useEffect(() => {
     if (checkCart) {
@@ -279,8 +276,11 @@ const ProductDetails = ({ setCartDetail }) => {
           variant: "success",
         });
       });
+      
     }
   }, [cart]);
+
+  
 
   return (
     <>
