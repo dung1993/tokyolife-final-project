@@ -32,6 +32,7 @@ const ModalSearch = ({ isOpen, toggle }) => {
         toggle();
     }
 
+
     const handleSearch = (keyword) => {
         async function getData(keyword) {
             let productsRes = await Products.getProductWithSearch({ keyword, pagesize: 5, page: 0 })
@@ -45,6 +46,7 @@ const ModalSearch = ({ isOpen, toggle }) => {
     }
 
     const searchRef = useRef();
+
 
     return (
         <div>
@@ -67,7 +69,7 @@ const ModalSearch = ({ isOpen, toggle }) => {
                 <ModalBody>
                     <div className="search__product">
                         {state.products?.map(product => { return <ProductWithSearch product={product} /> })}
-                        {state.products.length > 0 && <Link to={`/search/${searchRef.current.value}`} state={{ keyword: searchRef.current.value }} style={{ display: "flex", justifyContent: "center" }} onClick={handleClose}>Xem thêm</Link>}
+                        {state.products?.length > 0 && <Link to={`/search/${searchRef.current?.value}`} state={{ keyword: searchRef.current?.value }} style={{ display: "flex", justifyContent: "center" }} onClick={handleClose}>Xem thêm</Link>}
                     </div>
                 </ModalBody>
             </Modal>

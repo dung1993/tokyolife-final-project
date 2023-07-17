@@ -28,9 +28,8 @@
     display: block !important;
 }
 
-.border-filter ul li:hover {
-    background: #c92027;
-    color: #fff;
+.border-filter ul li:hover label {
+    cursor: pointer;
 }
 
 .border-filter .fil-title {
@@ -60,3 +59,12 @@ input {
     font-size: 15px;
     padding: 5px;
 }
+
+/* .fil-color {
+    width: 230px;
+    font-size: 0px;
+} */
+
+/* .fil-color li {
+    padding: 0 !important;
+} */
