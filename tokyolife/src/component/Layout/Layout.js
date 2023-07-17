@@ -5,11 +5,11 @@ import Routers from "../../routers/Router.js";
 
 
 const Layout = () => {
-    const [cartDetail , setCartDetail] = useState();
+    const [cartDetail, setCartDetail] = useState();
     return (
         <>
             <Header cartDetail={cartDetail} />
-            <div>
+            <div style={{ background: "#f7f7f7" }}>
                 <Routers setCartDetail={setCartDetail} />
             </div>
             <Footer />

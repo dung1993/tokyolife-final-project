@@ -25,9 +25,19 @@ class Products {
         return axios.post(API_URL + 'client/products/category?id=' + categoryId)
     }
 
-    static getAllProductFilter(categoryId, data) {
-        return axios.post(API_URL + 'client/products/filter/category/' + categoryId, data)
+    static getAllProductFilter(data) {
+        return axios.post(API_URL + 'client/products/filter/category?sort=' + data.sort, data)
     }
+
+    static getProductWithSearch(data) {
+        console.log(data);
+        return axios.post(API_URL + 'client/products/search?size=' + data.pagesize + '&page=' + data.page + '&keyword=' + data.keyword)
+    }
+    // static getProductWithSearch(pagesize, page, keyword) {
+    //     console.log(API_URL + 'client/products/search?size=' + pagesize + '&page=' + page + '&keyword=' + keyword);
+    //     return axios.post(API_URL + 'client/products/search?size=' + pagesize + '&page=' + page + '&keyword=' + keyword)
+    // }
+
 }
 
 
