@@ -70,11 +70,8 @@ const Header = ({ cartDetail }) => {
                                     <Link className='category' >{e.name}</Link>
                                     <div className='mega-menu'>
                                         {e?.categoryChilds?.map(c => { return < Link key={c.id.toString()} to={`products/category/${c.id}`} state={{ id: c.id }}><ul className='sub-menu'>{c.name}</ul></Link> }
-
                                         )}
                                     </div>
-
-
                                 </li>
                             }
                             )}

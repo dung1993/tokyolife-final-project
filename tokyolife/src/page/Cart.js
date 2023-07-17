@@ -3,38 +3,117 @@ import { Container, Row, Col } from "reactstrap";
 import "../component/Style/cart.css";
 import { FormattedNumber } from "react-intl";
 import { Link } from "react-router-dom";
-const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => {
-  // const [products, setProducts] = useState();
+import { useSnackbar } from "notistack";
+const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
+  const [products, setProducts] = useState();
   const [cartDetailLength, setCartDetailLength] = useState();
-  
-
+  const [totalAmountCartNoDiscount, setTotalAmountCartNoDiscount] = useState();
+  const [customerId, setCustomerId] = useState();
+  const [check, setCheck] = useState(0);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   useEffect(() => {
-    fetch(`http://localhost:8086/api/carts/cart-details/1`).then(
-      async (response) => {
-        let products = await response.json();
-        setProducts(products);
-        let result = 0;
-        products.map((item) => {
-          return (result += item.totalAmountItem);
-        });
-        setTotalAmountCart(result);
-      }
-    );
-  }, []);
+    if(customerId!=null){
+      fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
+        async (response) => {
+          let products = await response.json();
+          setProducts(products);
+          let totalCart = 0;
+          let totalCarNoDiscount = 0;
+          products.map((item) => {
+            totalCarNoDiscount += item.price * item.quantity;
+            totalCart += item.totalAmountItem;
+          });
+          setTotalAmountCart(totalCart);
+          setTotalAmountCartNoDiscount(totalCarNoDiscount);
+        }
+      );
+    }
+    else{
+      alert('here')
+    }
+    
+  }, [customerId, check]);
+
   useEffect(() => {
     if (products) {
       setCartDetailLength(products.length);
     }
   }, [products]);
-  const handleRemoveItem = (index) => {
+
+
+  const handleRemoveItem = (id, index) => {
+    console.log("id cart dt" + id);
     const updatedProducts = [...products];
     updatedProducts.splice(index, 1);
-    let totalResult = totalAmountCart - products[index].totalAmountItem;
-    console.log("total" + totalResult);
-    console.log(updatedProducts);
+    fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then(async (response) => {
+      let result = await response.json();
+      setTotalAmountCart(result.totalAmountCart);
+      enqueueSnackbar("Remove item successfully.", {
+        variant: "success",
+      });
+    });
     setProducts(updatedProducts);
-    setTotalAmountCart(totalResult);
   };
+
+  useEffect(() => {
+    if (products) {
+      let totalCarNoDiscount = 0;
+      products.map((item) => {
+        totalCarNoDiscount += item.price * item.quantity;
+      });
+      setTotalAmountCartNoDiscount(totalCarNoDiscount);
+    }
+  }, [products]);
+
+  const handleIncreaseQuantity = (id, index) => {
+    let inputQuantity = document.getElementById(`${id}`);
+    let increaseQuantity = parseInt(inputQuantity.value);
+    increaseQuantity += 1;
+    fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(increaseQuantity),
+    }).then(e =>  setCheck(check + 1))
+   
+  };
+
+  const handleDecreaseQuantity = (id, index) => {
+    
+    let inputQuantity = document.getElementById(`${id}`);
+    let decreaseQuantity = parseInt(inputQuantity.value);
+    decreaseQuantity -= 1;
+    if (decreaseQuantity > 0) {
+      fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(decreaseQuantity),
+      }).then((e)=>setCheck(check + 1));
+      
+    } else inputQuantity.value = 1;
+  };
+
+  const handleInputQuantity = (e,id,index) =>{
+    let quantity = e.target.value
+    
+    fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(quantity),
+      }).then((e)=>setCheck(check + 1));
+  }
+
+
 
   return (
     <>
@@ -74,7 +153,7 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                       <div className="table-cart">
                         {products?.map((data, index) => (
                           <div key={index}>
-                            {index !== products.length - 1 ? (
+                            {products && index !== products.length - 1 ? (
                               <div className="media-line-item line-item">
                                 <div className="media-left">
                                   <div class="item-img">
@@ -83,7 +162,9 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                                   <div class="item-remove">
                                     <a
                                       type="button"
-                                      onClick={() => handleRemoveItem(index)}
+                                      onClick={() =>
+                                        handleRemoveItem(data.id, index)
+                                      }
                                     >
                                       Xóa
                                     </a>
@@ -132,6 +213,7 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                                       <button
                                         type="button"
                                         class="qtyminus qty-btn"
+                                        onClick={()=>handleDecreaseQuantity(data.id,index)}
                                       >
                                         -
                                       </button>
@@ -141,14 +223,18 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                                         name="updates[]"
                                         min="1"
                                         productid="1046555400"
-                                        id="updates_1105003741"
+                                        id={data.id}
                                         data-price="29000000"
                                         value={data.quantity}
                                         class="tc line-item-qty item-quantity"
+                                        onChange={(e)=>handleInputQuantity(e,data.id,index)}
                                       ></input>
                                       <button
                                         type="button"
                                         class="qtyplus qty-btn"
+                                        onClick={() =>
+                                          handleIncreaseQuantity(data.id, index)
+                                        }
                                       >
                                         +
                                       </button>
@@ -168,7 +254,9 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                                   <div class="item-remove">
                                     <a
                                       type="button"
-                                      onClick={() => handleRemoveItem(index)}
+                                      onClick={() =>
+                                        handleRemoveItem(data.id, index)
+                                      }
                                     >
                                       Xóa
                                     </a>
@@ -217,6 +305,7 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                                       <button
                                         type="button"
                                         class="qtyminus qty-btn"
+                                        onClick={()=>handleDecreaseQuantity(data.id,index)}
                                       >
                                         -
                                       </button>
@@ -226,14 +315,18 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                                         name="updates[]"
                                         min="1"
                                         productid="1046555400"
-                                        id="updates_1105003741"
+                                        id={data.id}
                                         data-price="29000000"
                                         value={data.quantity}
                                         class="tc line-item-qty item-quantity"
+                                        onChange={(e)=>handleInputQuantity(e,data.id,index)}
                                       ></input>
                                       <button
                                         type="button"
                                         class="qtyplus qty-btn"
+                                        onClick={() =>
+                                          handleIncreaseQuantity(data.id, index)
+                                        }
                                       >
                                         +
                                       </button>
@@ -270,7 +363,16 @@ const Cart = ({ products, setProducts,totalAmountCart, setTotalAmountCart }) => 
                           fontWeight: "normal",
                         }}
                       >
-                        <del>2,090,000₫</del>
+                        <del>
+                          {products && (
+                            <FormattedNumber
+                              value={totalAmountCartNoDiscount}
+                              style="currency"
+                              currency="VND"
+                              minimumFractionDigits={0}
+                            />
+                          )}
+                        </del>
                       </span>
                     </p>
                     <p className="total-amount">

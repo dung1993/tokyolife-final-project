@@ -12,9 +12,11 @@ import Login from "../page/Login"
 import Signup from "../page/Signup"
 import ListProductWithCategory from "../page/ListProductWithCategory"
 
+
 const Routers = ({ cartDetail, setCartDetail }) => {
     const [products, setProducts] = useState();
     const [totalAmountCart, setTotalAmountCart] = useState(0);
+    
     return <Routes>
         <Route path="/" element={<Home />} />
         <Route path="shop" element={<Shop />} />
@@ -26,6 +28,7 @@ const Routers = ({ cartDetail, setCartDetail }) => {
         <Route path="products/category/:categoryId" element={<ListProductWithCategory />} />
         <Route path="signup" element={<Signup />} />
     </Routes>
+
 
 }
 export default Routers;

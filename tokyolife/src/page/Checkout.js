@@ -1,33 +1,120 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useRef, useState } from "react";
 import { Container, Row, Col } from "reactstrap";
 import "../component/Style/checkout.css";
 import { useForm } from "react-hook-form";
 import { FormattedNumber } from "react-intl";
-const Checkout = ({ products,totalAmountCart }) => {
+import FormInput from "../component/Form/FormInput";
+
+
+const Checkout = () => {
+  const [products, setProducts] = useState();
   const [provinces, setProvinces] = useState(null);
   const [provinceId, setProvinceId] = useState();
+  const [provinceName,setProvinceName] = useState();
   const [districts, setDistricts] = useState(null);
   const [districtId, setDistrictId] = useState();
+  const [districtName, setDistrictName] = useState();
   const [wards, setWards] = useState();
+  const [wardId, setWardId] = useState()
+  const [wardName, setWardName] = useState()
   const [customer, setCustomer] = useState();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const [totalAmountCart, setTotalAmountCart] = useState();
+  const [customerId, setCustomerId] = useState(1)
+  const [cartId, setCartId] = useState();
+  const [values, setValues] = useState({
+    name_receiver: "",
+    phone_receiver: "",
+    address: "",
+  });
+  const inputs = [
+    {
+      id: 1,
+      name: "name_receiver",
+      type: "text",
+      placeholder: "Fullname",
+      errorsMessage: "Fullname is required",
+      label: "Fullname",
+      required: true,
+    },
+    {
+      id: 2,
+      name: "phone_receiver",
+      type: "text",
+      placeholder: "Phone Number",
+      errorsMessage: "Phone number should be 10-12 characters",
+      pattern:"[0-9]{10}",
+      label: "Phone",
+      required: true,
+    },
+    {
+      id: 3,
+      name: "address",
+      type: "text",
+      placeholder: "Address",
+      errorsMessage: "Address is required",
+      pattern:"/^[a-zA-Z0-9\s\.,#-]+$/",
+      label: "Address",
+      required: true,
+    },
+  ];
 
-  const onSubmit = (data) => console.log(data);
+  const newObj = {
+    cartId:cartId,
+    cartDetailResDTOList: products,
+    name_receiver: values.name_receiver,
+    phone_receiver: values.phone_receiver,
+    totalAmount: totalAmountCart,
+    customerId: customerId,
+    locationRegion: {
+      id: null,
+      provinceId: provinceId,
+      provinceName: provinceName,
+      districtId: districtId,
+      districtName: districtName,
+      wardId: wardId,
+      wardName: wardName,
+      address: values.address,
+      customerId: customerId
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(newObj);
+    fetch('http://localhost:8086/api/carts/checkout',{
+      method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newObj)
+    })
+  };
 
   useEffect(() => {
-    fetch("http://localhost:8086/api/carts/customer/1").then(
+    fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
+      async (data) => {
+        let products = await data.json();
+        setProducts(products);
+      }
+    );
+  }, customerId);
+
+  useEffect(() => {
+    fetch(`http://localhost:8086/api/carts/amount/1`).then(async (data) => {
+      let cart = await data.json();
+      setTotalAmountCart(cart.totalAmountCart);
+      setCartId(cart.id)
+    });
+  }, []);
+
+  useEffect(() => {
+    fetch(`http://localhost:8086/api/carts/customer/${customerId}`).then(
       async (response) => {
         let customer = await response.json();
         setCustomer(customer);
-        console.log("customer" + customer);
       }
     );
-  }, []);
+  }, customerId);
 
   useEffect(() => {
     fetch("https://vapi.vnappmob.com/api/province/").then(async (response) => {
@@ -38,7 +125,9 @@ const Checkout = ({ products,totalAmountCart }) => {
 
   const handleProvince = (e) => {
     let provinceId = e.target.value;
+    let provinceName = e.target.options[e.target.selectedIndex].getAttribute("name")
     setProvinceId(provinceId);
+    setProvinceName(provinceName)
   };
 
   useEffect(() => {
@@ -59,8 +148,17 @@ const Checkout = ({ products,totalAmountCart }) => {
 
   const handleDistrict = (e) => {
     let districtId = e.target.value;
+    let distrctName = e.target.options[e.target.selectedIndex].getAttribute("name")
+    setDistrictName(distrctName)
     setDistrictId(districtId);
   };
+
+  const handleWard = (e) =>{
+    let wardId = e.target.value
+    let wardName = e.target.options[e.target.selectedIndex].getAttribute("name")
+    setWardId(wardId)
+    setWardName(wardName)
+  }
 
   useEffect(() => {
     fetch(`https://vapi.vnappmob.com/api/province/ward/${districtId}`).then(
@@ -71,6 +169,11 @@ const Checkout = ({ products,totalAmountCart }) => {
     );
   }, [districtId]);
 
+  const onChange = (e) => {
+    console.log(e.target.name);
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
+  console.log(values.name_receiver);
   return (
     <>
       <div className="checkout-page">
@@ -133,7 +236,7 @@ const Checkout = ({ products,totalAmountCart }) => {
                               </p>
                             </div>
 
-                            <form onSubmit={handleSubmit(onSubmit)}>
+                            <form onSubmit={handleSubmit}>
                               {/* <div class="mb-3">
                                 <label
                                   for="exampleInputEmail1"
@@ -149,51 +252,17 @@ const Checkout = ({ products,totalAmountCart }) => {
                                   <option>Disabled select</option>
                                 </select>
                               </div> */}
-                              <div class="mb-3">
-                                <label
-                                  for="exampleInputPassword1"
-                                  class="form-label"
-                                >
-                                  FullName
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="exampleInputPassword1"
-                                  {...register("fullname")}
-                                  placeholder={customer?.fullName}
-                                />
-                              </div>
+                              {inputs.map((input) => {
+                                return (
+                                  <FormInput
+                                    key={input.id}
+                                    {...input}
+                                    value={values[input.name]}
+                                    onChange={onChange}
+                                  ></FormInput>
+                                );
+                              })}
 
-                              <div class="mb-3">
-                                <label
-                                  for="exampleInputPassword1"
-                                  class="form-label"
-                                >
-                                  Phone
-                                </label>
-                                <input
-                                  type="number"
-                                  class="form-control"
-                                  id="exampleInputPassword1"
-                                  {...register("phoneNumber")}
-                                  placeholder={customer?.phone}
-                                />
-                              </div>
-                              <div class="mb-3">
-                                <label
-                                  for="exampleInputPassword1"
-                                  class="form-label"
-                                >
-                                  Address
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="exampleInputPassword1"
-                                  {...register("address")}
-                                />
-                              </div>
                               <div class="mb-3 row">
                                 <div class="col-md-4">
                                   <label for="inputCity" class="form-label">
@@ -209,6 +278,7 @@ const Checkout = ({ products,totalAmountCart }) => {
                                       <option
                                         key={index}
                                         value={data.province_id}
+                                        name ={data.province_name}
                                       >
                                         {data.province_name}
                                       </option>
@@ -232,6 +302,7 @@ const Checkout = ({ products,totalAmountCart }) => {
                                         <option
                                           key={index}
                                           value={data.district_id}
+                                          name = {data.district_name}
                                         >
                                           {data.district_name}
                                         </option>
@@ -242,10 +313,10 @@ const Checkout = ({ products,totalAmountCart }) => {
                                   <label for="inputZip" class="form-label">
                                     Phuong / Xa
                                   </label>
-                                  <select id="inputState" class="form-select">
+                                  <select id="inputState" class="form-select" onChange={(e)=>handleWard(e)}>
                                     <option selected>Choose...</option>
                                     {wards?.map((data, index) => (
-                                      <option key={index}>
+                                      <option key={index} value={data.ward_id} name={data.ward_name}>
                                         {data.ward_name}
                                       </option>
                                     ))}
@@ -253,21 +324,8 @@ const Checkout = ({ products,totalAmountCart }) => {
                                 </div>
                               </div>
 
-                              <div class="mb-3 form-check">
-                                <input
-                                  type="checkbox"
-                                  class="form-check-input"
-                                  id="exampleCheck1"
-                                />
-                                <label
-                                  class="form-check-label"
-                                  for="exampleCheck1"
-                                >
-                                  Check me out
-                                </label>
-                              </div>
                               <button type="submit" class="btn btn-primary">
-                                Submit
+                                Hoàn tất đơn hàng
                               </button>
                             </form>
                           </div>
@@ -340,37 +398,31 @@ const Checkout = ({ products,totalAmountCart }) => {
                         </td>
                       </tr>
                     ))}
-                    <hr/>
+                    <hr />
                     <tr
-                        class="product row mb-4"
-                        scope="row"
-                        data-product-id="1046555400"
-                        data-variant-id="1105003741"
-                      >
-                        <td class="product-image col-lg-3 d-flex justify-content-center">
-                          <div class="total-summary">
-                            Tong tien
-                          </div>
-                        </td>
-                        <td class="product-description col-lg-6">
-                         
-                        </td>
+                      class="product row mb-4"
+                      scope="row"
+                      data-product-id="1046555400"
+                      data-variant-id="1105003741"
+                    >
+                      <td class="product-image col-lg-3 d-flex justify-content-center">
+                        <div class="total-summary">Tổng tiền</div>
+                      </td>
+                      <td class="product-description col-lg-6"></td>
 
-                        <td class="product-price col-lg-3">
-                          <span class="order-summary">
-                            <FormattedNumber
-                              value={totalAmountCart}
-                              style="currency"
-                              currency="VND"
-                              minimumFractionDigits={0}
-                            />
-                            
-                          </span>
-                        </td>
-                      </tr>
-
+                      <td class="product-price col-lg-3">
+                        <span class="order-summary">
+                          <FormattedNumber
+                            value={totalAmountCart}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                          {/* <div>test</div> */}
+                        </span>
+                      </td>
+                    </tr>
                   </tbody>
-                  
                 </table>
               </div>
             </div>
