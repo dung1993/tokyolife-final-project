@@ -11,8 +11,9 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   const [customerId, setCustomerId] = useState();
   const [check, setCheck] = useState(0);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [totalAmountItem,setTotalAmountItem] = useState();
   useEffect(() => {
-    if(customerId!=null){
+    if (customerId != null) {
       fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
         async (response) => {
           let products = await response.json();
@@ -27,11 +28,16 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
           setTotalAmountCartNoDiscount(totalCarNoDiscount);
         }
       );
+    } else {
+      let products = JSON.parse(localStorage.getItem("cartStore"));
+      setProducts(products);
+      let totalCarNoDiscount = 0;
+
+      products?.map((item) => {
+        totalCarNoDiscount += item.price * item.quantity;
+      });
+      setTotalAmountCartNoDiscount(totalAmountCartNoDiscount);
     }
-    else{
-      alert('here')
-    }
-    
   }, [customerId, check]);
 
   useEffect(() => {
@@ -40,80 +46,132 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
     }
   }, [products]);
 
-
   const handleRemoveItem = (id, index) => {
-    console.log("id cart dt" + id);
-    const updatedProducts = [...products];
-    updatedProducts.splice(index, 1);
-    fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then(async (response) => {
-      let result = await response.json();
-      setTotalAmountCart(result.totalAmountCart);
-      enqueueSnackbar("Remove item successfully.", {
-        variant: "success",
+    if (id && customerId) {
+      fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(async (response) => {
+        let result = await response.json();
+        setTotalAmountCart(result.totalAmountCart);
+        enqueueSnackbar("Remove item successfully.", {
+          variant: "success",
+        });
       });
-    });
-    setProducts(updatedProducts);
+    } else {
+      //remove from local
+      let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+      const updateCartStore = [...cartStore];
+      updateCartStore.splice(index, 1);
+      localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+      setProducts(updateCartStore);
+    }
   };
 
   useEffect(() => {
     if (products) {
       let totalCarNoDiscount = 0;
+      let totalCartDiscount = 0;
       products.map((item) => {
+        totalCartDiscount +=
+          item.price * item.quantity -
+          (item.price * item.quantity * item.discount) / 100;
         totalCarNoDiscount += item.price * item.quantity;
       });
       setTotalAmountCartNoDiscount(totalCarNoDiscount);
+      setTotalAmountCart(totalCartDiscount);
     }
   }, [products]);
 
-  const handleIncreaseQuantity = (id, index) => {
+  const handleIncreaseQuantity = (id, index, price) => {
     let inputQuantity = document.getElementById(`${id}`);
     let increaseQuantity = parseInt(inputQuantity.value);
     increaseQuantity += 1;
-    fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(increaseQuantity),
-    }).then(e =>  setCheck(check + 1))
-   
+    inputQuantity.value = increaseQuantity;
+
+    if (customerId) {
+      fetch(
+        `http://localhost:8086/api/carts/cart-details/${customerId}/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(increaseQuantity),
+        }
+      ).then((e) => setCheck(check + 1));
+    } else {
+      let result = document.getElementById(`totalAmount${id}`);
+      result.innerText = increaseQuantity * price;
+     
+      
+      let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+      const updateCartStore = cartStore.map((item) =>
+        item.id == id ? { ...item, quantity: increaseQuantity } : item
+      );
+      localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+      setCheck(check + 1);
+    }
   };
 
-  const handleDecreaseQuantity = (id, index) => {
-    
+  const handleDecreaseQuantity = (id, index, price) => {
     let inputQuantity = document.getElementById(`${id}`);
     let decreaseQuantity = parseInt(inputQuantity.value);
     decreaseQuantity -= 1;
+    inputQuantity.value = decreaseQuantity;
     if (decreaseQuantity > 0) {
-      fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(decreaseQuantity),
-      }).then((e)=>setCheck(check + 1));
-      
+      if (customerId) {
+        fetch(
+          `http://localhost:8086/api/carts/cart-details/${customerId}/${id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(decreaseQuantity),
+          }
+        ).then((e) => setCheck(check + 1));
+      } else {
+        let result = document.getElementById(`totalAmount${id}`);
+        result.innerText = decreaseQuantity * price;
+        let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+        const updateCartStore = cartStore.map((item) =>
+          item.id == id ? { ...item, quantity: decreaseQuantity } : item
+        );
+        localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+        setCheck(check + 1);
+      }
     } else inputQuantity.value = 1;
   };
 
-  const handleInputQuantity = (e,id,index) =>{
-    let quantity = e.target.value
-    
-    fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(quantity),
-      }).then((e)=>setCheck(check + 1));
-  }
+  const handleInputQuantity = (e, id, index, price) => {
+    let quantity = e.target.value;
+    if (customerId) {
+      fetch(
+        `http://localhost:8086/api/carts/cart-details/${customerId}/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(quantity),
+        }
+      ).then((e) => setCheck(check + 1));
+    } else {
+      let result = document.getElementById(`totalAmount${id}`);
+      let total = quantity * price;
+      result.innerText = total;
 
-
+      let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+        const updateCartStore = cartStore.map((item) =>
+          item.id == id ? { ...item, quantity: quantity } : item
+        );
+        localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+        setCheck(check + 1);
+    }
+  };
 
   return (
     <>
@@ -199,13 +257,25 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                 </div>
                                 <div className="media-total">
                                   <div class="item-total-price">
-                                    <span class="line-item-total">
-                                      <FormattedNumber
-                                        value={data.totalAmountItem}
+                                    <span
+                                      class="line-item-total"
+                                      id={"totalAmount" + data.id}
+                                    >
+                                      {data.totalAmountItem && (
+                                        <FormattedNumber
+                                          value={data.totalAmountItem}
+                                          style="currency"
+                                          currency="VND"
+                                          minimumFractionDigits={0}
+                                        />
+                                      )}
+                                      {/* <FormattedNumber
+                                        value={data.totalAmountItemNoAccount}
                                         style="currency"
                                         currency="VND"
                                         minimumFractionDigits={0}
-                                      />
+                                      /> */}
+                                      {data.totalAmountItemNoAccount}
                                     </span>
                                   </div>
                                   <div className="item-quantity">
@@ -213,7 +283,13 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                       <button
                                         type="button"
                                         class="qtyminus qty-btn"
-                                        onClick={()=>handleDecreaseQuantity(data.id,index)}
+                                        onClick={() =>
+                                          handleDecreaseQuantity(
+                                            data.id,
+                                            index,
+                                            data.price
+                                          )
+                                        }
                                       >
                                         -
                                       </button>
@@ -222,18 +298,28 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                         size="4"
                                         name="updates[]"
                                         min="1"
-                                        productid="1046555400"
                                         id={data.id}
                                         data-price="29000000"
                                         value={data.quantity}
                                         class="tc line-item-qty item-quantity"
-                                        onChange={(e)=>handleInputQuantity(e,data.id,index)}
+                                        onChange={(e) =>
+                                          handleInputQuantity(
+                                            e,
+                                            data.id,
+                                            index,
+                                            data.price
+                                          )
+                                        }
                                       ></input>
                                       <button
                                         type="button"
                                         class="qtyplus qty-btn"
                                         onClick={() =>
-                                          handleIncreaseQuantity(data.id, index)
+                                          handleIncreaseQuantity(
+                                            data.id,
+                                            index,
+                                            data.price
+                                          )
                                         }
                                       >
                                         +
@@ -291,13 +377,25 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                 </div>
                                 <div className="media-total">
                                   <div class="item-total-price">
-                                    <span class="line-item-total">
-                                      <FormattedNumber
-                                        value={data.totalAmountItem}
+                                    <span
+                                      class="line-item-total"
+                                      id={"totalAmount" + data.id}
+                                    >
+                                      {data.totalAmountItem && (
+                                        <FormattedNumber
+                                          value={data.totalAmountItem}
+                                          style="currency"
+                                          currency="VND"
+                                          minimumFractionDigits={0}
+                                        />
+                                      )}
+                                      {/* <FormattedNumber
+                                        value={data.totalAmountItemNoAccount}
                                         style="currency"
                                         currency="VND"
                                         minimumFractionDigits={0}
-                                      />
+                                      /> */}
+                                      {data.totalAmountItemNoAccount}
                                     </span>
                                   </div>
                                   <div className="item-quantity">
@@ -305,7 +403,13 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                       <button
                                         type="button"
                                         class="qtyminus qty-btn"
-                                        onClick={()=>handleDecreaseQuantity(data.id,index)}
+                                        onClick={() =>
+                                          handleDecreaseQuantity(
+                                            data.id,
+                                            index,
+                                            data.price
+                                          )
+                                        }
                                       >
                                         -
                                       </button>
@@ -314,18 +418,28 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                         size="4"
                                         name="updates[]"
                                         min="1"
-                                        productid="1046555400"
                                         id={data.id}
                                         data-price="29000000"
                                         value={data.quantity}
                                         class="tc line-item-qty item-quantity"
-                                        onChange={(e)=>handleInputQuantity(e,data.id,index)}
+                                        onChange={(e) =>
+                                          handleInputQuantity(
+                                            e,
+                                            data.id,
+                                            index,
+                                            data.price
+                                          )
+                                        }
                                       ></input>
                                       <button
                                         type="button"
                                         class="qtyplus qty-btn"
                                         onClick={() =>
-                                          handleIncreaseQuantity(data.id, index)
+                                          handleIncreaseQuantity(
+                                            data.id,
+                                            index,
+                                            data.price
+                                          )
                                         }
                                       >
                                         +
@@ -378,6 +492,14 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                     <p className="total-amount">
                       Tổng tiền:{" "}
                       <span class="total-final">
+                        {products && customerId && (
+                          <FormattedNumber
+                            value={totalAmountCart}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                        )}
                         {products && (
                           <FormattedNumber
                             value={totalAmountCart}
