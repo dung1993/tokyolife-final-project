@@ -1,5 +1,6 @@
 .border-filter {
     position: relative;
+    background: #fff;
 }
 
 .filter-checkbox {
@@ -27,9 +28,8 @@
     display: block !important;
 }
 
-.border-filter ul li:hover {
-    background: #c92027;
-    color: #fff;
+.border-filter ul li:hover label {
+    cursor: pointer;
 }
 
 .border-filter .fil-title {
@@ -44,3 +44,27 @@
 input {
     -webkit-appearance: checkbox !important;
 }
+
+.top-category #sort {
+    border: 1px solid;
+    padding: 5px 10px;
+    width: 230px;
+    border-radius: 5px;
+}
+
+.list-tags .filter-tag {
+    border: 1px solid;
+    background: #ffffff;
+    border-radius: 10px;
+    font-size: 15px;
+    padding: 5px;
+}
+
+/* .fil-color {
+    width: 230px;
+    font-size: 0px;
+} */
+
+/* .fil-color li {
+    padding: 0 !important;
+} */
