@@ -103,13 +103,11 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
         }
       ).then((e) => setCheck(check + 1));
     } else {
-      let result = document.getElementById(`totalAmount${id}`);
-      result.innerText = increaseQuantity * price;
-     
       
+      let totalAmountItem = increaseQuantity*price;
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
       const updateCartStore = cartStore.map((item) =>
-        item.id == id ? { ...item, quantity: increaseQuantity } : item
+        item.id == id ? { ...item, quantity: increaseQuantity, totalAmountItemNoAccount:totalAmountItem } : item
       );
       localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
       setCheck(check + 1);
@@ -134,11 +132,12 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
           }
         ).then((e) => setCheck(check + 1));
       } else {
-        let result = document.getElementById(`totalAmount${id}`);
-        result.innerText = decreaseQuantity * price;
+      
+
+        let totalAmountItem = decreaseQuantity * price
         let cartStore = JSON.parse(localStorage.getItem("cartStore"));
         const updateCartStore = cartStore.map((item) =>
-          item.id == id ? { ...item, quantity: decreaseQuantity } : item
+          item.id == id ? { ...item, quantity: decreaseQuantity, totalAmountItemNoAccount:totalAmountItem } : item
         );
         localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
         setCheck(check + 1);
@@ -160,13 +159,11 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
         }
       ).then((e) => setCheck(check + 1));
     } else {
-      let result = document.getElementById(`totalAmount${id}`);
-      let total = quantity * price;
-      result.innerText = total;
-
+      
+      let totalAmount = quantity * price;
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
         const updateCartStore = cartStore.map((item) =>
-          item.id == id ? { ...item, quantity: quantity } : item
+          item.id == id ? { ...item, quantity: quantity, totalAmountItemNoAccount: totalAmount } : item
         );
         localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
         setCheck(check + 1);
@@ -269,13 +266,12 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                           minimumFractionDigits={0}
                                         />
                                       )}
-                                      {/* <FormattedNumber
+                                      <FormattedNumber
                                         value={data.totalAmountItemNoAccount}
                                         style="currency"
                                         currency="VND"
                                         minimumFractionDigits={0}
-                                      /> */}
-                                      {data.totalAmountItemNoAccount}
+                                      />
                                     </span>
                                   </div>
                                   <div className="item-quantity">
@@ -389,13 +385,12 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                           minimumFractionDigits={0}
                                         />
                                       )}
-                                      {/* <FormattedNumber
+                                      <FormattedNumber
                                         value={data.totalAmountItemNoAccount}
                                         style="currency"
                                         currency="VND"
                                         minimumFractionDigits={0}
-                                      /> */}
-                                      {data.totalAmountItemNoAccount}
+                                      />
                                     </span>
                                   </div>
                                   <div className="item-quantity">
