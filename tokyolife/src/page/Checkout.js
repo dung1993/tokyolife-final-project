@@ -19,8 +19,9 @@ const Checkout = () => {
   const [wardName, setWardName] = useState()
   const [customer, setCustomer] = useState();
   const [totalAmountCart, setTotalAmountCart] = useState();
-  const [customerId, setCustomerId] = useState(1)
+  const [customerId, setCustomerId] = useState(0)
   const [cartId, setCartId] = useState();
+  const [check,setCheck] = useState(1);
   const [values, setValues] = useState({
     name_receiver: "",
     phone_receiver: "",
@@ -91,29 +92,47 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
-      async (data) => {
-        let products = await data.json();
-        setProducts(products);
-      }
-    );
-  }, customerId);
+    if(customerId){
+      fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
+        async (data) => {
+          let products = await data.json();
+          setProducts(products);
+        }
+      );
+    }
+    else {
+      let products = JSON.parse(localStorage.getItem("cartStore"))
+      setProducts(products)
+      let totalAmountCart = 0
+      products.map((item)=>{
+        totalAmountCart += item.totalAmountItemNoAccount
+      })
+      setTotalAmountCart(totalAmountCart)
+    }
+    
+  }, [customerId]);
 
   useEffect(() => {
-    fetch(`http://localhost:8086/api/carts/amount/1`).then(async (data) => {
-      let cart = await data.json();
-      setTotalAmountCart(cart.totalAmountCart);
-      setCartId(cart.id)
-    });
-  }, []);
+    if(customerId){
+      fetch(`http://localhost:8086/api/carts/amount/${customerId}`).then(async (data) => {
+        let cart = await data.json();
+        setTotalAmountCart(cart.totalAmountCart);
+        setCartId(cart.id)
+      });
+    }
+    
+  },customerId);
 
   useEffect(() => {
-    fetch(`http://localhost:8086/api/carts/customer/${customerId}`).then(
-      async (response) => {
-        let customer = await response.json();
-        setCustomer(customer);
-      }
-    );
+    if(customerId){
+      fetch(`http://localhost:8086/api/carts/customer/${customerId}`).then(
+        async (response) => {
+          let customer = await response.json();
+          setCustomer(customer);
+        }
+      );
+    }
+    
   }, customerId);
 
   useEffect(() => {
@@ -227,13 +246,22 @@ const Checkout = () => {
                                   }}
                                 ></div>
                               </div>
-                              <p className="logged-in-customer-information-paragraph">
+                              {
+        
+                                customerId ? (<p className="logged-in-customer-information-paragraph">
                                 {customer?.fullName} ({customer?.email})
                                 <br />
                                 <a href="/account/logout?return_url=%2Fcheckouts%2Fad9e7dfa23044ffeabbee02030f84bc2%3Fstep%3D1">
                                   Đăng xuất
                                 </a>
-                              </p>
+                              </p>):
+                              <p className="logged-in-customer-information-paragraph">
+                              Bạn đã có tài khoản? Đăng nhập
+                              <br />
+                              
+                            </p>
+                              }
+                              
                             </div>
 
                             <form onSubmit={handleSubmit}>
@@ -389,7 +417,7 @@ const Checkout = () => {
                         <td class="product-price col-lg-3">
                           <span class="order-summary-emphasis">
                             <FormattedNumber
-                              value={data.totalAmountItem}
+                              value={data.totalAmountItemNoAccount}
                               style="currency"
                               currency="VND"
                               minimumFractionDigits={0}

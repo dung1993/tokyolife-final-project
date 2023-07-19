@@ -36,7 +36,7 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
       products?.map((item) => {
         totalCarNoDiscount += item.price * item.quantity;
       });
-      setTotalAmountCartNoDiscount(totalAmountCartNoDiscount);
+      setTotalAmountCartNoDiscount(totalCarNoDiscount);
     }
   }, [customerId, check]);
 
