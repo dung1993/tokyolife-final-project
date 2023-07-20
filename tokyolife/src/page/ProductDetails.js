@@ -16,12 +16,12 @@ Fancybox.bind('[data-fancybox="gallery"]', {
 const ProductDetails = ({ setCartDetail }) => {
   const { productId, categoryId } = useParams();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const [noAccountCart, setNoAccountCart] = useState([]);
-  
+  const [noAccountCart, setNoAccountCart] = useState();
+  const [customerId, setCustomerId] = useState();
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const [discountAmount, setDiscountAmount] = useState();
-  
+
   const settings = {
     dots: true,
     infinite: true,
@@ -229,39 +229,60 @@ const ProductDetails = ({ setCartDetail }) => {
       enqueueSnackbar("Size is required", { variant: "error" });
       return;
     }
-
-    setCart((prevCart) => ({
-      ...prevCart,
-      customerId: 1,
-      productId: product.id,
-      status: "ISCART",
-      price: product.price,
-      size: size,
-      quantity: quantity,
-      color: color,
-    }));
-
-    setNoAccountCart((noAccountCart) => ({
-      ...noAccountCart,
-      productId: product.id,
-      status: "ISCART",
-      price: product.price,
-      size: size,
-      quantity: quantity,
-      color: color,
-    }));
-    let storedNoAccountCart = JSON.parse(localStorage.getItem("cartNoAccount"));
-    if (!Array.isArray(storedNoAccountCart)) {
-      storedNoAccountCart = [];
+    if (customerId) {
+      setCart((prevCart) => ({
+        ...prevCart,
+        customerId: customerId,
+        productId: product.id,
+        status: "ISCART",
+        price: product.price,
+        size: size,
+        quantity: quantity,
+        color: color,
+      }));
+    } else {
+      let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+      
+      if (!Array.isArray(cartStore)) {
+        cartStore = [];
+      }
+      const newCartItem = {
+        id: product.id,
+        status: "ISCART",
+        price: product.price,
+        size: size,
+        quantity: quantity,
+        color: color,
+        avt: product.images[0].fileUrl,
+        discount: product.discount,
+        totalAmountItemNoAccount: product.price * quantity,
+      };
+      const isDuplicateItem = cartStore.find(
+        (item) =>
+          item.color === newCartItem.color &&
+          item.size === newCartItem.size &&
+          item.id === newCartItem.id
+      );
+      if (isDuplicateItem) {
+        isDuplicateItem.quantity =
+          isDuplicateItem.quantity + newCartItem.quantity;
+        console.log("test" + JSON.stringify(isDuplicateItem));
+      } else {
+        cartStore.push(newCartItem)
+        
+      }
+      setNoAccountCart(cartStore);
+        localStorage.setItem("cartStore", JSON.stringify(cartStore));
+        enqueueSnackbar("Successfully done the operation.", {
+          variant: "success",
+        });
     }
-    const updatedStore = [...storedNoAccountCart, noAccountCart];
-    localStorage.setItem("cartNoAccount", JSON.stringify(updatedStore));
+
     setCheckCart(true);
   };
 
-
   useEffect(() => {
-    if (checkCart) {
+    if (checkCart && customerId) {
       fetch("http://localhost:8086/api/carts/add", {
         headers: {
           Accept: "application/json",
@@ -276,11 +297,10 @@ const ProductDetails = ({ setCartDetail }) => {
           variant: "success",
         });
       });
-      
+    } else {
+      console.log("no account" + noAccountCart);
     }
   }, [cart]);
-
-  
 
   return (
     <>
