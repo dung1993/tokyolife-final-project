@@ -1,11 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row } from "react-bootstrap";
 import ProductsListFilter from "../component/UI/ProductListFilter";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import Products from "../assets/data/Products";
-import { useState } from "react";
-
 
 const Search = () => {
     const { keyword } = useParams();
@@ -13,36 +10,52 @@ const Search = () => {
     const [state, setState] = useState({
         keyword: keyword,
         products: [],
-        totalPage: [],
+        pageCount: 1,
         currentPage: 0,
         pageSize: 20,
     });
 
+    const getData = async (keyword, page) => {
+        try {
+            let objSearch = {
+                keyword,
+                pagesize: state.pageSize,
+                page: page - 1,
+            };
+            console.log("objSearch", objSearch);
+            let productsRes = await Products.getProductWithSearch(objSearch);
+            console.log(productsRes.data);
+            setState({
+                ...state,
+                products: productsRes.data.products || [],
+                pageCount: productsRes.data.totalPages,
+            });
+        } catch (error) { }
+    };
+
     useEffect(() => {
-        async function getData(keyword, page) {
-            try {
-                let productsRes = await Products.getProductWithSearch({
-                    keyword,
-                    pagesize: 20,
-                    page,
-                });
-                setState({
-                    ...state,
-                    products: productsRes.data.products || [],
-                    pageCount: Math.ceil(productsRes.data.total / 20),
-                });
-            } catch (error) { }
-        }
-        getData(keyword, 0);
+        console.log(pageCount);
+
+    }, [state.pageCount])
+
+    useEffect(() => {
+        getData(keyword, state.currentPage);
     }, [keyword]);
 
     const { products, currentPage, pageCount } = state;
 
     const handlePageClick = (page) => {
-        setState({ ...state, currentPage: page });
+        setState({
+            ...state,
+            currentPage: page,
+        });
+        getData(keyword, page);
     };
 
     const renderPageNumbers = () => {
+        if (pageCount === 1) {
+            return null;
+        }
         const pageNumbers = [];
         for (let i = 1; i <= pageCount; i++) {
             pageNumbers.push(i);
@@ -52,9 +65,14 @@ const Search = () => {
                 {pageNumbers.map((number) => (
                     <li
                         key={number}
-                        className={number === currentPage ? 'page-item active' : 'page-item'}
+                        className={
+                            number === currentPage ? "page-item active" : "page-item"
+                        }
                     >
-                        <button className="page-link" onClick={() => handlePageClick(number)}>
+                        <button
+                            className="page-link"
+                            onClick={() => handlePageClick(number)}
+                        >
                             {number}
                         </button>
                     </li>
@@ -63,10 +81,12 @@ const Search = () => {
         );
     };
 
+
+
     return (
         <>
             <Container>
-                <section className="search_title" style={{ paddingTop: '50px' }}>
+                <section className="search_title" style={{ paddingTop: "50px" }}>
                     <h1 className="text-center">Tìm Kiếm</h1>
                 </section>
                 <section className="product-list">
@@ -84,4 +104,4 @@ const Search = () => {
     );
 };
 
-export default Search
+export default Search;

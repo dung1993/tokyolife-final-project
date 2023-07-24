@@ -1,0 +1,51 @@
+.title-register {
+    padding: 15px 0;
+}
+
+.form-register {
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+.form-register .surName,
+.form-register .firstName,
+.form-register .dateOfBirth,
+.form-register .email,
+.form-register .phone,
+.form-register .password {
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 15px;
+    width: 560px;
+    margin-bottom: 15px;
+    background: #ededed;
+    display: flex;
+}
+
+.form-register .surName > input,
+.form-register .firstName > input,
+.form-register .dateOfBirth > input,
+.form-register .email > input,
+.form-register .phone > input,
+.form-register .password > input {
+    width: 100%;
+    outline: none;
+}
+
+.form-register .gender {
+    display: flex;
+    float: left !important;
+    width: 100%;
+    padding: 5px;
+}
+
+.form-register .btn-register {
+    border: 1px solid #000000;
+    background: #000000;
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
