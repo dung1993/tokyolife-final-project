@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Col } from "react-bootstrap";
+import React from "react";
 import Slider from "react-slick";
 import ProductCard from "./ProductCard.js";
 
 
-const ListBestSeller = ({ productsRes }) => {
+const ListBestSeller = ({ productsBestseller }) => {
 
+    console.log("aaaa", productsBestseller);
 
     const settings = {
         dots: false,
@@ -17,17 +17,16 @@ const ListBestSeller = ({ productsRes }) => {
 
     return (
         <div className="list-bestseller">
-            {
-                productsRes?.map(productsRes => productsRes.length > 0 ? <>
-                    <Slider {...settings}>
-                        {productsRes && productsRes?.map(product => <ProductCard key={Math.random() + "H123"} product={product} />)}
-                    </Slider>
+            <Slider key={Math.random() + "H123"} {...settings}>
+                {productsBestseller?.map(product => {
+                    return <ProductCard key={Math.random() + "H123"} product={product} />
+                })}
+            </Slider>
 
-                </> : <></>
 
-                )
 
-            }
+
+
         </div>
 
 

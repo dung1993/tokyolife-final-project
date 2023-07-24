@@ -8,7 +8,6 @@
 }
 
 .header-wrap-search {
-    margin-left: 180px;
     border: 1px solid gray;
     border-radius: 30px;
     padding: 5px 25px;
@@ -33,10 +32,34 @@ li.menu:hover li {
 .header-account {
     padding: 0 15px;
     cursor: pointer;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
+.header-action_text:hover > .customer-name div.mega-menu {
+    display: block;
+}
 .header-cart {
     position: relative;
+}
+
+.header-wrap-action {
+    height: 65px;
+    align-items: center;
+    display: flex;
+}
+
+.header-action {
+    height: 100%;
+    align-items: center;
+    display: flex;
+}
+
+.header-action_text {
+    height: 100%;
+    align-items: center;
+    display: flex;
 }
 
 .cart-icon {
@@ -81,7 +104,9 @@ li.menu:hover li {
 .mega-menu > a > ul:hover {
     background: #444444;
     color: #fff;
-    transition: all 0, 2s;
+    transition:
+        all 0,
+        2s;
     cursor: pointer;
 }
 

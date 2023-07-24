@@ -22,7 +22,25 @@ const Header = ({ cartDetail }) => {
 
     const toggleAuth = () => setIsOpenAuth(!isOpenAuth);
 
-    const toggleCart = () => setIsOpenCart(!isOpenCart)
+    const toggleCart = () => setIsOpenCart(!isOpenCart);
+
+    const [isLoggedIn, setIsLoggedIn] = useState(() => {
+        return document.cookie;
+    });
+
+    const dataUser = JSON.parse(localStorage.getItem('user'));
+    console.log(dataUser);
+
+    function handleLoginSuccess() {
+        setIsLoggedIn(true);
+        setIsOpenAuth(false);
+
+    }
+
+    function handleLogout() {
+        setIsLoggedIn(false);
+        window.location.href = "/";
+    }
 
     const [state, setState] = useState({
         categories: [],
@@ -79,24 +97,39 @@ const Header = ({ cartDetail }) => {
                         </ul>
                     </div>
 
-                    <div className="header-wrap-search w-auto" onClick={() => {
+                    {isLoggedIn ? (<div className="header-wrap-search w-auto" style={{ marginLeft: "125px" }} onClick={() => {
                         setIsOpenSearch(true)
                     }}>
                         <i className='fa fa-search'></i>
-                    </div>
+                    </div>)
+                        : (<div className="header-wrap-search w-auto" style={{ marginLeft: "180px" }} onClick={() => {
+                            setIsOpenSearch(true)
+                        }}>
+                            <i className='fa fa-search'></i>
+                        </div>)}
+
                     <div className='header-wrap-action w-auto'>
                         <div className="header-action d-flex">
                             <div className="header-item-action header-account">
                                 <div className="header-action_text">
-                                    <div title='Tài khoản' className="header-action_link header-action_click d-flex flex-column"
-                                        aria-label='Tài khoản'
-                                        style={{ textDecoration: "none" }}
-                                        onClick={() => {
-                                            setIsOpenAuth(true)
-                                        }}>
-                                        <i className='fa-regular fa-user d-flex justify-content-center'></i>
-                                        <span className='box-text text-dark'>Tài khoản</span>
-                                    </div>
+                                    {isLoggedIn ? (
+                                        <div className='customer-name'>
+                                            <p style={{ margin: "0", textAlign: "center" }}>Tài khoản</p>
+                                            <Link to="/account" state={dataUser.data.username}><div className="customer-name">{dataUser.data.name}</div></Link>
+                                            <div className='mega-menu' style={{ width: "140px", borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px" }}>
+                                                <ul style={{ padding: "5px" }} onClick={handleLogout}>Đăng xuất</ul>
+                                            </div>
+                                        </div>)
+                                        : (<div title="Tài khoản"
+                                            className="header-action_link header-action_click d-flex flex-column"
+                                            aria-label="Tài khoản"
+                                            style={{ textDecoration: "none" }}
+                                            onClick={() => { setIsOpenAuth(true); }} >
+                                            <i className="fa-regular fa-user d-flex justify-content-center"></i>
+                                            <span className="box-text text-dark">Tài khoản</span>
+                                        </div>)
+                                    }
+                                    {isOpenAuth && (<Auth isOpen={isOpenAuth} toggle={() => setIsOpenAuth(false)} onLoginSuccess={handleLoginSuccess} />)}
                                 </div>
                                 <div className="header-action_dropdown"></div>
                             </div>

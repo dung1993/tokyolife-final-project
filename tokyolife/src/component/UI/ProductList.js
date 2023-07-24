@@ -6,6 +6,7 @@ import ProductCard from "./ProductCard.js";
 
 const ProductList = ({ listProductAllRender }) => {
 
+
   const [state, setState] = useState({
     products: [],
   })
@@ -26,7 +27,7 @@ const ProductList = ({ listProductAllRender }) => {
   return (
     <div className="category-event">
       {
-        listProductAllRender?.map(products => products.length > 0 ? <>
+        listProductAllRender?.map(products => products.length > 4 ? <>
           <img src={products[0]?.category?.avatar} alt="" style={{ width: "100%", height: "250px" }} />
           <Col lg='12' md='12'>
             <h2 className="section__title mt-2">{products[0]?.category?.name}</h2>

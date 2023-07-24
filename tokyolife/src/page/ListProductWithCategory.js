@@ -23,7 +23,7 @@ const ListProductWithCategory = () => {
     const [state, setState] = useState({
         categoriesRes: [],
         products: [],
-        productsRes: [],
+        productsBestseller: [],
         category: [],
         colors: [],
         sizes: [],
@@ -32,6 +32,7 @@ const ListProductWithCategory = () => {
         sizeArr: [],
         sort: "",
     })
+    const [bestSeller, setBestSeller] = useState([]);
 
     const params = useLocation().state;
 
@@ -139,7 +140,6 @@ const ListProductWithCategory = () => {
                     ...state,
                     categoriesRes: categoriesRes.data,
                     products: productsRes.data,
-                    productsRender: productsRes.data,
                     category: categoryRes.data,
                     colors: colorsRes.data,
                     sizes: sizesRes.data,
@@ -185,21 +185,28 @@ const ListProductWithCategory = () => {
     useEffect(() => {
         Products.getAllProductFilter({
             id: params.id,
-            minMax: state.priceArr,
-            colors: state.colorArr,
-            sizes: state.sizeArr,
+            minMax: [],
+            colors: [],
+            sizes: [],
             sort: "bestseller"
         }).then(e => {
+            console.log("getAllProductFilter.....", e.data);
+            setBestSeller([...e.data])
             setState({
                 ...state,
-                productsRes: e.data
+                productsBestseller: e.data
 
             })
         })
     }, [])
 
-    const { products, productsRes, category, priceArr, colorArr, sizeArr, colors, sizes } = state
 
+
+    // useEffect(() => {
+    //     console.log(state.productsBestseller);
+    // }, [state.productsBestseller]);
+
+    const { products, category, priceArr, colorArr, sizeArr, colors, sizes } = state
 
     return <>
         <Container>
@@ -368,9 +375,7 @@ const ListProductWithCategory = () => {
                 <Container>
                     <h5 style={{ margin: 0, padding: '10px', alignItems: 'center', display: 'flex', background: '#ffffff', borderRadius: '5px' }}>SẢN PHẨM BÁN CHẠY NHẤT</h5>
                     <Row>
-                        <ListBestSeller
-                            productsRes={productsRes}
-                        />
+                        <ListBestSeller productsBestseller={bestSeller} />
                     </Row>
                 </Container>
             </section>
