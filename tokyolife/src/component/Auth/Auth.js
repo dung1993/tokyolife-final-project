@@ -66,7 +66,7 @@ const Auth = ({ isOpen, toggle, onLoginSuccess }) => {
                         <button type="submit" className="form-submit btn btn-dark">Đăng Nhập</button>
                     </form>
 
-                    <div className="wrap-social-login-plus">
+                    {/* <div className="wrap-social-login-plus">
                         <button className="btn-login-plus btn-google-login" id="btn-google-login-styled" >
                             <i className="fa-brands fa-google-plus-g me-1"></i>
                             <p>Đăng nhập Google</p>
@@ -75,7 +75,7 @@ const Auth = ({ isOpen, toggle, onLoginSuccess }) => {
                             <i class="fa-brands fa-facebook-f me-2"></i>
                             <p>Đăng nhập facebook</p>
                         </button>
-                    </div>
+                    </div> */}
                     <div className="additional-options">
                         <Link to={`/register`}><div className="d-flex">Khách hàng mới? Tạo tài khoản</div></Link>
                         <Link to={`/forgot-password`}><div>Quên mật khẩu? Khôi phục mật khẩu</div></Link>
