@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import CustomerService from "../assets/data/CustomerService";
 import { useState } from "react";
-import Cookies from "js-cookie";
 
 const Account = () => {
 
@@ -27,11 +26,27 @@ const Account = () => {
     const navigate = useNavigate();
 
     function handleClick() {
-        Cookies.remove("user");
-
+        // deleteJwtFromCookie();
         // Chuyển hướng đến trang chủ
         navigate("/");
+
     }
+
+    // function deleteJwtFromCookie() {
+    //     const name = 'JWT='
+    //     const decodedCookie = decodeURIComponent(document.cookie)
+    //     const cookieArray = decodedCookie.split(';')
+
+    //     for (let i = 0; i < cookieArray.length; i++) {
+    //         let cookie = cookieArray[i]
+    //         while (cookie.charAt(0) === ' ') {
+    //             cookie = cookie.substring(1)
+    //         }
+    //         if (cookie.indexOf(name) === 0) {
+    //             document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;'
+    //         }
+    //     }
+    // }
 
     useEffect(() => {
         try {
@@ -58,20 +73,25 @@ const Account = () => {
     return (
         <>
             <Container>
-                <h3>Tài Khoản Của Bạn</h3>
+                <h3 style={{ background: "#ffffff", padding: "30px 15px" }}>Tài Khoản Của Quý Khách</h3>
                 <Row>
                     <Col lg="3" md="3">
-                        <Link to={"/account"}><div className="account-folow">Thông tin tài khoản</div></Link>
-                        <div className="exit-account" onClick={handleClick}>
-                            Đăng xuất
+                        <div className="left-bar" style={{ background: "#ffffff", padding: "15px" }}>
+                            <Link to={"/account"}><div className="account-folow">Thông tin tài khoản</div></Link>
+                            <div className="to-home-page" onClick={handleClick}>
+                                Trở về trang Home
+                            </div>
                         </div>
+
                     </Col>
                     <Col lg="9" md="9">
-                        <h5>Thông tin tài khoản</h5>
-                        <div className="account-name">{state.fullName}</div>
-                        <div className="account-email">{state.email}</div>
-                        <div className="account-phone">{state.phone}</div>
-                        <div className="account-dateOfBirth">{state.dateOfBirth}</div>
+                        <div className="customer-information" style={{ background: "#ffffff", padding: "15px" }}>
+                            <h5>Thông tin khách hàng</h5>
+                            <div className="account-name">{state.fullName}</div>
+                            <div className="account-email">{state.email}</div>
+                            <div className="account-phone">{state.phone}</div>
+                            <div className="account-dateOfBirth">{state.dateOfBirth}</div>
+                        </div>
                     </Col>
                 </Row>
             </Container>

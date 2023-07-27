@@ -40,6 +40,23 @@ const Header = ({ cartDetail }) => {
     function handleLogout() {
         setIsLoggedIn(false);
         window.location.href = "/";
+        deleteJwtFromCookie();
+    }
+
+    function deleteJwtFromCookie() {
+        const name = 'JWT='
+        const decodedCookie = decodeURIComponent(document.cookie)
+        const cookieArray = decodedCookie.split(';')
+
+        for (let i = 0; i < cookieArray.length; i++) {
+            let cookie = cookieArray[i]
+            while (cookie.charAt(0) === ' ') {
+                cookie = cookie.substring(1)
+            }
+            if (cookie.indexOf(name) === 0) {
+                document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;'
+            }
+        }
     }
 
     const [state, setState] = useState({

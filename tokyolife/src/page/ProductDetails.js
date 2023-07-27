@@ -7,7 +7,8 @@ import "../component/Style/product-details.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FormattedNumber } from "react-intl";
-import { Link, json, useParams } from "react-router-dom";
+import { Link, json, useLocation, useParams } from "react-router-dom";
+import CustomerService from "../assets/data/CustomerService";
 import { useSnackbar } from "notistack";
 
 Fancybox.bind('[data-fancybox="gallery"]', {
@@ -15,13 +16,25 @@ Fancybox.bind('[data-fancybox="gallery"]', {
 });
 const ProductDetails = ({ setCartDetail }) => {
   const { productId, categoryId } = useParams();
+  const { username } = useParams();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [noAccountCart, setNoAccountCart] = useState([]);
-  
+
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const [discountAmount, setDiscountAmount] = useState();
-  
+
+  const params = useLocation().state
+
+  useEffect(() => {
+    console.log(params);
+  })
+
+  const [state, setState] = useState({
+    customerRes: {},
+    customerId: '',
+  })
+
   const settings = {
     dots: true,
     infinite: true,
@@ -49,6 +62,25 @@ const ProductDetails = ({ setCartDetail }) => {
   //khai bao phia ngoai route
 
   const [visitedproducts, setVisitedproducts] = useState([]);
+
+  useEffect(() => {
+    try {
+      async function getData(username) {
+        let customerRes = await CustomerService.getCustomerByUserName(username);
+        setState({
+          ...state,
+          customerId: customerRes.data.id
+        })
+      }
+      getData(params.username)
+    } catch (error) {
+
+    }
+  }, [params])
+
+  useEffect(() => {
+    console.log(params.username);
+  }, [params])
 
   useEffect(() => {
     try {
@@ -232,7 +264,8 @@ const ProductDetails = ({ setCartDetail }) => {
 
     setCart((prevCart) => ({
       ...prevCart,
-      customerId: 1,
+      idCart: params.idCart,
+      username: state.username,
       productId: product.id,
       status: "ISCART",
       price: product.price,
@@ -243,6 +276,8 @@ const ProductDetails = ({ setCartDetail }) => {
 
     setNoAccountCart((noAccountCart) => ({
       ...noAccountCart,
+      idCart: '',
+      username: '',
       productId: product.id,
       status: "ISCART",
       price: product.price,
@@ -271,16 +306,16 @@ const ProductDetails = ({ setCartDetail }) => {
         body: JSON.stringify(cart),
       }).then(async (response) => {
         let result = await response.json();
-        setCartDetail(result);
+        console.log(result);
         enqueueSnackbar("Successfully done the operation.", {
           variant: "success",
         });
       });
-      
+
     }
   }, [cart]);
 
-  
+
 
   return (
     <>
@@ -545,38 +580,38 @@ const ProductDetails = ({ setCartDetail }) => {
                     <Slider {...silder}>
                       {visitedproducts.length > 0
                         ? visitedproducts?.map((data, index) => {
-                            return (
-                              <div key={index} className="related-product">
-                                <div className="related-product-slide">
-                                  <Link to={`/productdetails/${data?.id}`}>
-                                    <img
-                                      src={data?.urlImage}
-                                      style={{ width: "200px" }}
-                                    />
-                                  </Link>
+                          return (
+                            <div key={index} className="related-product">
+                              <div className="related-product-slide">
+                                <Link to={`/productdetails/${data?.id}`}>
+                                  <img
+                                    src={data?.urlImage}
+                                    style={{ width: "200px" }}
+                                  />
+                                </Link>
 
-                                  <div className="d-flex justify-content-center">
-                                    <span>{data?.title}</span>
-                                  </div>
-                                  <div className="d-flex justify-content-center">
-                                    <span
-                                      style={{
-                                        color: "red",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      <FormattedNumber
-                                        value={data?.price}
-                                        style="currency"
-                                        currency="VND"
-                                        minimumFractionDigits={0}
-                                      />
-                                    </span>
-                                  </div>
+                                <div className="d-flex justify-content-center">
+                                  <span>{data?.title}</span>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                  <span
+                                    style={{
+                                      color: "red",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    <FormattedNumber
+                                      value={data?.price}
+                                      style="currency"
+                                      currency="VND"
+                                      minimumFractionDigits={0}
+                                    />
+                                  </span>
                                 </div>
                               </div>
-                            );
-                          })
+                            </div>
+                          );
+                        })
                         : null}
                     </Slider>
                   </Col>
