@@ -11,16 +11,18 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   const [customerId, setCustomerId] = useState();
   const [check, setCheck] = useState(0);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const [totalAmountItem,setTotalAmountItem] = useState();
+  const [totalAmountItem, setTotalAmountItem] = useState();
   useEffect(() => {
-    if (customerId != null) {
-      fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
+    let username = localStorage.getItem("username");
+    if (document.cookie !== '') {
+      fetch(`http://localhost:8086/api/carts/cart-details/${username}`).then(
         async (response) => {
           let products = await response.json();
           setProducts(products);
           let totalCart = 0;
           let totalCarNoDiscount = 0;
-          products.map((item) => {
+          products?.map((item) => {
+
             totalCarNoDiscount += item.price * item.quantity;
             totalCart += item.totalAmountItem;
           });
@@ -30,6 +32,10 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
       );
     } else {
       let products = JSON.parse(localStorage.getItem("cartStore"));
+      console.log(products)
+      if (products == null) {
+        products = []
+      }
       setProducts(products);
       let totalCarNoDiscount = 0;
 
@@ -42,7 +48,7 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
 
   useEffect(() => {
     if (products) {
-      setCartDetailLength(products.length);
+      setCartDetailLength(products?.length);
     }
   }, [products]);
 
@@ -71,10 +77,11 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   };
 
   useEffect(() => {
-    if (products) {
+    if (products && document.cookie == '') {
+      console.log(products)
       let totalCarNoDiscount = 0;
       let totalCartDiscount = 0;
-      products.map((item) => {
+      products?.map((item) => {
         totalCartDiscount +=
           item.price * item.quantity -
           (item.price * item.quantity * item.discount) / 100;
@@ -103,11 +110,11 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
         }
       ).then((e) => setCheck(check + 1));
     } else {
-      
-      let totalAmountItem = increaseQuantity*price;
+
+      let totalAmountItem = increaseQuantity * price;
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
       const updateCartStore = cartStore.map((item) =>
-        item.id == id ? { ...item, quantity: increaseQuantity, totalAmountItemNoAccount:totalAmountItem } : item
+        item.id == id ? { ...item, quantity: increaseQuantity, totalAmountItemNoAccount: totalAmountItem } : item
       );
       localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
       setCheck(check + 1);
@@ -132,12 +139,12 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
           }
         ).then((e) => setCheck(check + 1));
       } else {
-      
+
 
         let totalAmountItem = decreaseQuantity * price
         let cartStore = JSON.parse(localStorage.getItem("cartStore"));
         const updateCartStore = cartStore.map((item) =>
-          item.id == id ? { ...item, quantity: decreaseQuantity, totalAmountItemNoAccount:totalAmountItem } : item
+          item.id == id ? { ...item, quantity: decreaseQuantity, totalAmountItemNoAccount: totalAmountItem } : item
         );
         localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
         setCheck(check + 1);
@@ -159,16 +166,19 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
         }
       ).then((e) => setCheck(check + 1));
     } else {
-      
+      console.log(quantity, price, 'hạ huyệt')
       let totalAmount = quantity * price;
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
-        const updateCartStore = cartStore.map((item) =>
-          item.id == id ? { ...item, quantity: quantity, totalAmountItemNoAccount: totalAmount } : item
-        );
-        localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
-        setCheck(check + 1);
+      const updateCartStore = cartStore.map((item) =>
+        item.id == id ? { ...item, quantity: quantity, totalAmountItemNoAccount: totalAmount } : item
+      );
+      localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+      setCheck(check + 1);
     }
   };
+  useEffect(() => {
+    console.log(totalAmountCart);
+  }, [totalAmountCart])
 
   return (
     <>
@@ -208,7 +218,7 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                       <div className="table-cart">
                         {products?.map((data, index) => (
                           <div key={index}>
-                            {products && index !== products.length - 1 ? (
+                            {products && index !== products?.length - 1 ? (
                               <div className="media-line-item line-item">
                                 <div className="media-left">
                                   <div class="item-img">
@@ -258,20 +268,23 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                       class="line-item-total"
                                       id={"totalAmount" + data.id}
                                     >
-                                      {data.totalAmountItem && (
+
+                                      {document.cookie != '' && (
                                         <FormattedNumber
-                                          value={data.totalAmountItem}
+                                          value={data.totalAmountItem || 0}
                                           style="currency"
                                           currency="VND"
                                           minimumFractionDigits={0}
                                         />
                                       )}
-                                      <FormattedNumber
-                                        value={data.totalAmountItemNoAccount}
-                                        style="currency"
-                                        currency="VND"
-                                        minimumFractionDigits={0}
-                                      />
+                                      {document.cookie == '' &&
+                                        <FormattedNumber
+                                          value={data.totalAmountItemNoAccount}
+                                          style="currency"
+                                          currency="VND"
+                                          minimumFractionDigits={0}
+                                        />
+                                      }
                                     </span>
                                   </div>
                                   <div className="item-quantity">
@@ -377,20 +390,22 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                       class="line-item-total"
                                       id={"totalAmount" + data.id}
                                     >
-                                      {data.totalAmountItem && (
+                                      {document.cookie != '' && (
                                         <FormattedNumber
-                                          value={data.totalAmountItem}
+                                          value={data.totalAmountItem || 0}
                                           style="currency"
                                           currency="VND"
                                           minimumFractionDigits={0}
                                         />
                                       )}
-                                      <FormattedNumber
-                                        value={data.totalAmountItemNoAccount}
-                                        style="currency"
-                                        currency="VND"
-                                        minimumFractionDigits={0}
-                                      />
+                                      {document.cookie == '' &&
+                                        <FormattedNumber
+                                          value={data.totalAmountItemNoAccount}
+                                          style="currency"
+                                          currency="VND"
+                                          minimumFractionDigits={0}
+                                        />
+                                      }
                                     </span>
                                   </div>
                                   <div className="item-quantity">

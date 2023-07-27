@@ -20,6 +20,7 @@ const Auth = ({ isOpen, toggle, onLoginSuccess }) => {
                 username: data.email,
                 password: data.password,
             }).then((dataUser) => {
+                localStorage.setItem("username", data.email)
                 console.log(dataUser, "dataUser");
                 Cookies.set('JWT', dataUser.data.token);
                 onLoginSuccess();
