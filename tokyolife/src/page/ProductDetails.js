@@ -59,6 +59,7 @@ const ProductDetails = ({ setCartDetail }) => {
       fetch(`http://localhost:8086/api/products/${productId}`).then(
         async (response) => {
           let product = await response.json();
+          console.log(product);
           setProduct(product);
           const visitedProducts =
             JSON.parse(localStorage.getItem("visitedproduct")) || [];
@@ -226,24 +227,26 @@ const ProductDetails = ({ setCartDetail }) => {
 
   const handleAddToCart = () => {
     if (color == null) {
-      enqueueSnackbar("Color is required", { variant: "error" });
+      enqueueSnackbar("Hãy chọn màu", { variant: "error" });
       return;
     }
     if (size == null) {
-      enqueueSnackbar("Size is required", { variant: "error" });
+      enqueueSnackbar("Hãy chọn kích thước", { variant: "error" });
       return;
     }
 
-    if (customerId) {
+    if (document.cookie !== '') {
       setCart((prevCart) => ({
         ...prevCart,
         customerId: customerId,
         productId: product.id,
         status: "ISCART",
         price: product.price,
+        title: product.title,
         size: size,
         quantity: quantity,
         color: color,
+        username: localStorage.getItem('username')
       }));
     } else {
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
@@ -257,13 +260,15 @@ const ProductDetails = ({ setCartDetail }) => {
         id: product.id,
         status: "ISCART",
         price: product.price,
+        title: product.title,
         size: size,
         quantity: quantity,
         color: color,
         avt: product.images[0].fileUrl,
         discount: product.discount,
-        totalAmountItemNoAccount: product.price * quantity,
+        totalAmountItemNoAccount: product.price - (product.discount * quantity * product.price / 100),
       };
+      console.log(product.discountAmount, quantity)
       const isDuplicateItem = cartStore.find(
         (item) =>
           item.color === newCartItem.color &&
@@ -280,7 +285,7 @@ const ProductDetails = ({ setCartDetail }) => {
       }
       setNoAccountCart(cartStore);
       localStorage.setItem("cartStore", JSON.stringify(cartStore));
-      enqueueSnackbar("Successfully done the operation.", {
+      enqueueSnackbar("Thao tác thành công!", {
         variant: "success",
       });
 
@@ -290,7 +295,9 @@ const ProductDetails = ({ setCartDetail }) => {
   }
 
   useEffect(() => {
-    if (checkCart && customerId) {
+    console.log(document.cookie, cart.productId)
+    if (document.cookie != '' && cart.productId) {
+
       fetch("http://localhost:8086/api/carts/add", {
         headers: {
           Accept: "application/json",
@@ -301,7 +308,7 @@ const ProductDetails = ({ setCartDetail }) => {
       }).then(async (response) => {
         let result = await response.json();
         console.log(result);
-        enqueueSnackbar("Successfully done the operation.", {
+        enqueueSnackbar("Thao tác thành công!", {
           variant: "success",
         });
       });

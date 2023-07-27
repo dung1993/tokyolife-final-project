@@ -40,6 +40,7 @@ const Header = ({ cartDetail }) => {
     function handleLogout() {
         setIsLoggedIn(false);
         window.location.href = "/";
+        localStorage.removeItem('username')
         deleteJwtFromCookie();
     }
 
