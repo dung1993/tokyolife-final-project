@@ -19,7 +19,7 @@ const ProductDetails = ({ setCartDetail }) => {
   const { username } = useParams();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [noAccountCart, setNoAccountCart] = useState([]);
-
+  const [customerId, setCustomerId] = useState();
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const [discountAmount, setDiscountAmount] = useState();
@@ -287,335 +287,336 @@ const ProductDetails = ({ setCartDetail }) => {
 
       setCheckCart(true);
     };
+  }
 
-    useEffect(() => {
-      if (checkCart && customerId) {
-        fetch("http://localhost:8086/api/carts/add", {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify(cart),
-        }).then(async (response) => {
-          let result = await response.json();
-          console.log(result);
-          enqueueSnackbar("Successfully done the operation.", {
-            variant: "success",
-          });
+  useEffect(() => {
+    if (checkCart && customerId) {
+      fetch("http://localhost:8086/api/carts/add", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(cart),
+      }).then(async (response) => {
+        let result = await response.json();
+        console.log(result);
+        enqueueSnackbar("Successfully done the operation.", {
+          variant: "success",
         });
+      });
 
-      }
-    }, [cart]);
+    }
+  }, [cart]);
 
 
 
-    return (
-      <>
-        <div className="productDetail">
-          <Container>
-            <section className="productDetail-information" key={product.id}>
-              <Container>
-                <Row className="top-container">
-                  <Col lg="12" md="12" className="d-flex">
-                    <ul className="breadcrumb-list">
-                      <li>
-                        <Link to={`/`}>Trang chu</Link>
+  return (
+    <>
+      <div className="productDetail">
+        <Container>
+          <section className="productDetail-information" key={product.id}>
+            <Container>
+              <Row className="top-container">
+                <Col lg="12" md="12" className="d-flex">
+                  <ul className="breadcrumb-list">
+                    <li>
+                      <Link to={`/`}>Trang chu</Link>
 
-                        <span>&nbsp;&nbsp;</span>
-                      </li>
-                      <span>&#47;&nbsp;&nbsp;&nbsp;</span>
-                      <li>
-                        <a href="#">{product.categoryName}</a>
-                        <span>&nbsp;&nbsp;</span>
-                      </li>
-                      <span>&#47;&nbsp;&nbsp;&nbsp;</span>
-                      <li>
-                        <a href="#">{product.title}</a>
-                      </li>
-                      <span>&nbsp;</span>
-                    </ul>
+                      <span>&nbsp;&nbsp;</span>
+                    </li>
+                    <span>&#47;&nbsp;&nbsp;&nbsp;</span>
+                    <li>
+                      <a href="#">{product.categoryName}</a>
+                      <span>&nbsp;&nbsp;</span>
+                    </li>
+                    <span>&#47;&nbsp;&nbsp;&nbsp;</span>
+                    <li>
+                      <a href="#">{product.title}</a>
+                    </li>
+                    <span>&nbsp;</span>
+                  </ul>
+                </Col>
+              </Row>
+              <Row>
+                <Col lg="6" md="6" className="productDetail-gallery d-flex">
+                  <Col lg="2" md="2" className="d-flex flex-column">
+                    {product.images?.map((data, index) => (
+                      <a key={index}>
+                        <img
+                          onClick={() => handleTab(index)}
+                          src={data.fileUrl}
+                          alt=""
+                          className="image-product-list"
+                        />
+                      </a>
+                    ))}
                   </Col>
-                </Row>
-                <Row>
-                  <Col lg="6" md="6" className="productDetail-gallery d-flex">
-                    <Col lg="2" md="2" className="d-flex flex-column">
+                  <Col lg="10" md="10">
+                    <Slider ref={sliderRef} {...settings}>
                       {product.images?.map((data, index) => (
-                        <a key={index}>
+                        <a
+                          key={index}
+                          data-fancybox="gallery"
+                          href={data.fileUrl}
+                        >
                           <img
-                            onClick={() => handleTab(index)}
                             src={data.fileUrl}
                             alt=""
-                            className="image-product-list"
+                            style={{ maxWidth: "100%" }}
                           />
                         </a>
                       ))}
-                    </Col>
-                    <Col lg="10" md="10">
-                      <Slider ref={sliderRef} {...settings}>
-                        {product.images?.map((data, index) => (
-                          <a
-                            key={index}
-                            data-fancybox="gallery"
-                            href={data.fileUrl}
-                          >
-                            <img
-                              src={data.fileUrl}
-                              alt=""
-                              style={{ maxWidth: "100%" }}
-                            />
-                          </a>
-                        ))}
-                      </Slider>
-                    </Col>
+                    </Slider>
                   </Col>
-                  <Col lg="6" md="6" className="productDetail-content">
-                    <div className="product__detail">
-                      <div className="product-heading">
-                        <h1>{product.title}</h1>
-                        <ul className="product-meta">
-                          <li className="pro-sku">
-                            Mã sản phẩm: <span>{product.code}</span>{" "}
-                          </li>
-                          <li>&#124;</li>
-                          <li className="pro-brand">
-                            Thương hiệu: <span>{product.brandName}</span>
-                          </li>
-                          <li>&#124;</li>
-                          <li className="pro-sharing"></li>
-                        </ul>
-                      </div>
-                      {product.discount != 0 ? (
-                        <div className="product-price" id="price-preview">
-                          <span className="pro-percen me-2">
-                            -{product.discount}%
-                          </span>
-                          <del>
-                            <FormattedNumber
-                              value={product.price}
-                              style="currency"
-                              currency="VND"
-                              minimumFractionDigits={0}
-                            />
-                          </del>
-                          <span className="pro-price ms-2">
-                            <FormattedNumber
-                              value={discountAmount}
-                              style="currency"
-                              currency="VND"
-                              minimumFractionDigits={0}
-                            />
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="product-price" id="price-preview">
-                          <span className="pro-price ms-2">
-                            <FormattedNumber
-                              value={product.price}
-                              style="currency"
-                              currency="VND"
-                              minimumFractionDigits={0}
-                            />
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="product-variants">
-                        <form
-                          action="/cart/add"
-                          className="variants"
-                          id="add-item-form"
-                        >
-                          <div className="select-swatch">
-                            <div className="swatch">
-                              <div className="title-swap">Màu sắc:</div>
-                              <div className="select-swap">
-                                {colorArr?.map((item, index) => (
-                                  <input
-                                    key={index}
-                                    type="button"
-                                    data-input="color-size"
-                                    onClick={() => handleSetColor(item)}
-                                    style={{
-                                      backgroundColor: item,
-                                      width: "30px",
-                                      height: "30px",
-                                      border: "0.5px solid gray",
-                                      marginLeft: "5px",
-                                      borderRadius: "90%",
-                                    }}
-                                  ></input>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="swatch">
-                              <div className="title-swap">
-                                Size: <strong></strong>
-                              </div>
-                              <div className="select-swap">
-                                {sizeArr?.map((item, index) => (
-                                  <input
-                                    type="button"
-                                    data-input="color-size"
-                                    onClick={() => handleSetSize(item)}
-                                    style={{
-                                      marginLeft: "5px",
-                                      width: "30px",
-                                      height: "30px",
-                                      border: "0.1px solid gray",
-                                    }}
-                                    value={item}
-                                  ></input>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div style={{ marginTop: "5px" }}>
-                              {product && checkQuantity
-                                ? null
-                                : `Số lượng hàng trong kho: ${alertQuantity}`}
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-                      <hr />
-
-                      <div class="quantity-area clearfix">
-                        <input
-                          type="button"
-                          value="-"
-                          onClick={() => handleDecreaseQuantity()}
-                          class="qty-btn"
-                          id="quantity-btn"
-                        />
-                        <input
-                          type="text"
-                          id="quantity"
-                          name="quantity"
-                          value={quantity}
-                          min="1"
-                          class="quantity-input"
-                          onChange={(e) => handleQuantity(e)}
-                        />
-                        <input
-                          type="button"
-                          value="+"
-                          onclick="HRT.All.plusQuantity()"
-                          class="qty-btn"
-                          onClick={() => handleIncreaseQuantity()}
-                        />
-                      </div>
-
-                      <div>
-                        <span style={{ color: "red" }}>
-                          {product && checkQuantity
-                            ? null
-                            : `* Số lượng vượt quá hàng trong kho. Xin vui lòng nhập lại`}
+                </Col>
+                <Col lg="6" md="6" className="productDetail-content">
+                  <div className="product__detail">
+                    <div className="product-heading">
+                      <h1>{product.title}</h1>
+                      <ul className="product-meta">
+                        <li className="pro-sku">
+                          Mã sản phẩm: <span>{product.code}</span>{" "}
+                        </li>
+                        <li>&#124;</li>
+                        <li className="pro-brand">
+                          Thương hiệu: <span>{product.brandName}</span>
+                        </li>
+                        <li>&#124;</li>
+                        <li className="pro-sharing"></li>
+                      </ul>
+                    </div>
+                    {product.discount != 0 ? (
+                      <div className="product-price" id="price-preview">
+                        <span className="pro-percen me-2">
+                          -{product.discount}%
+                        </span>
+                        <del>
+                          <FormattedNumber
+                            value={product.price}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                        </del>
+                        <span className="pro-price ms-2">
+                          <FormattedNumber
+                            value={discountAmount}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
                         </span>
                       </div>
-
-                      <div class="addcart-area">
-                        <button
-                          type="button"
-                          id="add-to-cart"
-                          onClick={() => handleAddToCart()}
-                          class="add-to-cartProduct button dark btn-addtocart addtocart-modal"
-                          name="add"
-                        >
-                          <span>Thêm vào giỏ</span>
-                        </button>
-                        <button
-                          type="button"
-                          id="buy-now"
-                          class="btnred add-to-cartProduct-buynow button dark btn-addtocart addtocart-modal"
-                          name="add"
-                          style={{ display: "inline-block" }}
-                        >
-                          <span>Mua ngay</span>
-                        </button>
+                    ) : (
+                      <div className="product-price" id="price-preview">
+                        <span className="pro-price ms-2">
+                          <FormattedNumber
+                            value={product.price}
+                            style="currency"
+                            currency="VND"
+                            minimumFractionDigits={0}
+                          />
+                        </span>
                       </div>
-                      <hr />
+                    )}
 
-                      <div className="product-description">
-                        <div className="panel-group ">
-                          <div className="panel-title">
-                            <h2>Thông tin sản phẩm</h2>
+                    <div className="product-variants">
+                      <form
+                        action="/cart/add"
+                        className="variants"
+                        id="add-item-form"
+                      >
+                        <div className="select-swatch">
+                          <div className="swatch">
+                            <div className="title-swap">Màu sắc:</div>
+                            <div className="select-swap">
+                              {colorArr?.map((item, index) => (
+                                <input
+                                  key={index}
+                                  type="button"
+                                  data-input="color-size"
+                                  onClick={() => handleSetColor(item)}
+                                  style={{
+                                    backgroundColor: item,
+                                    width: "30px",
+                                    height: "30px",
+                                    border: "0.5px solid gray",
+                                    marginLeft: "5px",
+                                    borderRadius: "90%",
+                                  }}
+                                ></input>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="swatch">
+                            <div className="title-swap">
+                              Size: <strong></strong>
+                            </div>
+                            <div className="select-swap">
+                              {sizeArr?.map((item, index) => (
+                                <input
+                                  type="button"
+                                  data-input="color-size"
+                                  onClick={() => handleSetSize(item)}
+                                  style={{
+                                    marginLeft: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                    border: "0.1px solid gray",
+                                  }}
+                                  value={item}
+                                ></input>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: "5px" }}>
+                            {product && checkQuantity
+                              ? null
+                              : `Số lượng hàng trong kho: ${alertQuantity}`}
                           </div>
                         </div>
-                        <div className="panel-description ">
-                          <div className="description-productdetail">
-                            <p>{product.description}</p>
-                          </div>
+                      </form>
+                    </div>
+                    <hr />
+
+                    <div class="quantity-area clearfix">
+                      <input
+                        type="button"
+                        value="-"
+                        onClick={() => handleDecreaseQuantity()}
+                        class="qty-btn"
+                        id="quantity-btn"
+                      />
+                      <input
+                        type="text"
+                        id="quantity"
+                        name="quantity"
+                        value={quantity}
+                        min="1"
+                        class="quantity-input"
+                        onChange={(e) => handleQuantity(e)}
+                      />
+                      <input
+                        type="button"
+                        value="+"
+                        onclick="HRT.All.plusQuantity()"
+                        class="qty-btn"
+                        onClick={() => handleIncreaseQuantity()}
+                      />
+                    </div>
+
+                    <div>
+                      <span style={{ color: "red" }}>
+                        {product && checkQuantity
+                          ? null
+                          : `* Số lượng vượt quá hàng trong kho. Xin vui lòng nhập lại`}
+                      </span>
+                    </div>
+
+                    <div class="addcart-area">
+                      <button
+                        type="button"
+                        id="add-to-cart"
+                        onClick={() => handleAddToCart()}
+                        class="add-to-cartProduct button dark btn-addtocart addtocart-modal"
+                        name="add"
+                      >
+                        <span>Thêm vào giỏ</span>
+                      </button>
+                      <button
+                        type="button"
+                        id="buy-now"
+                        class="btnred add-to-cartProduct-buynow button dark btn-addtocart addtocart-modal"
+                        name="add"
+                        style={{ display: "inline-block" }}
+                      >
+                        <span>Mua ngay</span>
+                      </button>
+                    </div>
+                    <hr />
+
+                    <div className="product-description">
+                      <div className="panel-group ">
+                        <div className="panel-title">
+                          <h2>Thông tin sản phẩm</h2>
+                        </div>
+                      </div>
+                      <div className="panel-description ">
+                        <div className="description-productdetail">
+                          <p>{product.description}</p>
                         </div>
                       </div>
                     </div>
+                  </div>
+                </Col>
+              </Row>
+            </Container>
+          </section>
+
+          <hr />
+
+          {
+            <section>
+              <Container className="visitedProducts">
+                <Row>
+                  <Col
+                    lg="12"
+                    md="12"
+                    className="d-flex justify-content-center"
+                  >
+                    <h1>visited Products</h1>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg="12" md="12">
+                    <Slider {...silder}>
+                      {visitedproducts.length > 0
+                        ? visitedproducts?.map((data, index) => {
+                          return (
+                            <div key={index} className="related-product">
+                              <div className="related-product-slide">
+                                <Link to={`/productdetails/${data?.id}`}>
+                                  <img
+                                    src={data?.urlImage}
+                                    style={{ width: "200px" }}
+                                  />
+                                </Link>
+
+                                <div className="d-flex justify-content-center">
+                                  <span>{data?.title}</span>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                  <span
+                                    style={{
+                                      color: "red",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    <FormattedNumber
+                                      value={data?.price}
+                                      style="currency"
+                                      currency="VND"
+                                      minimumFractionDigits={0}
+                                    />
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                        : null}
+                    </Slider>
                   </Col>
                 </Row>
               </Container>
             </section>
+          }
+        </Container>
+      </div>
+    </>
+  );
+};
 
-            <hr />
-
-            {
-              <section>
-                <Container className="visitedProducts">
-                  <Row>
-                    <Col
-                      lg="12"
-                      md="12"
-                      className="d-flex justify-content-center"
-                    >
-                      <h1>visited Products</h1>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg="12" md="12">
-                      <Slider {...silder}>
-                        {visitedproducts.length > 0
-                          ? visitedproducts?.map((data, index) => {
-                            return (
-                              <div key={index} className="related-product">
-                                <div className="related-product-slide">
-                                  <Link to={`/productdetails/${data?.id}`}>
-                                    <img
-                                      src={data?.urlImage}
-                                      style={{ width: "200px" }}
-                                    />
-                                  </Link>
-
-                                  <div className="d-flex justify-content-center">
-                                    <span>{data?.title}</span>
-                                  </div>
-                                  <div className="d-flex justify-content-center">
-                                    <span
-                                      style={{
-                                        color: "red",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      <FormattedNumber
-                                        value={data?.price}
-                                        style="currency"
-                                        currency="VND"
-                                        minimumFractionDigits={0}
-                                      />
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })
-                          : null}
-                      </Slider>
-                    </Col>
-                  </Row>
-                </Container>
-              </section>
-            }
-          </Container>
-        </div>
-      </>
-    );
-  };
-
-  export default ProductDetails;
+export default ProductDetails;
