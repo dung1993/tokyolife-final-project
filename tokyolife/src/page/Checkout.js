@@ -19,7 +19,7 @@ const Checkout = () => {
   const [wardName, setWardName] = useState()
   const [customer, setCustomer] = useState();
   const [totalAmountCart, setTotalAmountCart] = useState();
-  const [customerId, setCustomerId] = useState(0)
+  const [customerId, setCustomerId] = useState(1)
   const [cartId, setCartId] = useState();
   const [check,setCheck] = useState(1);
   const [values, setValues] = useState({

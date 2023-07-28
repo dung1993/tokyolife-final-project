@@ -11,7 +11,7 @@ import Cart from "../page/Cart"
 import Login from "../page/Login"
 import Signup from "../page/Signup"
 import ListProductWithCategory from "../page/ListProductWithCategory"
-
+import Report from "../page/Report";
 
 const Routers = ({ cartDetail, setCartDetail }) => {
     const [products, setProducts] = useState();
@@ -27,6 +27,7 @@ const Routers = ({ cartDetail, setCartDetail }) => {
         <Route path="login" element={<Login />} />
         <Route path="products/category/:categoryId" element={<ListProductWithCategory />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="/report" element={<Report />} />
     </Routes>
 
 

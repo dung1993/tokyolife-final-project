@@ -17,7 +17,7 @@ const ProductDetails = ({ setCartDetail }) => {
   const { productId, categoryId } = useParams();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [noAccountCart, setNoAccountCart] = useState();
-  const [customerId, setCustomerId] = useState();
+  const [customerId, setCustomerId] = useState(1);
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const [discountAmount, setDiscountAmount] = useState();
