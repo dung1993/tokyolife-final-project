@@ -4,13 +4,15 @@ import "../component/Style/checkout.css";
 import { useForm } from "react-hook-form";
 import { FormattedNumber } from "react-intl";
 import FormInput from "../component/Form/FormInput";
+import CartService from "../assets/data/CartService";
+import { toast } from "react-toastify";
 
 
 const Checkout = () => {
   const [products, setProducts] = useState();
   const [provinces, setProvinces] = useState(null);
   const [provinceId, setProvinceId] = useState();
-  const [provinceName,setProvinceName] = useState();
+  const [provinceName, setProvinceName] = useState();
   const [districts, setDistricts] = useState(null);
   const [districtId, setDistrictId] = useState();
   const [districtName, setDistrictName] = useState();
@@ -21,12 +23,18 @@ const Checkout = () => {
   const [totalAmountCart, setTotalAmountCart] = useState();
   const [customerId, setCustomerId] = useState(1)
   const [cartId, setCartId] = useState();
-  const [check,setCheck] = useState(1);
+  const [check, setCheck] = useState(1);
   const [values, setValues] = useState({
     name_receiver: "",
     phone_receiver: "",
     address: "",
   });
+
+  const [state, setState] = useState({
+    cartRes: {},
+
+  })
+
   const inputs = [
     {
       id: 1,
@@ -43,7 +51,6 @@ const Checkout = () => {
       type: "text",
       placeholder: "Phone Number",
       errorsMessage: "Phone number should be 10-12 characters",
-      pattern:"[0-9]{10}",
       label: "Phone",
       required: true,
     },
@@ -53,17 +60,16 @@ const Checkout = () => {
       type: "text",
       placeholder: "Address",
       errorsMessage: "Address is required",
-      pattern:"/^[a-zA-Z0-9\s\.,#-]+$/",
       label: "Address",
       required: true,
     },
   ];
 
   const newObj = {
-    cartId:cartId,
+    cardId: cartId,
     cartDetailResDTOList: products,
-    name_receiver: values.name_receiver,
-    phone_receiver: values.phone_receiver,
+    receiverName: values.name_receiver,
+    phone: values.phone_receiver,
     totalAmount: totalAmountCart,
     customerId: customerId,
     locationRegion: {
@@ -75,25 +81,32 @@ const Checkout = () => {
       wardId: wardId,
       wardName: wardName,
       address: values.address,
-      customerId: customerId
     }
   }
 
-  const handleSubmit = (e) => {
+
+
+  const handleOrderSuccess = (e) => {
     e.preventDefault();
-    console.log(newObj);
-    fetch('http://localhost:8086/api/carts/checkout',{
+  }
+
+
+  const handleSubmit = (e) => {
+    console.log('submit')
+    e.preventDefault();
+    newObj.username = localStorage.getItem('username');
+    fetch('http://localhost:8086/api/carts/checkout', {
       method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newObj)
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newObj)
     })
   };
 
   useEffect(() => {
-    if(customerId){
-      fetch(`http://localhost:8086/api/carts/cart-details/${customerId}`).then(
+    if (document.cookie) {
+      fetch(`http://localhost:8086/api/carts/cart-details/${localStorage.getItem('username')}`).then(
         async (data) => {
           let products = await data.json();
           setProducts(products);
@@ -103,36 +116,37 @@ const Checkout = () => {
     else {
       let products = JSON.parse(localStorage.getItem("cartStore"))
       setProducts(products)
+      console.log(products);
       let totalAmountCart = 0
-      products.map((item)=>{
-        totalAmountCart += item.totalAmountItemNoAccount
+      products.map((item) => {
+        totalAmountCart += item.quantity * item.price;
       })
       setTotalAmountCart(totalAmountCart)
     }
-    
+
   }, [customerId]);
 
   useEffect(() => {
-    if(customerId){
-      fetch(`http://localhost:8086/api/carts/amount/${customerId}`).then(async (data) => {
+    if (document.cookie) {
+      fetch(`http://localhost:8086/api/carts/amount/${localStorage.getItem('username')}`).then(async (data) => {
         let cart = await data.json();
         setTotalAmountCart(cart.totalAmountCart);
         setCartId(cart.id)
       });
     }
-    
-  },customerId);
+
+  }, customerId);
 
   useEffect(() => {
-    if(customerId){
-      fetch(`http://localhost:8086/api/carts/customer/${customerId}`).then(
+    if (document.cookie) {
+      fetch(`http://localhost:8086/api/carts/customer/${localStorage.getItem('username')}`).then(
         async (response) => {
           let customer = await response.json();
           setCustomer(customer);
         }
       );
     }
-    
+
   }, customerId);
 
   useEffect(() => {
@@ -172,7 +186,7 @@ const Checkout = () => {
     setDistrictId(districtId);
   };
 
-  const handleWard = (e) =>{
+  const handleWard = (e) => {
     let wardId = e.target.value
     let wardName = e.target.options[e.target.selectedIndex].getAttribute("name")
     setWardId(wardId)
@@ -247,21 +261,21 @@ const Checkout = () => {
                                 ></div>
                               </div>
                               {
-        
+
                                 customerId ? (<p className="logged-in-customer-information-paragraph">
-                                {customer?.fullName} ({customer?.email})
-                                <br />
-                                <a href="/account/logout?return_url=%2Fcheckouts%2Fad9e7dfa23044ffeabbee02030f84bc2%3Fstep%3D1">
-                                  Đăng xuất
-                                </a>
-                              </p>):
-                              <p className="logged-in-customer-information-paragraph">
-                              Bạn đã có tài khoản? Đăng nhập
-                              <br />
-                              
-                            </p>
+                                  {customer?.fullName} ({customer?.email})
+                                  <br />
+                                  <a href="/account/logout?return_url=%2Fcheckouts%2Fad9e7dfa23044ffeabbee02030f84bc2%3Fstep%3D1">
+                                    Đăng xuất
+                                  </a>
+                                </p>) :
+                                  <p className="logged-in-customer-information-paragraph">
+                                    Bạn đã có tài khoản? Đăng nhập
+                                    <br />
+
+                                  </p>
                               }
-                              
+
                             </div>
 
                             <form onSubmit={handleSubmit}>
@@ -306,7 +320,7 @@ const Checkout = () => {
                                       <option
                                         key={index}
                                         value={data.province_id}
-                                        name ={data.province_name}
+                                        name={data.province_name}
                                       >
                                         {data.province_name}
                                       </option>
@@ -330,7 +344,7 @@ const Checkout = () => {
                                         <option
                                           key={index}
                                           value={data.district_id}
-                                          name = {data.district_name}
+                                          name={data.district_name}
                                         >
                                           {data.district_name}
                                         </option>
@@ -341,7 +355,7 @@ const Checkout = () => {
                                   <label for="inputZip" class="form-label">
                                     Phuong / Xa
                                   </label>
-                                  <select id="inputState" class="form-select" onChange={(e)=>handleWard(e)}>
+                                  <select id="inputState" class="form-select" onChange={(e) => handleWard(e)}>
                                     <option selected>Choose...</option>
                                     {wards?.map((data, index) => (
                                       <option key={index} value={data.ward_id} name={data.ward_name}>
@@ -392,7 +406,7 @@ const Checkout = () => {
                           <div class="product-thumbnail">
                             <img
                               class="product-thumbnail-image"
-                              alt="Quần bơi nam C7BKN007M"
+                              alt={data.title}
                               src={data.avt}
                             />
 
@@ -406,7 +420,7 @@ const Checkout = () => {
                         </td>
                         <td class="product-description col-lg-6">
                           <span class="product-description-name order-summary-emphasis d-block">
-                            Quần bơi nam C7BKN007M
+                            {data.title}
                           </span>
 
                           <span class="product-description-variant order-summary-small-text">
@@ -416,12 +430,23 @@ const Checkout = () => {
 
                         <td class="product-price col-lg-3">
                           <span class="order-summary-emphasis">
-                            <FormattedNumber
-                              value={data.totalAmountItemNoAccount}
-                              style="currency"
-                              currency="VND"
-                              minimumFractionDigits={0}
-                            />
+
+                            {document.cookie != '' && (
+                              <FormattedNumber
+                                value={data.totalAmountItem || 0}
+                                style="currency"
+                                currency="VND"
+                                minimumFractionDigits={0}
+                              />
+                            )}
+                            {document.cookie == '' &&
+                              <FormattedNumber
+                                value={data.price * data.quantity}
+                                style="currency"
+                                currency="VND"
+                                minimumFractionDigits={0}
+                              />
+                            }
                           </span>
                         </td>
                       </tr>
@@ -436,9 +461,9 @@ const Checkout = () => {
                       <td class="product-image col-lg-3 d-flex justify-content-center">
                         <div class="total-summary">Tổng tiền</div>
                       </td>
-                      <td class="product-description col-lg-6"></td>
+                      <td class="product-description col-lg-5"></td>
 
-                      <td class="product-price col-lg-3">
+                      <td class="product-price col-lg-4">
                         <span class="order-summary">
                           <FormattedNumber
                             value={totalAmountCart}

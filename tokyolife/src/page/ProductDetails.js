@@ -7,7 +7,8 @@ import "../component/Style/product-details.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FormattedNumber } from "react-intl";
-import { Link, json, useParams } from "react-router-dom";
+import { Link, json, useLocation, useParams } from "react-router-dom";
+import CustomerService from "../assets/data/CustomerService";
 import { useSnackbar } from "notistack";
 
 Fancybox.bind('[data-fancybox="gallery"]', {
@@ -15,9 +16,11 @@ Fancybox.bind('[data-fancybox="gallery"]', {
 });
 const ProductDetails = ({ setCartDetail }) => {
   const { productId, categoryId } = useParams();
+  const { username } = useParams();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [noAccountCart, setNoAccountCart] = useState();
   const [customerId, setCustomerId] = useState(1);
+
   document.title = "N2D shop - Product Detail";
   const [product, setProduct] = useState({});
   const [discountAmount, setDiscountAmount] = useState();
@@ -50,11 +53,14 @@ const ProductDetails = ({ setCartDetail }) => {
 
   const [visitedproducts, setVisitedproducts] = useState([]);
 
+
+
   useEffect(() => {
     try {
       fetch(`http://localhost:8086/api/products/${productId}`).then(
         async (response) => {
           let product = await response.json();
+          console.log(product);
           setProduct(product);
           const visitedProducts =
             JSON.parse(localStorage.getItem("visitedproduct")) || [];
@@ -222,41 +228,48 @@ const ProductDetails = ({ setCartDetail }) => {
 
   const handleAddToCart = () => {
     if (color == null) {
-      enqueueSnackbar("Color is required", { variant: "error" });
+      enqueueSnackbar("Hãy chọn màu", { variant: "error" });
       return;
     }
     if (size == null) {
-      enqueueSnackbar("Size is required", { variant: "error" });
+      enqueueSnackbar("Hãy chọn kích thước", { variant: "error" });
       return;
     }
-    if (customerId) {
+
+    if (document.cookie !== '') {
       setCart((prevCart) => ({
         ...prevCart,
         customerId: customerId,
         productId: product.id,
         status: "ISCART",
         price: product.price,
+        title: product.title,
         size: size,
         quantity: quantity,
         color: color,
+        username: localStorage.getItem('username')
       }));
     } else {
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
-      
+
       if (!Array.isArray(cartStore)) {
         cartStore = [];
       }
       const newCartItem = {
+        idCart: '',
+        username: '',
         id: product.id,
         status: "ISCART",
         price: product.price,
+        title: product.title,
         size: size,
         quantity: quantity,
         color: color,
         avt: product.images[0].fileUrl,
         discount: product.discount,
-        totalAmountItemNoAccount: product.price * quantity,
+        totalAmountItemNoAccount: product.price - (product.discount * quantity * product.price / 100),
       };
+      console.log(product.discountAmount, quantity)
       const isDuplicateItem = cartStore.find(
         (item) =>
           item.color === newCartItem.color &&
@@ -269,20 +282,23 @@ const ProductDetails = ({ setCartDetail }) => {
         console.log("test" + JSON.stringify(isDuplicateItem));
       } else {
         cartStore.push(newCartItem)
-        
+
       }
       setNoAccountCart(cartStore);
-        localStorage.setItem("cartStore", JSON.stringify(cartStore));
-        enqueueSnackbar("Successfully done the operation.", {
-          variant: "success",
-        });
-    }
+      localStorage.setItem("cartStore", JSON.stringify(cartStore));
+      enqueueSnackbar("Thao tác thành công!", {
+        variant: "success",
+      });
 
-    setCheckCart(true);
-  };
+
+      setCheckCart(true);
+    };
+  }
 
   useEffect(() => {
-    if (checkCart && customerId) {
+    console.log(document.cookie, cart.productId)
+    if (document.cookie != '' && cart.productId) {
+
       fetch("http://localhost:8086/api/carts/add", {
         headers: {
           Accept: "application/json",
@@ -292,15 +308,16 @@ const ProductDetails = ({ setCartDetail }) => {
         body: JSON.stringify(cart),
       }).then(async (response) => {
         let result = await response.json();
-        setCartDetail(result);
-        enqueueSnackbar("Successfully done the operation.", {
+        console.log(result);
+        enqueueSnackbar("Thao tác thành công!", {
           variant: "success",
         });
       });
-    } else {
-      console.log("no account" + noAccountCart);
+
     }
   }, [cart]);
+
+
 
   return (
     <>
@@ -565,38 +582,38 @@ const ProductDetails = ({ setCartDetail }) => {
                     <Slider {...silder}>
                       {visitedproducts.length > 0
                         ? visitedproducts?.map((data, index) => {
-                            return (
-                              <div key={index} className="related-product">
-                                <div className="related-product-slide">
-                                  <Link to={`/productdetails/${data?.id}`}>
-                                    <img
-                                      src={data?.urlImage}
-                                      style={{ width: "200px" }}
-                                    />
-                                  </Link>
+                          return (
+                            <div key={index} className="related-product">
+                              <div className="related-product-slide">
+                                <Link to={`/productdetails/${data?.id}`}>
+                                  <img
+                                    src={data?.urlImage}
+                                    style={{ width: "200px" }}
+                                  />
+                                </Link>
 
-                                  <div className="d-flex justify-content-center">
-                                    <span>{data?.title}</span>
-                                  </div>
-                                  <div className="d-flex justify-content-center">
-                                    <span
-                                      style={{
-                                        color: "red",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      <FormattedNumber
-                                        value={data?.price}
-                                        style="currency"
-                                        currency="VND"
-                                        minimumFractionDigits={0}
-                                      />
-                                    </span>
-                                  </div>
+                                <div className="d-flex justify-content-center">
+                                  <span>{data?.title}</span>
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                  <span
+                                    style={{
+                                      color: "red",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    <FormattedNumber
+                                      value={data?.price}
+                                      style="currency"
+                                      currency="VND"
+                                      minimumFractionDigits={0}
+                                    />
+                                  </span>
                                 </div>
                               </div>
-                            );
-                          })
+                            </div>
+                          );
+                        })
                         : null}
                     </Slider>
                   </Col>
