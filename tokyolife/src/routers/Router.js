@@ -21,7 +21,7 @@ const Routers = ({ cartDetail, setCartDetail }) => {
         <Route path="/" element={<Home />} />
         <Route path="shop" element={<Shop />} />
         <Route path="/checkout" element={<Checkout totalAmountCart={totalAmountCart} products={products} />} />
-        <Route path="/productdetails/:productId" element={<ProductDetails setCartDetail={setCartDetail} />} />
+        <Route path="/chi-tiet-san-pham/:productId" element={<ProductDetails setCartDetail={setCartDetail} />} />
         <Route path="/cart" element={<Cart totalAmountCart={totalAmountCart} setTotalAmountCart={setTotalAmountCart} products={products} setProducts={setProducts} />} />
         <Route path="/search/:keyword" element={<Search />} />
         <Route path="/account" element={<Account />} />

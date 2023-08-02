@@ -9,7 +9,7 @@ const ProductCard = ({ product }) => {
 
 
     return (
-        product.id && <Link key={product.id.toString()} to={`/productDetails/${product.id}`} state={{ id: product.id }} >
+        product.id && <Link key={product.id.toString()} to={`/chi-tiet-san-pham/${product.id}`} state={{ id: product.id }} >
 
 
             <div className="product__item ">

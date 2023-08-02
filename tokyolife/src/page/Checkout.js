@@ -461,9 +461,9 @@ const Checkout = () => {
                       <td class="product-image col-lg-3 d-flex justify-content-center">
                         <div class="total-summary">Tổng tiền</div>
                       </td>
-                      <td class="product-description col-lg-6"></td>
+                      <td class="product-description col-lg-5"></td>
 
-                      <td class="product-price col-lg-3">
+                      <td class="product-price col-lg-4">
                         <span class="order-summary">
                           <FormattedNumber
                             value={totalAmountCart}

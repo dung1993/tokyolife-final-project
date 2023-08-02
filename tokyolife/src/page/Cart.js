@@ -543,7 +543,7 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                         data-price-total="1754000"
                         href=""
                       >
-                        THANH TOÁN{" "}
+                        ĐẶT HÀNG{" "}
                       </Link>
                     </div>
                     <div id="script-cart-container"></div>
