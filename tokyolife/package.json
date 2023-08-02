@@ -25,6 +25,7 @@
     "react-bootstrap": "^2.7.4",
     "react-carousel-minimal": "^1.4.1",
     "react-dom": "^18.2.0",
+    "react-google-charts": "^4.0.1",
     "react-hook-form": "^7.45.1",
     "react-intl": "^6.4.4",
     "react-paginate": "^8.2.0",

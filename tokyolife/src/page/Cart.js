@@ -8,7 +8,7 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   const [products, setProducts] = useState();
   const [cartDetailLength, setCartDetailLength] = useState();
   const [totalAmountCartNoDiscount, setTotalAmountCartNoDiscount] = useState();
-  const [customerId, setCustomerId] = useState();
+  const [customerId, setCustomerId] = useState(1);
   const [check, setCheck] = useState(0);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [totalAmountItem, setTotalAmountItem] = useState();
