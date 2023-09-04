@@ -4,14 +4,22 @@ import "../component/Style/cart.css";
 import { FormattedNumber } from "react-intl";
 import { Link } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import API_URL from "../constant/APP_CONSTANT";
+
+
 const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   const [products, setProducts] = useState();
   const [cartDetailLength, setCartDetailLength] = useState();
   const [totalAmountCartNoDiscount, setTotalAmountCartNoDiscount] = useState();
-  const [customerId, setCustomerId] = useState(1);
-  const [check, setCheck] = useState(0);
+
+  const [customerId, setCustomerId] = useState();
+  // const [check, setCheck] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const [totalAmountItem, setTotalAmountItem] = useState();
+
+  // const [totalAmountItem, setTotalAmountItem] = useState();
+
   useEffect(() => {
     let username = localStorage.getItem("username");
     if (document.cookie !== '') {
@@ -20,31 +28,86 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
           let products = await response.json();
           setProducts(products);
           let totalCart = 0;
-          let totalCarNoDiscount = 0;
+          let totalCartNoDiscount = 0;
           products?.map((item) => {
-
-            totalCarNoDiscount += item.price * item.quantity;
-            totalCart += item.totalAmountItem;
+            totalCartNoDiscount += item.price * item.quantity;
+            totalCart += item.totalAmountItem
           });
           setTotalAmountCart(totalCart);
-          setTotalAmountCartNoDiscount(totalCarNoDiscount);
+          setTotalAmountCartNoDiscount(totalCartNoDiscount);
         }
       );
-    } else {
-      let products = JSON.parse(localStorage.getItem("cartStore"));
-      console.log(products)
-      if (products == null) {
-        products = []
-      }
-      setProducts(products);
-      let totalCarNoDiscount = 0;
-
-      products?.map((item) => {
-        totalCarNoDiscount += item.price * item.quantity;
-      });
-      setTotalAmountCartNoDiscount(totalCarNoDiscount);
     }
-  }, [customerId, check]);
+  }, [])
+
+  useEffect(() => {
+    // let username = localStorage.getItem("username");
+    // if (document.cookie !== '') {
+    //   fetch(`http://localhost:8086/api/carts/cart-details/${username}`).then(
+    //     async (response) => {
+    //       let products = await response.json();
+    //       setProducts(products);
+    //       let totalCart = 0;
+    //       let totalCartNoDiscount = 0;
+    //       products?.map((item) => {
+    //         totalCartNoDiscount += item.price * item.quantity;
+    //         totalCart += item.totalAmountItem
+    //       });
+    //       setTotalAmountCart(totalCart);
+    //       setTotalAmountCartNoDiscount(totalCartNoDiscount);
+    //     }
+    //   );
+    // } else {
+    let products = JSON.parse(localStorage.getItem("cartStore"));
+    if (products == null) {
+      products = []
+    }
+    setProducts(products);
+    let totalCarNoDiscount = 0;
+
+    products?.map((item) => {
+      totalCarNoDiscount += item.price * item.quantity;
+
+    });
+
+    setTotalAmountCartNoDiscount(totalCarNoDiscount);
+
+  }, [quantity])
+
+  // useEffect(() => {
+  //   let username = localStorage.getItem("username");
+  //   if (document.cookie !== '') {
+  //     fetch(`http://localhost:8086/api/carts/cart-details/${username}`).then(
+  //       async (response) => {
+  //         let products = await response.json();
+  //         setProducts(products);
+  //         let totalCart = 0;
+  //         let totalCarNoDiscount = 0;
+  //         products?.map((item) => {
+
+  //           totalCarNoDiscount += item.price * item.quantity;
+  //           totalCart += item.totalAmountItem;
+  //         });
+  //         setTotalAmountCart(totalCart);
+  //         setTotalAmountCartNoDiscount(totalCarNoDiscount);
+  //       }
+  //     );
+  //   } else {
+  //     let products = JSON.parse(localStorage.getItem("cartStore"));
+  //     if (products == null) {
+  //       products = []
+  //     }
+  //     setProducts(products);
+  //     let totalCarNoDiscount = 0;
+
+  //     products?.map((item) => {
+  //       totalCarNoDiscount += item.price * item.quantity;
+  //     });
+  //     setTotalAmountCartNoDiscount(totalCarNoDiscount);
+  //   }
+  // }, [check]);
+
+
 
   useEffect(() => {
     if (products) {
@@ -53,8 +116,9 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   }, [products]);
 
   const handleRemoveItem = (id, index) => {
-    if (id && customerId) {
-      fetch(`http://localhost:8086/api/carts/cart-details/1/${id}`, {
+    let username = localStorage.getItem("username");
+    if (id && document.cookie != '') {
+      fetch(`http://localhost:8086/api/carts/cart-details/${username}/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -70,93 +134,21 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
       //remove from local
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
       const updateCartStore = [...cartStore];
-      updateCartStore.splice(index, 1);
+      updateCartStore.splice(index, id);
       localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
       setProducts(updateCartStore);
     }
   };
 
-  useEffect(() => {
-    if (products && document.cookie == '') {
-      console.log(products)
-      let totalCarNoDiscount = 0;
-      let totalCartDiscount = 0;
-      products?.map((item) => {
-        totalCartDiscount +=
-          item.price * item.quantity -
-          (item.price * item.quantity * item.discount) / 100;
-        totalCarNoDiscount += item.price * item.quantity;
-      });
-      setTotalAmountCartNoDiscount(totalCarNoDiscount);
-      setTotalAmountCart(totalCartDiscount);
-    }
-  }, [products]);
-
-  const handleIncreaseQuantity = (id, index, price) => {
-    let inputQuantity = document.getElementById(`${id}`);
-    let increaseQuantity = parseInt(inputQuantity.value);
-    increaseQuantity += 1;
-    inputQuantity.value = increaseQuantity;
-
-    if (customerId) {
-      fetch(
-        `http://localhost:8086/api/carts/cart-details/${customerId}/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(increaseQuantity),
-        }
-      ).then((e) => setCheck(check + 1));
-    } else {
-
-      let totalAmountItem = increaseQuantity * price;
-      let cartStore = JSON.parse(localStorage.getItem("cartStore"));
-      const updateCartStore = cartStore.map((item) =>
-        item.id == id ? { ...item, quantity: increaseQuantity, totalAmountItemNoAccount: totalAmountItem } : item
-      );
-      localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
-      setCheck(check + 1);
-    }
-  };
-
-  const handleDecreaseQuantity = (id, index, price) => {
-    let inputQuantity = document.getElementById(`${id}`);
-    let decreaseQuantity = parseInt(inputQuantity.value);
-    decreaseQuantity -= 1;
-    inputQuantity.value = decreaseQuantity;
-    if (decreaseQuantity > 0) {
-      if (customerId) {
-        fetch(
-          `http://localhost:8086/api/carts/cart-details/${customerId}/${id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(decreaseQuantity),
-          }
-        ).then((e) => setCheck(check + 1));
-      } else {
-
-
-        let totalAmountItem = decreaseQuantity * price
-        let cartStore = JSON.parse(localStorage.getItem("cartStore"));
-        const updateCartStore = cartStore.map((item) =>
-          item.id == id ? { ...item, quantity: decreaseQuantity, totalAmountItemNoAccount: totalAmountItem } : item
-        );
-        localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
-        setCheck(check + 1);
-      }
-    } else inputQuantity.value = 1;
-  };
-
-  const handleInputQuantity = (e, id, index, price) => {
+  const handleQuantityChange = (e, id, price) => {
+    let username = localStorage.getItem("username");
     let quantity = e.target.value;
-    if (customerId) {
+
+    if (quantity === '') return;
+
+    if (document.cookie !== '') {
       fetch(
-        `http://localhost:8086/api/carts/cart-details/${customerId}/${id}`,
+        `http://localhost:8086/api/carts/cart-details/${username}/${id}`,
         {
           method: "PATCH",
           headers: {
@@ -164,21 +156,253 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
           },
           body: JSON.stringify(quantity),
         }
-      ).then((e) => setCheck(check + 1));
-    } else {
-      console.log(quantity, price, 'hạ huyệt')
+      ).then(async (response) => {
+        let username = localStorage.getItem("username");
+        if (document.cookie !== '') {
+          fetch(`http://localhost:8086/api/carts/cart-details/${username}`).then(
+            async (response) => {
+              let products = await response.json();
+              setProducts(products);
+              let totalCart = 0;
+              let totalCartNoDiscount = 0;
+              products?.map((item) => {
+                totalCartNoDiscount += item.price * item.quantity;
+                totalCart += item.totalAmountItem
+              });
+              setTotalAmountCart(totalCart);
+              setTotalAmountCartNoDiscount(totalCartNoDiscount);
+            }
+          );
+        }
+      }).catch((error) => {
+        console.error("Fetch request failed:", error);
+      });
+    }
+    else {
       let totalAmount = quantity * price;
       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
       const updateCartStore = cartStore.map((item) =>
-        item.id == id ? { ...item, quantity: quantity, totalAmountItemNoAccount: totalAmount } : item
+        item.id === id ? { ...item, quantity: quantity, totalAmountItemNoAccount: totalAmount } : item
       );
       localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
-      setCheck(check + 1);
     }
   };
-  useEffect(() => {
-    console.log(totalAmountCart);
-  }, [totalAmountCart])
+
+  const handleIncreaseQuantity = (id, price, index, discount) => {
+    let username = localStorage.getItem("username");
+    let inputQuantity = document.getElementById(`${id}`);
+    let increaseQuantity = +inputQuantity.value;
+    increaseQuantity += 1;
+    inputQuantity.value = increaseQuantity;
+
+    if (document.cookie !== '') {
+      fetch(API_URL + `/carts/cart-details/${username}/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(increaseQuantity),
+        }
+      ).then((data) => {
+        let username = localStorage.getItem("username");
+        if (document.cookie !== '') {
+          fetch(API_URL + `/carts/cart-details/${username}`).then(
+            async (response) => {
+              let products = await response.json();
+              setProducts(products);
+              let totalCart = 0;
+              let totalCartNoDiscount = 0;
+              products?.map((item) => {
+                totalCartNoDiscount += item.price * item.quantity;
+                totalCart += item.totalAmountItem
+              });
+              setTotalAmountCart(totalCart);
+              setTotalAmountCartNoDiscount(totalCartNoDiscount);
+            }
+          );
+        }
+      }).catch((error) => {
+        console.error("Fetch request failed:", error);
+      });
+    } else {
+      let totalAmountItem = increaseQuantity * (price - (price * discount) / 100);
+      let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+      const updateCartStore = cartStore.map((item) =>
+        item.id === id
+          ? { ...item, quantity: increaseQuantity, totalAmountItemNoAccount: totalAmountItem }
+          : item
+      );
+      localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+    }
+    setQuantity(increaseQuantity);
+  };
+
+  const handleDecreaseQuantity = (id, price, index, discount) => {
+    let username = localStorage.getItem("username");
+    let inputQuantity = document.getElementById(`${id}`);
+    let decreaseQuantity = inputQuantity.value;
+    decreaseQuantity -= 1;
+    inputQuantity.value = decreaseQuantity;
+
+    if (decreaseQuantity > 0) {
+      if (document.cookie !== '') {
+        fetch(
+          API_URL + `/carts/cart-details/${username}/${id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(decreaseQuantity),
+          }
+        ).then((data) => {
+          console.log(decreaseQuantity);
+          let username = localStorage.getItem("username");
+          if (document.cookie !== '') {
+            fetch(API_URL + `/carts/cart-details/${username}`).then(
+              async (response) => {
+                let products = await response.json();
+                setProducts(products);
+                let totalCart = 0;
+                let totalCartNoDiscount = 0;
+                products?.map((item) => {
+                  totalCartNoDiscount += item.price * item.quantity;
+                  totalCart += item.totalAmountItem
+                });
+                setTotalAmountCart(totalCart);
+                setTotalAmountCartNoDiscount(totalCartNoDiscount);
+              }
+            );
+          }
+        }).catch((error) => {
+          console.error("Fetch request failed:", error);
+        });
+      } else {
+        let totalAmountItem = decreaseQuantity * (price - (price * discount) / 100);
+        let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+        const updateCartStore = cartStore.map((item) =>
+          item.id === id
+            ? { ...item, quantity: decreaseQuantity, totalAmountItemNoAccount: totalAmountItem }
+            : item
+        );
+        localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+      }
+    } else {
+      decreaseQuantity = 1;
+      setQuantity(decreaseQuantity);
+    }
+
+  };
+
+
+
+  // useEffect(() => {
+  //   if (products && document.cookie == '') {
+  //     console.log(products)
+  //     let totalCarNoDiscount = 0;
+  //     let totalCartDiscount = 0;
+  //     products?.map((item) => {
+  //       totalCartDiscount +=
+  //         item.price * item.quantity -
+  //         (item.price * item.quantity * (item.discount / 100));
+  //       totalCarNoDiscount += item.price * item.quantity;
+  //     });
+  //     setTotalAmountCartNoDiscount(totalCarNoDiscount);
+  //     setTotalAmountCart(totalCartDiscount);
+  //   }
+  // }, [products]);
+
+  // const handleIncreaseQuantity = (id, index, price, discount) => {
+  //   let username = localStorage.getItem("username");
+  //   let inputQuantity = document.getElementById(`${id}`);
+  //   let increaseQuantity = parseInt(inputQuantity.value);
+  //   increaseQuantity += 1;
+  //   inputQuantity.value = increaseQuantity;
+
+  //   if (document.cookie != '') {
+  //     fetch(
+  //       `http://localhost:8086/api/carts/cart-details/${username}/${id}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(increaseQuantity),
+  //       }
+  //     ).then((response) => setCheck(check + 1));
+  //   } else {
+
+  //     let totalAmountItem = increaseQuantity * (price - price * discount / 100);
+  //     let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+  //     const updateCartStore = cartStore.map((item) =>
+  //       item.id == id ? { ...item, quantity: increaseQuantity, totalAmountItemNoAccount: totalAmountItem } : item
+  //     );
+  //     localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+  //     setCheck(check + 1);
+  //   }
+  // };
+
+  // const handleDecreaseQuantity = (id, index, price, discount) => {
+  //   let username = localStorage.getItem("username");
+  //   let inputQuantity = document.getElementById(`${id}`);
+  //   let decreaseQuantity = parseInt(inputQuantity.value);
+  //   decreaseQuantity -= 1;
+  //   inputQuantity.value = decreaseQuantity;
+  //   if (decreaseQuantity > 0) {
+  //     if (document.cookie != '') {
+  //       fetch(
+  //         `http://localhost:8086/api/carts/cart-details/${username}/${id}`,
+  //         {
+  //           method: "PATCH",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(decreaseQuantity),
+  //         }
+  //       ).then((response) => setCheck(check + 1));
+  //     } else {
+
+
+  //       let totalAmountItem = decreaseQuantity * (price - price * discount / 100);
+  //       let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+  //       const updateCartStore = cartStore.map((item) =>
+  //         item.id == id ? { ...item, quantity: decreaseQuantity, totalAmountItemNoAccount: totalAmountItem } : item
+  //       );
+  //       localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+  //       setCheck(check + 1);
+  //     }
+  //   } else inputQuantity.value = 1;
+  // };
+
+  // const handleInputQuantity = (e, id, index, price) => {
+  //   let username = localStorage.getItem("username");
+  //   let quantity = e.target.value;
+
+  //   if (quantity == '') return quantity = 0;
+  //   if (document.cookie !== '') {
+  //     fetch(
+  //       `http://localhost:8086/api/carts/cart-details/${username}/${id}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(quantity),
+  //       }
+  //     ).then(async (response) => {
+  //       setChangeQuantity(quantity)
+  //     });
+  //   } else {
+  //     let totalAmount = quantity * price;
+  //     let cartStore = JSON.parse(localStorage.getItem("cartStore"));
+  //     const updateCartStore = cartStore.map((item) =>
+  //       item.id == id ? { ...item, quantity: quantity, totalAmountItemNoAccount: totalAmount } : item
+  //     );
+  //     localStorage.setItem("cartStore", JSON.stringify(updateCartStore));
+  //     setChangeQuantity(quantity);
+  //   }
+  // };
 
   return (
     <>
@@ -296,7 +520,8 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                           handleDecreaseQuantity(
                                             data.id,
                                             index,
-                                            data.price
+                                            data.price,
+                                            data.discount
                                           )
                                         }
                                       >
@@ -306,13 +531,12 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                         type="text"
                                         size="4"
                                         name="updates[]"
-                                        min="1"
                                         id={data.id}
                                         data-price="29000000"
                                         value={data.quantity}
                                         class="tc line-item-qty item-quantity"
                                         onChange={(e) =>
-                                          handleInputQuantity(
+                                          handleQuantityChange(
                                             e,
                                             data.id,
                                             index,
@@ -327,7 +551,8 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                           handleIncreaseQuantity(
                                             data.id,
                                             index,
-                                            data.price
+                                            data.price,
+                                            data.discount
                                           )
                                         }
                                       >
@@ -417,7 +642,8 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                           handleDecreaseQuantity(
                                             data.id,
                                             index,
-                                            data.price
+                                            data.price,
+                                            data.discount
                                           )
                                         }
                                       >
@@ -425,15 +651,19 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                       </button>
                                       <input
                                         type="text"
-                                        size="4"
                                         name="updates[]"
-                                        min="1"
                                         id={data.id}
                                         data-price="29000000"
                                         value={data.quantity}
                                         class="tc line-item-qty item-quantity"
-                                        onChange={(e) =>
-                                          handleInputQuantity(
+                                        onChange={(e) => {
+                                          const productsNew = JSON.parse(JSON.stringify(products));
+                                          productsNew[index].quantity = e.target.value;
+
+                                          setProducts(productsNew)
+                                        }}
+                                        onBlur={(e) =>
+                                          handleQuantityChange(
                                             e,
                                             data.id,
                                             index,
@@ -448,7 +678,8 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
                                           handleIncreaseQuantity(
                                             data.id,
                                             index,
-                                            data.price
+                                            data.price,
+                                            data.discount
                                           )
                                         }
                                       >
