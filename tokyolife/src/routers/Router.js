@@ -9,8 +9,12 @@ import ProductDetails from "../page/ProductDetails"
 import Search from "../page/Search";
 import Cart from "../page/Cart"
 import ListProductWithCategory from "../page/ListProductWithCategory"
+
+import Report from "../page/Report";
+
 import Register from './../page/Register';
 import Account from './../page/Account';
+
 
 
 const Routers = ({ cartDetail, setCartDetail }) => {
@@ -26,7 +30,12 @@ const Routers = ({ cartDetail, setCartDetail }) => {
         <Route path="/search/:keyword" element={<Search />} />
         <Route path="/account" element={<Account />} />
         <Route path="products/category/:categoryId" element={<ListProductWithCategory />} />
+
+        <Route path="signup" element={<Signup />} />
+        <Route path="/report" element={<Report />} />
+
         <Route path="/register" element={<Register />} />
+
     </Routes>
 
 

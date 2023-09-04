@@ -14,6 +14,7 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   const [customerId, setCustomerId] = useState();
   // const [check, setCheck] = useState(0);
   const [quantity, setQuantity] = useState(0);
+
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   // const [totalAmountItem, setTotalAmountItem] = useState();
