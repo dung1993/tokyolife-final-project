@@ -103,7 +103,7 @@ const Header = ({ cartDetail }) => {
                         <ul className="menu d-flex " style={{ listStyle: 'none' }}>
                             {state.categories?.map(e => {
                                 return <li className="menu category">
-                                    <Link className='category' >{e.name}</Link>
+                                    <div className='category' >{e.name}</div>
                                     <div className='mega-menu'>
                                         {e?.categoryChilds?.map(c => { return < Link key={c.id.toString()} to={`products/category/${c.id}`} state={{ id: c.id }}><ul className='sub-menu'>{c.name}</ul></Link> }
                                         )}
