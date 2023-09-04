@@ -11,7 +11,6 @@ const Cart = ({ totalAmountCart, setTotalAmountCart }) => {
   const [products, setProducts] = useState();
   const [cartDetailLength, setCartDetailLength] = useState();
   const [totalAmountCartNoDiscount, setTotalAmountCartNoDiscount] = useState();
-
   const [customerId, setCustomerId] = useState();
   // const [check, setCheck] = useState(0);
   const [quantity, setQuantity] = useState(0);

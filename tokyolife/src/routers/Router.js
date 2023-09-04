@@ -31,7 +31,7 @@ const Routers = ({ cartDetail, setCartDetail }) => {
         <Route path="/account" element={<Account />} />
         <Route path="products/category/:categoryId" element={<ListProductWithCategory />} />
 
-        <Route path="signup" element={<Signup />} />
+        {/* <Route path="signup" element={<Signup />} /> */}
         <Route path="/report" element={<Report />} />
 
         <Route path="/register" element={<Register />} />
