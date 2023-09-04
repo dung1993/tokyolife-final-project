@@ -40,3 +40,7 @@
 .slick-arrow::before {
   color: #444444 !important;
 }
+
+body {
+  font-family: "Open Sans";
+}

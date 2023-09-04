@@ -68,7 +68,7 @@ const ModalSearch = ({ isOpen, toggle }) => {
                 </ModalHeader>
                 <ModalBody>
                     <div className="search__product">
-                        {state.products?.map(product => { return <ProductWithSearch product={product} /> })}
+                        {state.products?.map(product => { return <ProductWithSearch product={product} handleClose={handleClose} /> })}
                         {state.products?.length > 0 && <Link to={`/search/${searchRef.current?.value}`} state={{ keyword: searchRef.current?.value }} style={{ display: "flex", justifyContent: "center" }} onClick={handleClose}>Xem thêm</Link>}
                     </div>
                 </ModalBody>

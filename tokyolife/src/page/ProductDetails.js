@@ -10,6 +10,9 @@ import { FormattedNumber } from "react-intl";
 import { Link, json, useLocation, useParams } from "react-router-dom";
 import CustomerService from "../assets/data/CustomerService";
 import { useSnackbar } from "notistack";
+// import parse from 'html-react-parser';
+import API_URL from "../constant/APP_CONSTANT";
+// import Description from "../component/Description/Description";
 
 Fancybox.bind('[data-fancybox="gallery"]', {
   // Your custom options
@@ -56,7 +59,7 @@ const ProductDetails = ({ setCartDetail }) => {
 
   useEffect(() => {
     try {
-      fetch(`http://localhost:8086/api/products/${productId}`).then(
+      fetch(API_URL + `products/${productId}`).then(
         async (response) => {
           let product = await response.json();
           console.log(product);
@@ -129,7 +132,7 @@ const ProductDetails = ({ setCartDetail }) => {
     if (str) {
       try {
         fetch(
-          `http://localhost:8086/api/products/visited?products=${str}`
+          API_URL + `products/visited?products=${str}`
         ).then(async (response) => {
           const products = await response.json();
           const temp = [...products];
@@ -298,7 +301,7 @@ const ProductDetails = ({ setCartDetail }) => {
     console.log(document.cookie, cart.productId)
     if (document.cookie != '' && cart.productId) {
 
-      fetch("http://localhost:8086/api/carts/add", {
+      fetch(API_URL + "/carts/add", {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -552,7 +555,7 @@ const ProductDetails = ({ setCartDetail }) => {
                       </div>
                       <div className="panel-description ">
                         <div className="description-productdetail">
-                          <p>{product.description}</p>
+                          <p dangerouslySetInnerHTML={{ __html: product.description }}></p>
                         </div>
                       </div>
                     </div>

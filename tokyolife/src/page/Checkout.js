@@ -22,6 +22,7 @@ const Checkout = () => {
   const [customer, setCustomer] = useState();
   const [totalAmountCart, setTotalAmountCart] = useState();
   const [customerId, setCustomerId] = useState(0)
+  const [userId, setUserId] = useState(0);
   const [cartId, setCartId] = useState();
   const [check, setCheck] = useState(1);
   const [values, setValues] = useState({
@@ -34,6 +35,10 @@ const Checkout = () => {
     cartRes: {},
 
   })
+
+  useEffect(() => {
+    console.log(products);
+  }, [products])
 
   const inputs = [
     {
@@ -71,7 +76,7 @@ const Checkout = () => {
     receiverName: values.name_receiver,
     phone: values.phone_receiver,
     totalAmount: totalAmountCart,
-    customerId: customerId,
+    userId: userId,
     locationRegion: {
       id: null,
       provinceId: provinceId,
@@ -105,11 +110,18 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    if (document.cookie) {
-      fetch(`http://localhost:8086/api/carts/cart-details/${localStorage.getItem('username')}`).then(
+    let username = localStorage.getItem('username')
+    if (document.cookie != '') {
+      fetch(`http://localhost:8086/api/carts/cart-details/${username}`).then(
         async (data) => {
           let products = await data.json();
           setProducts(products);
+          let totalAmountCart = 0
+          products.map((item) => {
+            totalAmountCart += item.totalAmountItem;
+            console.log(totalAmountCart);
+          })
+          setTotalAmountCart(totalAmountCart);
         }
       );
     }
@@ -124,22 +136,24 @@ const Checkout = () => {
       setTotalAmountCart(totalAmountCart)
     }
 
-  }, [customerId]);
+  }, [userId]);
 
   useEffect(() => {
-    if (document.cookie) {
-      fetch(`http://localhost:8086/api/carts/amount/${localStorage.getItem('username')}`).then(async (data) => {
+    let username = localStorage.getItem('username')
+    if (document.cookie != '') {
+      fetch(`http://localhost:8086/api/carts/amount/${username}`).then(async (data) => {
         let cart = await data.json();
         setTotalAmountCart(cart.totalAmountCart);
         setCartId(cart.id)
       });
     }
 
-  }, customerId);
+  }, [userId]);
 
   useEffect(() => {
-    if (document.cookie) {
-      fetch(`http://localhost:8086/api/carts/customer/${localStorage.getItem('username')}`).then(
+    let username = localStorage.getItem('username')
+    if (document.cookie != '') {
+      fetch(`http://localhost:8086/api/carts/customer/${username}`).then(
         async (response) => {
           let customer = await response.json();
           setCustomer(customer);
@@ -147,7 +161,7 @@ const Checkout = () => {
       );
     }
 
-  }, customerId);
+  }, [userId]);
 
   useEffect(() => {
     fetch("https://vapi.vnappmob.com/api/province/").then(async (response) => {
@@ -206,7 +220,7 @@ const Checkout = () => {
     console.log(e.target.name);
     setValues({ ...values, [e.target.name]: e.target.value });
   };
-  console.log(values.name_receiver);
+
   return (
     <>
       <div className="checkout-page">
@@ -465,12 +479,15 @@ const Checkout = () => {
 
                       <td class="product-price col-lg-4">
                         <span class="order-summary">
+
                           <FormattedNumber
-                            value={totalAmountCart}
+                            value={totalAmountCart || 0}
                             style="currency"
                             currency="VND"
                             minimumFractionDigits={0}
                           />
+
+
                           {/* <div>test</div> */}
                         </span>
                       </td>
