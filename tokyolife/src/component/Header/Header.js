@@ -41,6 +41,7 @@ const Header = ({ cartDetail }) => {
         setIsLoggedIn(false);
         window.location.href = "/";
         localStorage.removeItem('username')
+        localStorage.removeItem('user')
         deleteJwtFromCookie();
     }
 
@@ -133,7 +134,7 @@ const Header = ({ cartDetail }) => {
                                     {isLoggedIn ? (
                                         <div className='customer-name'>
                                             <p style={{ margin: "0", textAlign: "center" }}>Tài khoản</p>
-                                            <Link to="/account" state={dataUser.data.username}><div className="customer-name">{dataUser.data.name}</div></Link>
+                                            <Link to="/account" state={dataUser.username}><div className="customer-name">{dataUser.name}</div></Link>
                                             <div className='mega-menu' style={{ width: "140px", borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px" }}>
                                                 <ul style={{ padding: "5px" }} onClick={handleLogout}>Đăng xuất</ul>
                                             </div>
